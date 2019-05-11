@@ -20,14 +20,14 @@ grid.color: ececec
 grid.linestyle: -
 grid.linewidth: 1.0
 
-legend.edgecolor: white
+legend.edgecolor: fefcec
 legend.fancybox: True
 legend.fontsize: 14
 legend.framealpha: 0.8
-legend.facecolor: white
+legend.facecolor: fefcec
 
 font.size: 14
 
-figure.facecolor: white
-figure.edgecolor: white
+figure.facecolor: fefcec
+figure.edgecolor: fefcec
 figure.figsize: 6.4, 4.8
