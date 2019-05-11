@@ -1,0 +1,33 @@
+lines.linewidth : 3.0
+
+patch.antialiased: True
+
+axes.edgecolor: ffffff
+axes.grid : True
+axes.titlesize: 16
+axes.labelsize: 14
+axes.prop_cycle: cycler('color', ['0067C4', 'FF9500', '5600C9', 'AC9C00', '329EFF', '320075'])
+
+xtick.labelsize : 14
+xtick.major.size: 0
+xtick.minor.size: 0
+
+ytick.labelsize : 14
+ytick.major.size: 0
+ytick.minor.size: 0
+
+grid.color: ececec
+grid.linestyle: -
+grid.linewidth: 1.0
+
+legend.edgecolor: white
+legend.fancybox: True
+legend.fontsize: 14
+legend.framealpha: 0.8
+legend.facecolor: white
+
+font.size: 14
+
+figure.facecolor: white
+figure.edgecolor: white
+figure.figsize: 6.4, 4.8
