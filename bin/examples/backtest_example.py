@@ -1,42 +1,20 @@
-import os
-import sys
-import backtrader as bt
-import alpaca_backtrader_api
-import pandas
+from datetime import datetime
+import backtrader
 
-wd = os.getcwd()
-sys.path.append(wd)
-
-from lib import alpaca
-
-credentials = alpaca.load_paper_credentials()
-
-class SmaCross(bt.SignalStrategy):
+class SmaCross(backtrader.SignalStrategy):
+    params = (('pfast', 10), ('pslow', 30),)
     def __init__(self):
-        sma1, sma2 = bt.ind.SMA(period=10), bt.ind.SMA(period=30)
-        crossover = bt.ind.CrossOver(sma1, sma2)
-        self.signal_add(bt.SIGNAL_LONG, crossover)
+        sma1, sma2 = backtrader.ind.SMA(period=self.p.pfast), backtrader.ind.SMA(period=self.p.pslow)
+        self.signal_add(backtrader.SIGNAL_LONG, backtrader.ind.CrossOver(sma1, sma2))
 
-cerebro = bt.Cerebro()
-cerebro.addstrategy(SmaCross)
-
-store = alpaca_backtrader_api.AlpacaStore(key_id=credentials['key_id'],
-                                          secret_key=credentials['secret_key'],
-                                          paper=True)
-
+cerebro = backtrader.Cerebro()
 cerebro.broker.setcash(100000)
 cerebro.broker.setcommission(commission=0.0)
-cerebro.addsizer(bt.sizers.PercentSizer, percents=20)
+cerebro.addsizer(backtrader.sizers.PercentSizer, percents=20)
 
-DataFactory = store.getdata
+data = backtrader.feeds.YahooFinanceData(dataname='MSFT', fromdate=datetime(2011, 1, 1), todate=datetime(2012, 12, 31))
+cerebro.adddata(data)
 
-data0 = DataFactory(dataname='AAPL',
-                    timeframe=bt.TimeFrame.TFrame("Minutes"),
-                    fromdate=pandas.Timestamp('2018-11-15'),
-                    todate=pandas.Timestamp('2018-11-17'),
-                    historical=True)
-cerebro.adddata(data0)
-
+cerebro.addstrategy(SmaCross)
 cerebro.run()
-print('Final Portfolio Value: %.2f' % cerebro.broker.getvalue())
 cerebro.plot()
