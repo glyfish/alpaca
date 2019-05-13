@@ -12,3 +12,4 @@ backtrader
 alpaca-trade-api
 alpaca-backtrader-api
 pyyaml
+pylivetrader
