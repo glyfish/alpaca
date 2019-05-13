@@ -46,9 +46,9 @@ def _get_prices(symbols, end_dt, max_workers=5):
 
 # Get the map of prices in DataFrame with the symbol name key.
 def prices(symbols):
-    now = pandas.Timestamp.now(tz=NY)
+    now = pandas.Timestamp.now(tz='America/New_York')
     end_dt = now
-    if now.time() >= pandas.Timestamp('09:30', tz=NY).time():
+    if now.time() >= pandas.Timestamp('09:30', tz='America/New_York').time():
         end_dt = now - pandas.Timedelta(now.strftime('%H:%M:%S')) - pandas.Timedelta('1 minute')
     return _get_prices(symbols, end_dt)
 
@@ -172,7 +172,7 @@ def main():
         now = clock.timestamp
         if clock.is_open and done != now.strftime('%Y-%m-%d'):
 
-            price_df = prices(universe)
+            price_df = prices(alpaca.SP500)
             orders = get_orders(api, price_df)
             trade(orders)
 
