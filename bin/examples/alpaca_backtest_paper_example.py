@@ -29,14 +29,9 @@ cerebro.broker.setcommission(commission=0.0)
 cerebro.addsizer(bt.sizers.PercentSizer, percents=20)
 
 DataFactory = store.getdata
-
-data0 = DataFactory(dataname='AAPL',
-                    timeframe=bt.TimeFrame.TFrame("Minutes"),
-                    fromdate=pandas.Timestamp('2018-11-15'),
-                    todate=pandas.Timestamp('2018-11-17'),
-                    historical=True)
+data0 = DataFactory(dataname='AAPL', timeframe=bt.TimeFrame.TFrame("Days"))
 cerebro.adddata(data0)
 
-cerebro.run()
+cerebro.run(exactbars=1)
 print('Final Portfolio Value: %.2f' % cerebro.broker.getvalue())
 cerebro.plot()
