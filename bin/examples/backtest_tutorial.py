@@ -40,11 +40,13 @@ class TestStrategy(backtrader.Strategy):
 
         if order.status in [order.Completed]:
             if order.isbuy():
-                self.log('BUY EXECUTED, Price: %.2f, Cost: %.2f, Comm: %.2f' % (order.executed.price, order.executed.value, order.executed.comm))
+                self.log('BUY EXECUTED, Size: %2.f, Price: %.2f, Cost: %.2f, Comm: %.2f' %
+                         (order.executed.size, order.executed.price, order.executed.value, order.executed.comm))
                 self.buyprice = order.executed.price
                 self.buycomm = order.executed.comm
             elif order.issell():
-                self.log('SELL EXECUTED, Price: %.2f, Cost: %.2f, Comm: %.2f' % (order.executed.price, order.executed.value, order.executed.comm))
+                self.log('SELL EXECUTED, Size: %2.f, Price: %.2f, Cost: %.2f, Comm: %.2f' %
+                         (order.executed.size, order.executed.price, order.executed.value, order.executed.comm))
 
             self.bar_executed = len(self)
 
