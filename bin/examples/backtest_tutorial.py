@@ -20,6 +20,7 @@ class TestStrategy(backtrader.Strategy):
     params = (
         ('exitbars', 5),
         ('stake', 10),
+        ('maperiod', 15)
     )
 
     def log(self, txt, dt=None):
@@ -32,29 +33,47 @@ class TestStrategy(backtrader.Strategy):
         self.buyprice = None
         self.buycomm = None
         self.sizer.setsizing(self.params.stake)
+
+        # Moving avaerage indicator
+        self.sma = backtrader.indicators.SimpleMovingAverage(self.datas[0], period=self.params.maperiod)
+        backtrader.indicators.ExponentialMovingAverage(self.datas[0], period=25)
+        backtrader.indicators.WeightedMovingAverage(self.datas[0], period=25, subplot=True)
+        backtrader.indicators.StochasticSlow(self.datas[0])
+        backtrader.indicators.MACDHisto(self.datas[0])
+        rsi = backtrader.indicators.RSI(self.datas[0])
+        backtrader.indicators.SmoothedMovingAverage(rsi, period=10)
+        backtrader.indicators.ATR(self.datas[0], plot=False)
+
         logger.info(f"Data source: {self.datas[0].p.dataname}")
 
+    # process changes in state of orders
     def notify_order(self, order):
+        # pending order is submitted or accepted
         if order.status in [order.Submitted, order.Accepted]:
             return
 
+        # order is completed
         if order.status in [order.Completed]:
+            # if order is a buy log purchase info
             if order.isbuy():
                 self.log('BUY EXECUTED, Size: %2.f, Price: %.2f, Cost: %.2f, Comm: %.2f' %
                          (order.executed.size, order.executed.price, order.executed.value, order.executed.comm))
                 self.buyprice = order.executed.price
                 self.buycomm = order.executed.comm
+            # if order is a sell log sell info
             elif order.issell():
                 self.log('SELL EXECUTED, Size: %2.f, Price: %.2f, Cost: %.2f, Comm: %.2f' %
                          (order.executed.size, order.executed.price, order.executed.value, order.executed.comm))
 
             self.bar_executed = len(self)
 
+        # Log if order was rejected, canceled or margin
         elif order.status in [order.Canceled, order.Margin. order.Rejected]:
             self.log('ORDER Cancelled/Margin/Rejected')
 
         self.order = None
 
+    # process next bar
     def next(self):
         self.log('Close: %.2f' % (self.dataclose[0]))
 
@@ -68,13 +87,13 @@ class TestStrategy(backtrader.Strategy):
                 self.log('CREATE BUY ORDER: %.2f, %.2f, %.2f' % (self.dataclose[0], self.dataclose[-1], self.dataclose[-2]))
                 self.order = self.buy()
 
-        # if in market sell if criterion is met
+        # sell if positions has been held for more than exitbars
         else:
-            # sell if positions has been held for more than hold_barsd
             if len(self) >= (self.bar_executed + self.params.exitbars):
                 self.log('CREATE SELL ORDER: %.2f' % self.dataclose[0])
                 self.order = self.sell()
 
+    # process changes in state of trade
     def notify_trade(self, trade):
         if not trade.isclosed:
             return
@@ -93,13 +112,15 @@ def main():
     cerebro.addstrategy(TestStrategy, exitbars=10, stake=20)
 
     # configure broker
-    cerebro.broker.setcash(100000)
-    cerebro.broker.setcommission(commission=0.001)
+    cerebro.broker.setcash(1000)
+    cerebro.broker.setcommission(commission=0.0)
 
     # run strategy
     logger.info(f"Inital Value: {cerebro.broker.get_value()}")
     cerebro.run()
     logger.info(f"Final Value: {cerebro.broker.get_value()}")
+
+    cerebro.plot()
 
 # run algorithm
 if __name__ == '__main__':

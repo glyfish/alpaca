@@ -20,9 +20,7 @@ class SmaCross(bt.SignalStrategy):
 cerebro = bt.Cerebro()
 cerebro.addstrategy(SmaCross)
 
-store = alpaca_backtrader_api.AlpacaStore(key_id=credentials['key_id'],
-                                          secret_key=credentials['secret_key'],
-                                          paper=True)
+store = alpaca_backtrader_api.AlpacaStore(key_id=credentials['key_id'], secret_key=credentials['secret_key'], paper=True)
 
 cerebro.broker.setcash(100000)
 cerebro.broker.setcommission(commission=0.0)
