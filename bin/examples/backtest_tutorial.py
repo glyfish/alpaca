@@ -90,7 +90,7 @@ def main():
     cerebro.adddata(data)
 
     # add strategy
-    cerebro.addstrategy(TestStrategy)
+    cerebro.addstrategy(TestStrategy, exitbars=10, stake=20)
 
     # configure broker
     cerebro.broker.setcash(100000)
