@@ -58,5 +58,5 @@ cerebro.addstrategy(TestStrategy)
 
 cerebro.broker.get_value()
 result = cerebro.run()
-result[0].datas[0].datetime.date(-251).isoformat()
+result[0].datas[0].datetime.date(0)
 cerebro.broker.get_value()

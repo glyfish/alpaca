@@ -105,7 +105,6 @@ def main():
     # get data
     data_file = os.path.join(yahoo_root, 'AAPL.csv')
     data = backtrader.feeds.YahooFinanceCSVData(dataname=data_file, fromdate=datetime(2010, 1, 1), todate=datetime(2010, 12, 31))
-    cerebro = backtrader.Cerebro()
     cerebro.adddata(data)
 
     # add strategy
