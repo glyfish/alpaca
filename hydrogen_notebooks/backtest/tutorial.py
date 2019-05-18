@@ -36,6 +36,12 @@ cerebro.broker.get_value()
 
 # %%
 
+len(data)
+data.datetime.date
+[data.close[i] for i in range(0, -len(data), -1)]
+
+# %%
+
 datframe = pandas.read_csv(data_file, parse_dates=True)
 
 # %%
