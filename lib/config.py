@@ -7,17 +7,17 @@ from IPython.display import Image
 from cycler import cycler
 
 def save_post_asset(figure, post, plot):
-    path = os.path.join(post_asset_path, post, plot) + ".png"
+    path = os.path.join(plot_asset_path, post, plot) + ".png"
     figure.savefig(path, bbox_inches="tight")
 
 def draw(dot, post, plot):
-    path = os.path.join(post_asset_path, post, plot) + ".png"
+    path = os.path.join(plot_asset_path, post, plot) + ".png"
     pygraphviz.AGraph(dot).draw(path, format='png', prog='dot')
     return Image(pygraphviz.AGraph(dot).draw(format='png', prog='dot'))
 
 style_file = os.path.join(os.getcwd(), 'gly.fish.mplstyle')
 glyfish_style = pathlib.Path(style_file).as_uri()
-post_asset_path = os.path.join(os.getcwd(), 'assets', 'posts')
+plot_asset_path = os.path.join(os.getcwd(), 'plots')
 
 color = matplotlib.colors.ColorConverter().to_rgb
 
