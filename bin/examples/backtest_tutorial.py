@@ -6,7 +6,7 @@ import pandas
 
 wd = os.getcwd()
 sys.path.append(wd)
-yahoo_root = os.path.join(wd, 'data', 'yahoo')
+yahoo_root = os.path.join(wd, 'data', 'yahoo', 'dow_stocks')
 
 from lib import alpaca
 from lib.utils import setup_logging
@@ -103,6 +103,7 @@ class TestStrategy(backtrader.Strategy):
 def main():
 
     # get data
+    cerebro = backtrader.Cerebro()
     data_file = os.path.join(yahoo_root, 'AAPL.csv')
     data = backtrader.feeds.YahooFinanceCSVData(dataname=data_file, fromdate=datetime(2010, 1, 1), todate=datetime(2010, 12, 31))
     cerebro.adddata(data)

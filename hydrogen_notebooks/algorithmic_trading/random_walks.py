@@ -48,6 +48,15 @@ def multiplot(samples, time, text_pos, title, plot_name):
         axis.plot(time, samples[i], lw=1)
     config.save_post_asset(figure, "mean_reversion", plot_name)
 
+def plot(samples, time, text_pos, plot_name):
+    nplot = len(samples)
+    figure, axis = pyplot.subplots(figsize=(12, 8))
+    axis.set_xlabel("Time")
+    axis.set_ylabel("Value")
+    axis.set_title(title)
+    axis.plot(time, samples, lw=1)
+    config.save_post_asset(figure, "mean_reversion", plot_name)
+
 # %%
 
 Δt = 0.01
@@ -61,7 +70,7 @@ for i in range(nsim):
         samples = numpy.append(samples, numpy.array([brownian_motion(Δt, npts)]), axis=0)
 time = numpy.linspace(0.0, float(npts-1)*Δt, npts)
 title = f"Brownian Motion; Δt={Δt}"
-multiplot(samples, time, [5.0, 15.0], title, "brownian_motion_1")
+multiplot(samples, time, [5.0, 12.0], title, "brownian_motion_1")
 
 # %%
 
@@ -77,6 +86,15 @@ for i in range(nsim):
 time = numpy.linspace(0.0, float(npts-1)*Δt, npts)
 title = f"Brownian Motion; Δt={Δt}"
 multiplot(samples, time, [5.0, 25.0], title, "brownian_motion_2")
+
+# %%
+
+Δt = 0.01
+npts = 10000
+samples = brownian_motion(Δt, npts)
+time = numpy.linspace(0.0, float(npts-1)*Δt, npts)
+title = f"Brownian Motion; Δt={Δt}"
+plot(samples, time, title, "brownian_motion_3")
 
 # %%
 
@@ -128,7 +146,7 @@ for i in range(nsim):
         samples = numpy.append(samples, numpy.array([geometric_brownian_motion(μ, σ, s0, Δt, npts)]), axis=0)
 time = numpy.linspace(0.0, float(npts-1)*Δt, npts)
 title = f"Geometric Brownian Motion; Δt={Δt}, μ={μ}, σ={σ}, "+r"$S_0$" + f"={s0}"
-multiplot(samples, time, [5.0, 90.0], title, "geometric_brownian_motion_1")
+multiplot(samples, time, [5.0, 60.0], title, "geometric_brownian_motion_1")
 
 
 # %%
@@ -148,3 +166,21 @@ for i in range(nsim):
 time = numpy.linspace(0.0, float(npts-1)*Δt, npts)
 title = f"Geometric Brownian Motion; Δt={Δt}, μ={μ}, σ={σ}, "+r"$S_0$" + f"={s0}"
 multiplot(samples, time, [5.0, 1000.0], title, "geometric_brownian_motion_2")
+
+# %%
+
+Δt = 0.01
+npts = 10000
+nsim = 10000
+μ = 0.025
+σ = 0.15
+s0 = 1.0
+
+for i in range(nsim):
+    if i == 0:
+        samples = numpy.array([geometric_brownian_motion(μ, σ, s0, Δt, npts)])
+    else:
+        samples = numpy.append(samples, numpy.array([geometric_brownian_motion(μ, σ, s0, Δt, npts)]), axis=0)
+time = numpy.linspace(0.0, float(npts-1)*Δt, npts)
+title = f"Geometric Brownian Motion; Δt={Δt}, μ={μ}, σ={σ}, "+r"$S_0$" + f"={s0}"
+multiplot(samples, time, [5.0, 1000.0], title, "geometric_brownian_motion_3")
