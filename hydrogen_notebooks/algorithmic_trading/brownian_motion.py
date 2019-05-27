@@ -22,7 +22,7 @@ for i in range(nsim):
     else:
         samples = numpy.append(samples, numpy.array([brownian_motion.brownian_motion(Δt, npts)]), axis=0)
 time = numpy.linspace(0.0, float(npts-1)*Δt, npts)
-title = f"Brownian Motion; Δt={Δt}"
+title = f"Brownian Motion: Δt={Δt}"
 brownian_motion.multiplot(samples, time, [5.0, 12.0], title, "brownian_motion_1")
 
 # %%
@@ -37,7 +37,7 @@ for i in range(nsim):
     else:
         samples = numpy.append(samples, numpy.array([brownian_motion.brownian_motion(Δt, npts)]), axis=0)
 time = numpy.linspace(0.0, float(npts-1)*Δt, npts)
-title = f"Brownian Motion; Δt={Δt}"
+title = f"Brownian Motion: Δt={Δt}"
 brownian_motion.multiplot(samples, time, [5.0, 25.0], title, "brownian_motion_2")
 
 # %%
@@ -46,8 +46,14 @@ brownian_motion.multiplot(samples, time, [5.0, 25.0], title, "brownian_motion_2"
 npts = 10000
 samples = brownian_motion.brownian_motion(Δt, npts)
 time = numpy.linspace(0.0, float(npts-1)*Δt, npts)
-title = f"Brownian Motion; Δt={Δt}"
+title = f"Brownian Motion: Δt={Δt}"
 brownian_motion.plot(samples, time, title, "brownian_motion_3")
+
+# %%
+
+max_lag = 5000
+title = f"Brownian Motion Autocorrelation: Δt={Δt}, npts={npts}"
+brownian_motion.autocor(title, samples, Δt, max_lag, "brownian_motion_autocorrelation_1")
 
 # %%
 
@@ -63,7 +69,7 @@ for i in range(nsim):
     else:
         samples = numpy.append(samples, numpy.array([brownian_motion.brownian_motion_with_drift(μ, σ, Δt, npts)]), axis=0)
 time = numpy.linspace(0.0, float(npts-1)*Δt, npts)
-title = f"Brownian Motion with Drift; Δt={Δt}, μ={μ}, σ={σ}"
+title = f"Brownian Motion with Drift: Δt={Δt}, μ={μ}, σ={σ}"
 brownian_motion.multiplot(samples, time, [5.0, 8.0], title, "brownian_motion_with_drift_1")
 
 # %%
@@ -80,7 +86,7 @@ for i in range(nsim):
     else:
         samples = numpy.append(samples, numpy.array([brownian_motion.brownian_motion_with_drift(μ, σ, Δt, npts)]), axis=0)
 time = numpy.linspace(0.0, float(npts-1)*Δt, npts)
-title = f"Brownian Motion with Drift; Δt={Δt}, μ={μ}, σ={σ}"
+title = f"Brownian Motion with Drift: Δt={Δt}, μ={μ}, σ={σ}"
 brownian_motion.multiplot(samples, time, [5.0, 8.0], title, "brownian_motion_with_drift_2")
 
 # %%
@@ -98,7 +104,7 @@ for i in range(nsim):
     else:
         samples = numpy.append(samples, numpy.array([brownian_motion.geometric_brownian_motion(μ, σ, s0, Δt, npts)]), axis=0)
 time = numpy.linspace(0.0, float(npts-1)*Δt, npts)
-title = f"Geometric Brownian Motion; Δt={Δt}, μ={μ}, σ={σ}, "+r"$S_0$" + f"={s0}"
+title = f"Geometric Brownian Motion: Δt={Δt}, μ={μ}, σ={σ}, "+r"$S_0$" + f"={s0}"
 brownian_motion.multiplot(samples, time, [5.0, 60.0], title, "geometric_brownian_motion_1")
 
 
@@ -117,7 +123,7 @@ for i in range(nsim):
     else:
         samples = numpy.append(samples, numpy.array([brownian_motion.geometric_brownian_motion(μ, σ, s0, Δt, npts)]), axis=0)
 time = numpy.linspace(0.0, float(npts-1)*Δt, npts)
-title = f"Geometric Brownian Motion; Δt={Δt}, μ={μ}, σ={σ}, "+r"$S_0$" + f"={s0}"
+title = f"Geometric Brownian Motion: Δt={Δt}, μ={μ}, σ={σ}, "+r"$S_0$" + f"={s0}"
 brownian_motion.multiplot(samples, time, [5.0, 1000.0], title, "geometric_brownian_motion_2")
 
 # %%
@@ -135,5 +141,5 @@ for i in range(nsim):
     else:
         samples = numpy.append(samples, numpy.array([brownian_motion.geometric_brownian_motion(μ, σ, s0, Δt, npts)]), axis=0)
 time = numpy.linspace(0.0, float(npts-1)*Δt, npts)
-title = f"Geometric Brownian Motion; Δt={Δt}, μ={μ}, σ={σ}, "+r"$S_0$" + f"={s0}"
+title = f"Geometric Brownian Motion: Δt={Δt}, μ={μ}, σ={σ}, "+r"$S_0$" + f"={s0}"
 brownian_motion.multiplot(samples, time, [0.2, 30.0], title, "geometric_brownian_motion_3")
