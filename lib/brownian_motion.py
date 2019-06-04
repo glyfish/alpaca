@@ -50,6 +50,17 @@ def plot(samples, time, title, plot_name):
     axis.plot(time, samples, lw=1)
     config.save_post_asset(figure, "mean_reversion", plot_name)
 
+def autocor_coef(title, samples, Δt, max_lag, plot):
+    figure, axis = pyplot.subplots(figsize=(10, 7))
+    axis.set_title(title)
+    axis.set_ylabel(r"$\gamma_{\tau}$")
+    axis.set_xlabel("Time Lag (τ)")
+    axis.set_xlim([0, Δt*max_lag])
+    axis.set_ylim([-1.05, 1.0])
+    ac = stats.autocorrelate(samples)
+    axis.plot(Δt*numpy.array(range(max_lag)), numpy.real(ac[:max_lag]))
+    config.save_post_asset(figure, "mean_reversion", plot)
+
 def autocor(title, samples, Δt, max_lag, plot):
     figure, axis = pyplot.subplots(figsize=(10, 7))
     axis.set_title(title)
