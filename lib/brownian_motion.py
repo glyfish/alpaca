@@ -39,7 +39,7 @@ def multiplot(samples, time, text_pos, title, plot_name):
     axis.text(text_pos[0], text_pos[1], stats, fontsize=15, bbox=bbox)
     for i in range(nplot):
         axis.plot(time, samples[i], lw=1)
-    config.save_post_asset(figure, "mean_reversion", plot_name)
+    config.save_post_asset(figure, "brownian_motion", plot_name)
 
 def plot(samples, time, title, plot_name):
     nplot = len(samples)
@@ -48,7 +48,7 @@ def plot(samples, time, title, plot_name):
     axis.set_ylabel("Value")
     axis.set_title(title)
     axis.plot(time, samples, lw=1)
-    config.save_post_asset(figure, "mean_reversion", plot_name)
+    config.save_post_asset(figure, "brownian_motion", plot_name)
 
 def autocor_coef(title, samples, Δt, max_lag, plot):
     figure, axis = pyplot.subplots(figsize=(10, 7))
@@ -59,7 +59,7 @@ def autocor_coef(title, samples, Δt, max_lag, plot):
     axis.set_ylim([-1.05, 1.0])
     ac = stats.autocorrelate(samples)
     axis.plot(Δt*numpy.array(range(max_lag)), numpy.real(ac[:max_lag]))
-    config.save_post_asset(figure, "mean_reversion", plot)
+    config.save_post_asset(figure, "brownian_motion", plot)
 
 def autocor(title, samples, Δt, max_lag, plot):
     figure, axis = pyplot.subplots(figsize=(10, 7))
@@ -70,4 +70,4 @@ def autocor(title, samples, Δt, max_lag, plot):
     axis.set_ylim([-1.05, 1.0])
     ac = stats.autocorrelate(samples)
     axis.plot(Δt*numpy.array(range(max_lag)), numpy.real(ac[:max_lag]))
-    config.save_post_asset(figure, "mean_reversion", plot)
+    config.save_post_asset(figure, "brownian_motion", plot)
