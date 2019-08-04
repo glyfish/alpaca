@@ -5,6 +5,14 @@ from lib import stats
 
 pyplot.style.use(config.glyfish_style)
 
+# Fractional Brownian Motion variance and Autocorrelation
+
+def fbm_variance(H, time):
+    return time**(2.0*H)
+
+def fbm_covariance(H, s, time):
+    return 0.5*(time**(2.0*H) + s**(2.0*H) - numpy.abs(time - s)**(2.0*H))
+
 # Brownian Motion Simulations
 
 def brownian_motion(Δt, n):

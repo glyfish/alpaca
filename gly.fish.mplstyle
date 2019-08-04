@@ -2,11 +2,11 @@ lines.linewidth : 3.0
 
 patch.antialiased: True
 
-axes.edgecolor: fefcec
+axes.edgecolor: f7f6e8
 axes.grid : True
 axes.titlesize: 16
 axes.labelsize: 14
-axes.facecolor: fefcec
+axes.facecolor: f7f6e8
 axes.prop_cycle: cycler('color', ['0067C4', 'FF9500', '5600C9', 'AC9C00', '329EFF', 'FFC574', '320075', 'FFE800', '003B6F', 'AC6500', '8C35FF', 'FFEB22'])
 
 xtick.labelsize : 14
@@ -21,17 +21,17 @@ grid.color: e0e0e0
 grid.linestyle: -
 grid.linewidth: 1.0
 
-legend.edgecolor: fefcec
+legend.edgecolor: f7f6e8
 legend.fancybox: True
 legend.fontsize: 14
 legend.framealpha: 0.8
-legend.facecolor: fefcec
+legend.facecolor: f7f6e8
 
 font.size: 14
 
-figure.facecolor: fefcec
-figure.edgecolor: fefcec
+figure.facecolor: f7f6e8
+figure.edgecolor: f7f6e8
 figure.figsize: 6.4, 4.8
 
-savefig.facecolor: fefcec
-savefig.edgecolor: fefcec
+savefig.facecolor: f7f6e8
+savefig.edgecolor: f7f6e8
