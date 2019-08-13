@@ -16,7 +16,7 @@ pyplot.style.use(config.glyfish_style)
 
 # %%
 
-def fbm_autocorrelation_plot(H_vals, s, time, file_name):
+def fbm_covariance_plot(H_vals, s, time, file_name):
     figure, axis = pyplot.subplots(figsize=(12, 8))
     axis.set_xlabel("Time")
     axis.set_ylabel("Value")
@@ -24,6 +24,18 @@ def fbm_autocorrelation_plot(H_vals, s, time, file_name):
 
     for H in H_vals:
         axis.plot(time, brownian_motion.fbm_covariance(H, s, time), label=f"H={format(H, '1.2f')}")
+
+    axis.legend(ncol=2)
+    config.save_post_asset(figure, "brownian_motion", file_name)
+
+def fbm_autocovariance_plot(H_vals, time, Δt, file_name):
+    figure, axis = pyplot.subplots(figsize=(12, 8))
+    axis.set_xlabel("Time")
+    axis.set_ylabel("Value")
+    axis.set_title(r"Fraction Brownian Motion Autocovariance, $\frac{1}{2}[(n-1)^{2H} + (n+1)^{2H} - 2n^{2H}]$")
+
+    for H in H_vals:
+        axis.plot(time, brownian_motion.fbm_autocovariance(H, time, Δt), label=f"H={format(H, '1.2f')}")
 
     axis.legend(ncol=2)
     config.save_post_asset(figure, "brownian_motion", file_name)
@@ -53,17 +65,17 @@ config.save_post_asset(figure, "brownian_motion", "fractional_brownian_motion_va
 # %%
 
 s = 0.25
-fbm_autocorrelation_plot(H_vals, s, time, "fractional_brownian_motion_covariance_0.25")
+fbm_covariance_plot(H_vals, s, time, "fractional_brownian_motion_covariance_0.25")
 
 # %%
 
 s = 0.5
-fbm_autocorrelation_plot(H_vals, s, time, "fractional_brownian_motion_covariance_0.5")
+fbm_covariance_plot(H_vals, s, time, "fractional_brownian_motion_covariance_0.5")
 
 # %%
 
 s = 1.0
-fbm_autocorrelation_plot(H_vals, s, time, "fractional_brownian_motion_covariance_1.0")
+fbm_covariance_plot(H_vals, s, time, "fractional_brownian_motion_covariance_1.0")
 
 # %%
 
@@ -74,7 +86,7 @@ nsteps = int(tmax/Δt)
 time = numpy.linspace(0.0, tmax, nsteps)
 H_vals = [0.05, 0.1, 0.2, 0.3, 0.4, 0.5]
 
-fbm_autocorrelation_plot(H_vals, s, time, "fractional_brownian_motion_covariance_long_time_low_H_1.0")
+fbm_covariance_plot(H_vals, s, time, "fractional_brownian_motion_covariance_long_time_low_H_1.0")
 
 # %%
 
@@ -85,4 +97,26 @@ nsteps = int(tmax/Δt)
 time = numpy.linspace(0.0, tmax, nsteps)
 H_vals = [0.6, 0.7, 0.8, 0.9, 1.0]
 
-fbm_autocorrelation_plot(H_vals, s, time, "fractional_brownian_motion_covariance_long_time_high_H_1.0")
+fbm_covariance_plot(H_vals, s, time, "fractional_brownian_motion_covariance_long_time_high_H_1.0")
+
+# %%
+
+tmax = 10.0
+Δt = 1.0
+nsteps = int(tmax/Δt)
+
+H_vals = [0.05, 0.1, 0.2, 0.3, 0.4, 0.5]
+time = numpy.linspace(1.0, tmax, nsteps)
+
+fbm_autocovariance_plot(H_vals, time, Δt, "fractional_brownian_motion_autocovariance_H_lt_eq_0.5")
+
+# %%
+
+tmax = 100000.0
+Δt = 1.0
+nsteps = int(tmax/Δt)
+
+H_vals = [0.6, 0.7, 0.8, 0.9, 1.0]
+time = numpy.linspace(1.0, tmax, nsteps)
+
+fbm_autocovariance_plot(H_vals, time, Δt, "fractional_brownian_motion_autocovariance_H_gt_eq_0.5")
