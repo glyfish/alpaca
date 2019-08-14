@@ -40,6 +40,19 @@ def fbm_autocovariance_plot(H_vals, time, Δt, file_name):
     axis.legend(ncol=2)
     config.save_post_asset(figure, "brownian_motion", file_name)
 
+def fbm_autocvariance_limit(H_vals, time, Δt, file_name):
+    figure, axis = pyplot.subplots(figsize=(12, 8))
+    axis.set_xlabel("Time")
+    axis.set_ylabel("Value")
+    axis.set_title(r"Fraction Brownian Motion Autocovariance for large $n$, $H(2H-1)n^{2H-2}$")
+
+    for H in H_vals:
+        axis.plot(time, brownian_motion.fbm_autocovariance_limit(H, time, Δt), label=f"H={format(H, '1.2f')}")
+
+    axis.legend(ncol=2)
+    config.save_post_asset(figure, "brownian_motion", file_name)
+
+
 # %%
 
 tmax = 1.0
@@ -112,11 +125,22 @@ fbm_autocovariance_plot(H_vals, time, Δt, "fractional_brownian_motion_autocovar
 
 # %%
 
-tmax = 100000.0
+tmax = 1000.0
 Δt = 1.0
 nsteps = int(tmax/Δt)
 
-H_vals = [0.6, 0.7, 0.8, 0.9, 1.0]
+H_vals = [0.6, 0.7, 0.8, 0.9, 0.95, 0.975, 0.99, 1.0]
 time = numpy.linspace(1.0, tmax, nsteps)
 
 fbm_autocovariance_plot(H_vals, time, Δt, "fractional_brownian_motion_autocovariance_H_gt_eq_0.5")
+
+# %%
+
+tmax = 1000.0
+Δt = 1.0
+nsteps = int(tmax/Δt)
+
+H_vals = [0.6, 0.7, 0.8, 0.9, 0.95, 0.975, 0.99, 1.0]
+time = numpy.linspace(1.0, tmax, nsteps)
+
+fbm_autocvariance_limit(H_vals, time, Δt, "fractional_brownian_motion_autocovariance_limit_H_gt_eq_0.5")
