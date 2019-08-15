@@ -13,11 +13,11 @@ def fbm_variance(H, time):
 def fbm_covariance(H, s, time):
     return 0.5*(time**(2.0*H) + s**(2.0*H) - numpy.abs(time - s)**(2.0*H))
 
-def fbm_autocovariance(H, time, Δt):
-    return 0.5*((time-Δt)**(2.0*H) + (time+Δt)**(2.0*H) - 2.0*time**(2.0*H))
+def fbm_autocovariance(H, time):
+    return 0.5*((time-1.0)**(2.0*H) + (time+1.0)**(2.0*H) - 2.0*time**(2.0*H))
 
-def fbm_autocovariance_limit(H, time, Δt):
-    return Δt**(2.0*H)*(H*(2.0*H - 1.0)*time**(2.0*H - 2.0))
+def fbm_autocovariance_limit(H, time):
+    return H*(2.0*H - 1.0)*time**(2.0*H - 2.0)
 
 # Brownian Motion Simulations
 
