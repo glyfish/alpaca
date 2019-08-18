@@ -19,7 +19,37 @@ def fbm_autocorrelation(H, time):
 def fbm_autocorrelation_large_n(H, time):
     return H*(2.0*H - 1.0)*time**(2.0*H - 2.0)
 
+def brownian_noise(n):
+    return numpy.random.normal(0.0, 1.0, n)
+
+def fb_motion_riemann_sum(H, Δt, n, B1=None, B2=None):
+    b = int(numpy.ceil(n**(1.5)))
+    if B1 is None or B2 is None:
+        B1 = brownian_noise(b)
+        B2 = brownian_noise(n+1)
+    if len(B1) != b or len(B2) != n + 1:
+        raise Exception(f"B1 should have length {b} and B2 should have length {n+1}")
+    Z = numpy.zeros(n+1)
+    for i in range(1, n+1):
+        bn = int(numpy.ceil(i**(1.5)))
+        C = 0.0
+        for k in range(-bn, i):
+            if k < 0:
+                Z[i] += ((float(i) - float(k))**(H - 0.5) - (-k)**(H - 0.5))*B1[k]
+                C += ((1.0 - float(k)/float(i))**(H - 0.5) - (-float(k)/float(i))**(H - 0.5))**2
+            elif k > 0:
+                Z[i] += ((float(i) - float(k))**(H - 0.5))*B2[k]
+        C += 1.0/(2.0*H)
+        Z[i] = Z[i]*Δt**(H - 0.5)/numpy.sqrt(C)
+    return Z
+
 # Brownian Motion Simulations
+
+def brownian_motion_from_noise(dB):
+    B = numpy.zeros(len(dB))
+    for i in range(1, len(dB)):
+        B[i] = B[i - 1] + dB[i]
+    return B
 
 def brownian_motion(Δt, n):
     σ = numpy.sqrt(Δt)
@@ -42,11 +72,20 @@ def geometric_brownian_motion(μ, σ, s0, Δt, n):
 
 # Plots
 
+def comparison_multiplot(samples, time, labels, lengend_location, title, plot_name):
+    nplot = len(samples)
+    figure, axis = pyplot.subplots(figsize=(12, 8))
+    axis.set_xlabel("Time")
+    axis.set_title(title)
+    for i in range(nplot):
+        axis.plot(time, samples[i], lw=1, label=labels[i])
+    axis.legend(ncol=2, bbox_to_anchor=lengend_location)
+    config.save_post_asset(figure, "brownian_motion", plot_name)
+
 def multiplot(samples, time, text_pos, title, plot_name):
     nplot = len(samples)
     figure, axis = pyplot.subplots(figsize=(12, 8))
     axis.set_xlabel("Time")
-    axis.set_ylabel("Value")
     axis.set_title(title)
     stats=f"Simulation Stats\n\nμ={format(numpy.mean(samples[:,-1]), '2.2f')}\nσ={format(numpy.std(samples[:,-1]), '2.2f')}"
     bbox = dict(boxstyle='square,pad=1', facecolor="#FEFCEC", edgecolor="#FEFCEC", alpha=0.75)
@@ -59,7 +98,6 @@ def plot(samples, time, title, plot_name):
     nplot = len(samples)
     figure, axis = pyplot.subplots(figsize=(12, 8))
     axis.set_xlabel("Time")
-    axis.set_ylabel("Value")
     axis.set_title(title)
     axis.plot(time, samples, lw=1)
     config.save_post_asset(figure, "brownian_motion", plot_name)
