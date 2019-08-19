@@ -70,4 +70,4 @@ for H in H_vals[1:]:
 
 labels = [f"H={format(H, '1.2f')}" for H in H_vals]
 title = f"Fractional Brownian Motion Comparison"
-bm.comparison_multiplot(samples, time, labels, (0.4, 0.76), title, "fbm_cholesky_H_leq_0.5_comparison")
+bm.comparison_multiplot(samples, time, labels, (0.4, 0.3), title, "fbm_cholesky_H_leq_0.5_comparison")

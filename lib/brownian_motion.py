@@ -5,7 +5,7 @@ from lib import stats
 
 pyplot.style.use(config.glyfish_style)
 
-# Fractional Brownian Motion variance and Autocorrelation
+# Fractional Brownian Motion variance and autocovariance
 
 def fbm_variance(H, n):
     return n**(2.0*H)
@@ -22,27 +22,6 @@ def fbn_autocorrelation_large_n(H, n):
 def brownian_noise(n):
     return numpy.random.normal(0.0, 1.0, n)
 
-def fb_motion_riemann_sum(H, Δt, n, B1=None, B2=None):
-    b = int(numpy.ceil(n**(1.5)))
-    if B1 is None or B2 is None:
-        B1 = brownian_noise(b)
-        B2 = brownian_noise(n+1)
-    if len(B1) != b or len(B2) != n + 1:
-        raise Exception(f"B1 should have length {b} and B2 should have length {n+1}")
-    Z = numpy.zeros(n+1)
-    for i in range(1, n+1):
-        bn = int(numpy.ceil(i**(1.5)))
-        C = 0.0
-        for k in range(-bn, i):
-            if k < 0:
-                Z[i] += ((float(i) - float(k))**(H - 0.5) - (-k)**(H - 0.5))*B1[k]
-                C += ((1.0 - float(k)/float(i))**(H - 0.5) - (-float(k)/float(i))**(H - 0.5))**2
-            elif k > 0:
-                Z[i] += ((float(i) - float(k))**(H - 0.5))*B2[k]
-        C += 1.0/(2.0*H)
-        Z[i] = Z[i]*Δt**(H - 0.5)/numpy.sqrt(C)
-    return Z
-
 def fbn_autocorrelation_matrix(H, n):
     γ = numpy.matrix(numpy.zeros([n+1, n+1]))
     for i in range(n+1):
@@ -52,6 +31,8 @@ def fbn_autocorrelation_matrix(H, n):
             else:
                 γ[i,j] = 1.0
     return γ
+
+# Cholesky Method for FBM generation
 
 def cholesky_decompose(H, n):
     l = numpy.matrix(numpy.zeros([n+1, n+1]))
@@ -76,6 +57,8 @@ def fbn_cholesky(H, Δt, n, dB=None, L=None):
     if L is None:
         R = fbn_autocorrelation_matrix(H, n)
         L = numpy.linalg.cholesky(R)
+    if len(L) != n + 1:
+        raise Exception(f"L should have length {n+1}")
     return numpy.squeeze(numpy.asarray(L*dB.T))
 
 def fbm_cholesky(H, Δt, n, dB=None, L=None):
@@ -86,7 +69,49 @@ def fbm_cholesky(H, Δt, n, dB=None, L=None):
         L = numpy.linalg.cholesky(R)
     if len(dB) != n + 1:
         raise Exception(f"dB should have length {n+1}")
-    dZ = fbn_cholesky(H, Δt, n, L, dB)
+    dZ = fbn_cholesky(H, Δt, n, dB, L)
+    Z = numpy.zeros(len(dB))
+    for i in range(1, len(dB)):
+        Z[i] = Z[i - 1] + dZ[i]
+    return Z
+
+# FFT Method for FBM generation
+
+def fbn_fft(H, Δt, n, dB=None):
+    if dB is None:
+        dB = brownian_noise(2*n)
+    if len(dB) != 2*n:
+        raise Exception(f"dB should have length {2*n}")
+
+    # Compute first row of circulant matrix with embedded autocorrelation
+    C = numpy.zeros(2*n)
+    for i in range(2*n):
+        if i == 0:
+            C[i] = 1.0
+        elif i < n:
+            C[i] = fbn_autocorrelation(H, i)
+        else:
+            C[i] = fbn_autocorrelation(H, 2*n-i)
+
+    # Compute circulant matrix eigen values
+    Λ  = numpy.fft.fft(C).real
+    if numpy.any([l < 0 for l in Λ]):
+        raise Exception(f"Eigenvalues are negative")
+
+    # Compute product of Fourier Matrix and Brownian brownian noise
+    TB = nunmpy.zeros(2*n, dtype=numpy.cdouble)
+    TB[0] = dB[0]
+    TB[n] = dB[n]
+    for i in range(1, n):
+        TB[i] = () / numpy.sqrt(2)
+        TB[2*n-i] = () / numpy.sqrt(2)
+
+def fbm_fft(H, Δt, n, dB=None):
+    if dB is None:
+        dB = brownian_noise(2*n)
+    if len(dB) != 2*n:
+        raise Exception(f"dB should have length {2*n}")
+    dZ = fbn_fft(H, Δt, n, dB)
     Z = numpy.zeros(len(dB))
     for i in range(1, len(dB)):
         Z[i] = Z[i - 1] + dZ[i]
