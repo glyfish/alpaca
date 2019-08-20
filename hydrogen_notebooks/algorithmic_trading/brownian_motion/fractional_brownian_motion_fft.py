@@ -21,6 +21,7 @@ n = 1000
 H = 0.9
 
 # %%
+
 C = numpy.zeros(2*n)
 for i in range(2*n):
     if i == 0:
@@ -31,8 +32,19 @@ for i in range(2*n):
         C[i] = bm.fbn_autocorrelation(H, 2*n-i)
 
 # %%
+
 Λ = numpy.fft.fft(C).real
 numpy.any([l < 0 for l in Λ])
-len(Λ)
 
-numpy.zeros(10, dtype=numpy.cdouble)
+# %%
+
+dB = bm.brownian_noise(2*n)
+J = numpy.zeros(2*n, dtype=numpy.cdouble)
+J[0] = numpy.complex(dB[0], 0.0)
+J[n] = numpy.complex(dB[n], 0.0)
+
+for i in range(1, n):
+    J[i] = numpy.sqrt(Λ[i])*numpy.complex(dB[i], dB[n+i]) / numpy.sqrt(2)
+    J[2*n-i] = numpy.sqrt(Λ[2*n-i])*numpy.complex(dB[i], -dB[n+i]) / numpy.sqrt(2)
+
+# %%

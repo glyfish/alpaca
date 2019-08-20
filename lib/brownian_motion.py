@@ -98,13 +98,14 @@ def fbn_fft(H, Δt, n, dB=None):
     if numpy.any([l < 0 for l in Λ]):
         raise Exception(f"Eigenvalues are negative")
 
-    # Compute product of Fourier Matrix and Brownian brownian noise
-    TB = nunmpy.zeros(2*n, dtype=numpy.cdouble)
-    TB[0] = dB[0]
-    TB[n] = dB[n]
+    # Compute product of Fourier Matrix and Brownian noise
+    J = numpy.zeros(2*n, dtype=numpy.cdouble)
+    J[0] = numpy.complex(dB[0], 0.0)
+    J[n] = numpy.complex(dB[n], 0.0)
+
     for i in range(1, n):
-        TB[i] = () / numpy.sqrt(2)
-        TB[2*n-i] = () / numpy.sqrt(2)
+        J[i] = numpy.sqrt(Λ[i])*numpy.complex(dB[i], dB[n+i]) / numpy.sqrt(2)
+        J[2*n-i] = numpy.sqrt(Λ[2*n-i])*numpy.complex(dB[i], -dB[n+i]) / numpy.sqrt(2)
 
 def fbm_fft(H, Δt, n, dB=None):
     if dB is None:
