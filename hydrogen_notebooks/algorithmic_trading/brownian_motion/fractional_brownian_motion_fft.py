@@ -17,34 +17,57 @@ pyplot.style.use(config.glyfish_style)
 
 # %%
 
-n = 1000
+Δt = 1.0
+npts = 1000
+time = numpy.linspace(0.0, float(npts)*Δt, npts)
+dB = bm.brownian_noise(2*npts)
+
+title = f"Brownian Noise"
+bm.plot(dB[:n], time, title, "brwonian_noise_fft")
+
+# %%
+
+H = 0.5
+samples = bm.fbn_fft(H, Δt, npts, dB=dB)
+title = f"FFT Fractional Brownian Noise: Δt={Δt}, H={H}"
+bm.plot(samples, time,title, "fbn_fft_H_0.5")
+
+# %%
+
 H = 0.9
+samples = bm.fbn_fft(H, Δt, npts, dB=dB)
+title = f"FFT Fractional Brownian Noise: Δt={Δt}, H={H}"
+bm.plot(samples, time,title, "fbn_fft_H_0.9")
 
 # %%
 
-C = numpy.zeros(2*n)
-for i in range(2*n):
-    if i == 0:
-        C[i] = 1.0
-    elif i < n:
-        C[i] = bm.fbn_autocorrelation(H, i)
-    else:
-        C[i] = bm.fbn_autocorrelation(H, 2*n-i)
+H = 0.2
+samples = bm.fbn_fft(H, Δt, npts, dB=dB)
+title = f"FFT Fractional Brownian Noise: Δt={Δt}, H={H}"
+bm.plot(samples, time,title, "fbn_fft_H_0.2")
 
 # %%
 
-Λ = numpy.fft.fft(C).real
-numpy.any([l < 0 for l in Λ])
+H_vals = [0.55, 0.6, 0.7, 0.8, 0.9, 0.95]
+samples = numpy.array([bm.fbm_fft(H_vals[0], Δt, npts)])
+for H in H_vals[1:]:
+    samples = numpy.append(samples, numpy.array([bm.fbm_fft(H, Δt, npts)]), axis=0)
 
 # %%
 
-dB = bm.brownian_noise(2*n)
-J = numpy.zeros(2*n, dtype=numpy.cdouble)
-J[0] = numpy.complex(dB[0], 0.0)
-J[n] = numpy.complex(dB[n], 0.0)
-
-for i in range(1, n):
-    J[i] = numpy.sqrt(Λ[i])*numpy.complex(dB[i], dB[n+i]) / numpy.sqrt(2)
-    J[2*n-i] = numpy.sqrt(Λ[2*n-i])*numpy.complex(dB[i], -dB[n+i]) / numpy.sqrt(2)
+labels = [f"H={format(H, '1.2f')}" for H in H_vals]
+title = f"FFT Fractional Brownian Motion Comparison"
+bm.comparison_multiplot(samples, time, labels, (0.375, 0.75), title, "fbm_fft_H_gt_0.5_comparison")
 
 # %%
+
+H_vals = [0.05, 0.1, 0.2, 0.3, 0.4, 0.45, 0.5]
+samples = numpy.array([bm.fbm_fft(H_vals[0], Δt, npts)])
+for H in H_vals[1:]:
+    samples = numpy.append(samples, numpy.array([bm.fbm_fft(H, Δt, npts)]), axis=0)
+
+# %%
+
+labels = [f"H={format(H, '1.2f')}" for H in H_vals]
+title = f"FFT Fractional Brownian Motion Comparison"
+bm.comparison_multiplot(samples, time, labels, (0.38, 0.275), title, "fbm_fft_H_leq_0.5_comparison")

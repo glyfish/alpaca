@@ -78,6 +78,7 @@ def fbm_cholesky(H, Δt, n, dB=None, L=None):
 # FFT Method for FBM generation
 
 def fbn_fft(H, Δt, n, dB=None):
+
     if dB is None:
         dB = brownian_noise(2*n)
     if len(dB) != 2*n:
@@ -94,27 +95,32 @@ def fbn_fft(H, Δt, n, dB=None):
             C[i] = fbn_autocorrelation(H, 2*n-i)
 
     # Compute circulant matrix eigen values
-    Λ  = numpy.fft.fft(C).real
+    Λ = numpy.fft.fft(C).real
     if numpy.any([l < 0 for l in Λ]):
         raise Exception(f"Eigenvalues are negative")
 
     # Compute product of Fourier Matrix and Brownian noise
     J = numpy.zeros(2*n, dtype=numpy.cdouble)
-    J[0] = numpy.complex(dB[0], 0.0)
-    J[n] = numpy.complex(dB[n], 0.0)
+    J[0] = numpy.sqrt(Λ[0])*numpy.complex(dB[0], 0.0) / numpy.sqrt(2.0 * n)
+    J[n] = numpy.sqrt(Λ[n])*numpy.complex(dB[n], 0.0) / numpy.sqrt(2.0 * n)
 
     for i in range(1, n):
-        J[i] = numpy.sqrt(Λ[i])*numpy.complex(dB[i], dB[n+i]) / numpy.sqrt(2)
-        J[2*n-i] = numpy.sqrt(Λ[2*n-i])*numpy.complex(dB[i], -dB[n+i]) / numpy.sqrt(2)
+        J[i] = numpy.sqrt(Λ[i])*numpy.complex(dB[i], dB[n+i]) / numpy.sqrt(4.0 * n)
+        J[2*n-i] = numpy.sqrt(Λ[2*n-i])*numpy.complex(dB[i], -dB[n+i]) / numpy.sqrt(4.0 * n)
+
+    Z = numpy.fft.fft(J)
+
+    return Z[:n].real
+
 
 def fbm_fft(H, Δt, n, dB=None):
     if dB is None:
         dB = brownian_noise(2*n)
     if len(dB) != 2*n:
         raise Exception(f"dB should have length {2*n}")
-    dZ = fbn_fft(H, Δt, n, dB)
-    Z = numpy.zeros(len(dB))
-    for i in range(1, len(dB)):
+    dZ = fbn_fft(H, Δt, n, dB=dB)
+    Z = numpy.zeros(n)
+    for i in range(1, n):
         Z[i] = Z[i - 1] + dZ[i]
     return Z
 

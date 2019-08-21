@@ -29,21 +29,21 @@ bm.plot(dB, time, title, "brwonian_noise_cholesky")
 
 H = 0.5
 samples = bm.fbn_cholesky(H, Δt, npts, dB=dB)
-title = f"Fractional Brownian Noise: Δt={Δt}, H={H}"
+title = f"Cholesky Fractional Brownian Noise: Δt={Δt}, H={H}"
 bm.plot(samples, time,title, "fbn_cholesky_H_0.5")
 
 # %%
 
 H = 0.9
 samples = bm.fbn_cholesky(H, Δt, npts, dB=dB)
-title = f"Fractional Brownian Noise: Δt={Δt}, H={H}"
+title = f"Cholesky Fractional Brownian Noise: Δt={Δt}, H={H}"
 bm.plot(samples, time,title, "fbn_cholesky_H_0.9")
 
 # %%
 
 H = 0.2
 samples = bm.fbn_cholesky(H, Δt, npts, dB=dB)
-title = f"Fractional Brownian Noise: Δt={Δt}, H={H}"
+title = f"Cholesky Fractional Brownian Noise: Δt={Δt}, H={H}"
 bm.plot(samples, time,title, "fbn_cholesky_H_0.2")
 
 # %%
@@ -56,8 +56,8 @@ for H in H_vals[1:]:
 # %%
 
 labels = [f"H={format(H, '1.2f')}" for H in H_vals]
-title = f"Fractional Brownian Motion Comparison"
-bm.comparison_multiplot(samples, time, labels, (0.4, 0.9), title, "fbm_cholesky_H_gt_0.5_comparison")
+title = f"Cholesky Fractional Brownian Motion Comparison"
+bm.comparison_multiplot(samples, time, labels, (0.4, 0.45), title, "fbm_cholesky_H_gt_0.5_comparison")
 
 # %%
 
@@ -69,5 +69,5 @@ for H in H_vals[1:]:
 # %%
 
 labels = [f"H={format(H, '1.2f')}" for H in H_vals]
-title = f"Fractional Brownian Motion Comparison"
-bm.comparison_multiplot(samples, time, labels, (0.4, 0.3), title, "fbm_cholesky_H_leq_0.5_comparison")
+title = f"Cholesky Fractional Brownian Motion Comparison"
+bm.comparison_multiplot(samples, time, labels, (0.25, 0.7), title, "fbm_cholesky_H_leq_0.5_comparison")
