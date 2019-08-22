@@ -16,3 +16,7 @@ yahoo_root = os.path.join(wd, 'data', 'yahoo')
 pyplot.style.use(config.glyfish_style)
 
 # %%
+
+f = [8.0, 4.0, 8.0, 0.0]
+t = numpy.fft.fft(f)
+numpy.fft.ifft(t)
