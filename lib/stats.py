@@ -1,5 +1,31 @@
 import numpy
 
+def ensemble_mean(samples):
+    nsim, npts = samples.shape
+    mean = numpy.zeros(npts)
+    for i in range(npts):
+        for j in range(nsim):
+            mean[i] += samples[j,i] / float(nsim)
+    return mean
+
+def ensemble_std(samples):
+    mean = ensemble_mean(samples)
+    nsim, npts = samples.shape
+    std = numpy.zeros(npts)
+    for i in range(npts):
+        for j in range(nsim):
+            std[i] += (samples[j,i] - mean[i])**2 / float(nsim)
+    return numpy.sqrt(std)
+
+def ensemble_autocorrelation(samples):
+    nsim, npts = samples.shape
+    ac_avg = numpy.zeros(npts)
+    for j in range(nsim):
+        ac = autocorrelate(samples[j]).real
+        for i in range(npts):
+            ac_avg[i] += ac[i]
+    return ac_avg / float(nsim)
+
 def cummean(samples):
     nsample = len(samples)
     mean = numpy.zeros(nsample)

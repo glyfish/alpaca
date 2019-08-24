@@ -112,7 +112,6 @@ def fbn_fft(H, Δt, n, dB=None):
 
     return Z[:n].real
 
-
 def fbm_fft(H, Δt, n, dB=None):
     if dB is None:
         dB = brownian_noise(2*n)
