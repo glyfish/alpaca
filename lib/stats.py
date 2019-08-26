@@ -61,3 +61,12 @@ def autocorrelate(x):
     h_fft = numpy.conj(x_fft) * x_fft
     ac = numpy.fft.ifft(h_fft)
     return ac[0:n]/ac[0]
+
+def autocorrelate_sum(x, max_lag):
+    n = len(x)
+    x_shifted = x - x.mean()
+    ac = numpy.zeros(n)
+    for t in range(max_lag):
+        for k in range(0, n - t):
+            ac[t] += x_shifted[k] * x_shifted[k + t]
+    return ac/ac[0]

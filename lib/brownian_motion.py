@@ -14,13 +14,22 @@ def fbm_covariance(H, s, n):
     return 0.5*(n**(2.0*H) + s**(2.0*H) - numpy.abs(n - s)**(2.0*H))
 
 def fbn_autocorrelation(H, n):
-    return 0.5*((n-1.0)**(2.0*H) + (n+1.0)**(2.0*H) - 2.0*n**(2.0*H))
+    return 0.5*(abs(n-1.0)**(2.0*H) + (n+1.0)**(2.0*H) - 2.0*n**(2.0*H))
 
 def fbn_autocorrelation_large_n(H, n):
     return H*(2.0*H - 1.0)*n**(2.0*H - 2.0)
 
 def brownian_noise(n):
     return numpy.random.normal(0.0, 1.0, n)
+
+def to_noise(samples):
+    nsim, npts = samples.shape
+    noise = numpy.zeros((nsim, npts-1))
+    for i in range(nsim):
+        for j in range(npts-1):
+            noise[i,j] = samples[i,j+1] - samples[i,j]
+    return noise
+
 
 def fbn_autocorrelation_matrix(H, n):
     γ = numpy.matrix(numpy.zeros([n+1, n+1]))
@@ -89,6 +98,8 @@ def fbn_fft(H, Δt, n, dB=None):
     for i in range(2*n):
         if i == 0:
             C[i] = 1.0
+        if i == n:
+            C[i] = 0.0
         elif i < n:
             C[i] = fbn_autocorrelation(H, i)
         else:

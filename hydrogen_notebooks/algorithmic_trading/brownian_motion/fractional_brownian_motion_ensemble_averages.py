@@ -59,18 +59,10 @@ def ensemble_autocorrelation_plot(H, ac, time, lengend_location, title, plot_nam
     axis.legend(bbox_to_anchor=lengend_location)
     config.save_post_asset(figure, "brownian_motion", plot_name)
 
-def fbn_from_fbm(samples):
-    nsim, npts = samples.shape
-    noise = numpy.zeros((nsim, npts-1))
-    for i in range(nsim):
-        for j in range(npts-1):
-            noise[i,j] = samples[i,j+1] - samples[i,j]
-    return noise
-
 # %%
 
 Δt = 1.0
-npts = 1000
+npts = 1024
 nsims = 500
 time = numpy.linspace(0.0, float(npts)*Δt, npts)
 
@@ -103,14 +95,14 @@ ensemble_std_plot(H, std, time, [0.35, 0.85], title, plot_name)
 
 # %%
 
-ac = stats.ensemble_autocorrelation(fbn_from_fbm(samples))
+ac = stats.ensemble_autocorrelation(bm.to_noise(samples))
 title = f"Fractional Brownian Noise Ensemble γ, Ensemble Size={nsims}, H={format(H, '1.1f')}"
 plot_name = f"fractional_brownian_noise_ensemble_γ_H_{format(H, '1.1f')}"
-ensemble_autocorrelation_plot(H, ac, time[:-1], [0.45, 0.85], title, plot_name)
+ensemble_autocorrelation_plot(H, ac[:200], time[:200], [0.45, 0.3], title, plot_name)
 
 # %%
 
-H = 0.9
+H = 0.8
 samples = numpy.array([bm.fbm_fft(H, Δt, npts)])
 for i in range(1, nsims):
     samples = numpy.append(samples, numpy.array([bm.fbm_fft(H, Δt, npts)]), axis=0)
@@ -119,7 +111,7 @@ for i in range(1, nsims):
 
 title = f"Fractional Brownian Motion Ensemble, Ensemble Size={nsims}, H = {format(H, '1.1f')}"
 plot_name = f"fractional_brownian_motion_ensemble_H_{format(H, '1.1f')}"
-ensemble_plot(samples, time, [10.0, 1000.0], title, plot_name)
+ensemble_plot(samples, time, [100.0, 500.0], title, plot_name)
 
 # %%
 
@@ -137,10 +129,44 @@ ensemble_std_plot(H, std, time, [0.35, 0.85], title, plot_name)
 
 # %%
 
-ac = stats.ensemble_autocorrelation(fbn_from_fbm(samples))
+ac = stats.ensemble_autocorrelation(bm.to_noise(samples))
 title = f"Fractional Brownian Noise Ensemble γ, Ensemble Size={nsims}, H={format(H, '1.1f')}"
 plot_name = f"fractional_brownian_noise_ensemble_γ_H_{format(H, '1.1f')}"
-ensemble_autocorrelation_plot(H, ac, time[:-1], [0.45, 0.85], title, plot_name)
+ensemble_autocorrelation_plot(H, ac[:200], time[:200], [0.45, 0.85], title, plot_name)
+
+# %%
+
+H = 0.7
+samples = numpy.array([bm.fbm_fft(H, Δt, npts)])
+for i in range(1, nsims):
+    samples = numpy.append(samples, numpy.array([bm.fbm_fft(H, Δt, npts)]), axis=0)
+
+# %%
+
+title = f"Fractional Brownian Motion Ensemble, Ensemble Size={nsims}, H = {format(H, '1.1f')}"
+plot_name = f"fractional_brownian_motion_ensemble_H_{format(H, '1.1f')}"
+ensemble_plot(samples, time, [100.0, 250.0], title, plot_name)
+
+# %%
+
+mean = stats.ensemble_mean(samples)
+title = f"Fractional Brownian Motion Ensemble μ, Ensemble Size={nsims}, H={format(H, '1.1f')}"
+plot_name = f"fractional_brownian_motion_ensemble_μ_H_{format(H, '1.1f')}"
+ensemble_mean_plot(mean, time, title, plot_name)
+
+# %%
+
+std = stats.ensemble_std(samples)
+title = f"Fractional Brownian Motion Ensemble σ, Ensemble Size={nsims}, H={format(H, '1.1f')}"
+plot_name = f"fractional_brownian_motion_ensemble_σ_H_{format(H, '1.1f')}"
+ensemble_std_plot(H, std, time, [0.35, 0.85], title, plot_name)
+
+# %%
+
+ac = stats.ensemble_autocorrelation(bm.to_noise(samples))
+title = f"Fractional Brownian Noise Ensemble γ, Ensemble Size={nsims}, H={format(H, '1.1f')}"
+plot_name = f"fractional_brownian_noise_ensemble_γ_H_{format(H, '1.1f')}"
+ensemble_autocorrelation_plot(H, ac[:200], time[:200], [0.65, 0.85], title, plot_name)
 
 # %%
 
@@ -171,7 +197,44 @@ ensemble_std_plot(H, std, time, [0.35, 0.9], title, plot_name)
 
 # %%
 
-ac = stats.ensemble_autocorrelation(fbn_from_fbm(samples))
+ac = stats.ensemble_autocorrelation(bm.to_noise(samples))
 title = f"Fractional Brownian Noise Ensemble γ, Ensemble Size={nsims}, H={format(H, '1.1f')}"
 plot_name = f"fractional_brownian_noise_ensemble_γ_H_{format(H, '1.1f')}"
-ensemble_autocorrelation_plot(H, ac, time[:-1], [0.5, 0.85], title, plot_name)
+ensemble_autocorrelation_plot(H, ac[:200], time[:200], [0.5, 0.85], title, plot_name)
+
+# %%
+
+H = 0.9
+npts = 4098
+time = numpy.linspace(0.0, float(npts)*Δt, npts)
+
+samples = numpy.array([bm.fbm_fft(H, Δt, npts)])
+for i in range(1, nsims):
+    samples = numpy.append(samples, numpy.array([bm.fbm_fft(H, Δt, npts)]), axis=0)
+
+# %%
+
+title = f"Fractional Brownian Motion Ensemble, Ensemble Size={nsims}, H = {format(H, '1.1f')}"
+plot_name = f"fractional_brownian_motion_ensemble_H_{format(H, '1.1f')}"
+ensemble_plot(samples, time, [100.0, 3000.0], title, plot_name)
+
+# %%
+
+mean = stats.ensemble_mean(samples)
+title = f"Fractional Brownian Motion Ensemble μ, Ensemble Size={nsims}, H={format(H, '1.1f')}"
+plot_name = f"fractional_brownian_motion_ensemble_μ_H_{format(H, '1.1f')}"
+ensemble_mean_plot(mean, time, title, plot_name)
+
+# %%
+
+std = stats.ensemble_std(samples)
+title = f"Fractional Brownian Motion Ensemble σ, Ensemble Size={nsims}, H={format(H, '1.1f')}"
+plot_name = f"fractional_brownian_motion_ensemble_σ_H_{format(H, '1.1f')}"
+ensemble_std_plot(H, std, time, [0.35, 0.85], title, plot_name)
+
+# %%
+
+ac = stats.ensemble_autocorrelation(bm.to_noise(samples))
+title = f"Fractional Brownian Noise Ensemble γ, Ensemble Size={nsims}, H={format(H, '1.1f')}"
+plot_name = f"fractional_brownian_noise_ensemble_γ_H_{format(H, '1.1f')}"
+ensemble_autocorrelation_plot(H, ac[:200], time[:200], [0.45, 0.4], title, plot_name)

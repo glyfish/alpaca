@@ -20,3 +20,11 @@ pyplot.style.use(config.glyfish_style)
 f = [8.0, 4.0, 8.0, 0.0]
 t = numpy.fft.fft(f)
 numpy.fft.ifft(t)
+
+# %% FFT algorithm for FBN example
+
+# circulant matrix is 1 at n=0 and zero everywhere else
+c = numpy.zeros(10)
+c[0] = 1
+
+numpy.fft.fft (c).real

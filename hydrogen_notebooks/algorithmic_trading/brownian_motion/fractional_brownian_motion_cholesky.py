@@ -9,6 +9,7 @@ import numpy
 from matplotlib import pyplot
 from lib import config
 from lib import brownian_motion as bm
+from lib import stats
 
 wd = os.getcwd()
 
@@ -70,4 +71,4 @@ for H in H_vals[1:]:
 
 labels = [f"H={format(H, '1.2f')}" for H in H_vals]
 title = f"Cholesky Fractional Brownian Motion Comparison"
-bm.comparison_multiplot(samples, time, labels, (0.25, 0.7), title, "fbm_cholesky_H_leq_0.5_comparison")
+bm.comparison_multiplot(samples, time, labels, (0.375, 0.85), title, "fbm_cholesky_H_leq_0.5_comparison")
