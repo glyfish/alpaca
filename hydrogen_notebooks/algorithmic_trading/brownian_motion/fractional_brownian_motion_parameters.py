@@ -176,3 +176,25 @@ H_vals = [0.6, 0.7, 0.8, 0.9, 0.95, 0.975, 0.99, 1.0]
 time = numpy.linspace(1.0, tmax, nsteps)
 
 fbn_autocorrelation_limit(H_vals, time, (0.6125, 0.75), "fractional_brownian_motion_autocorrelation_limit_H_gt_eq_0.5")
+
+# %%
+
+tmax = 2.0
+Δt = 0.001
+nsteps = int(tmax/Δt)
+
+H_vals = [0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
+time = numpy.linspace(0.0, tmax, nsteps)
+
+# %%
+
+figure, axis = pyplot.subplots(figsize=(12, 8))
+axis.set_xlabel("Time")
+axis.set_ylabel("Value")
+axis.set_title(r"Fraction Brownian Motion Variance, $t^{2H}$")
+
+for H in H_vals:
+    axis.plot(time, brownian_motion.fbm_variance(H, time), label=f"H={format(H, '1.2f')}")
+
+axis.legend(ncol=2, bbox_to_anchor=(0.6, 0.5))
+config.save_post_asset(figure, "brownian_motion", "fractional_brownian_motion_variance_long_time")
