@@ -41,19 +41,19 @@ reg.distribution_plot(chi2.cdf(x, k), x, title, ylabel, "chi_squared_test_chi_sq
 k = 3
 title = r"$\chi^2$"+f" PDF, Number of Degress of Freedom: {k}"
 ylabel = r"$f(x;3)$"
-reg.distribution_plot(reg.chi_squared_pdf(x, k), x, title, ylabel, "chi_squared_test_chi_squared_3_pdf")
+reg.distribution_plot(reg.chi_squared_pdf(k)(x), x, title, ylabel, "chi_squared_test_chi_squared_3_pdf")
 
 # %%
 
 k = 3
 title = r"$\chi^2$"+f" CDF, Number of Degress of Freedom: {k}"
 ylabel = r"$F(x;3)$"
-reg.distribution_plot(reg.chi_squared_cdf(x, k), x, title, ylabel, "chi_squared_test_chi_squared_3_cdf")
+reg.distribution_plot(reg.chi_squared_cdf(k)(x), x, title, ylabel, "chi_squared_test_chi_squared_3_cdf")
 
 # %%
 
 k_vals = [1, 2, 3, 4, 6, 9, 12]
-fx = [reg.chi_squared_pdf(x, k) for k in k_vals]
+fx = [reg.chi_squared_pdf(k)(x) for k in k_vals]
 labels = [f"k={k}" for k in k_vals]
 title = r"$\chi^2$ PDF for Range of Degress of Freedom"
 ylabel = r"$f(x;k)$"
@@ -62,7 +62,7 @@ reg.distribution_multiplot(fx, x, labels, ylabel, [0.8, 0.8], [0.0, 0.5], title,
 # %%
 
 k_vals = [1, 2, 3, 4, 6, 9, 12]
-fx = [reg.chi_squared_cdf(x, k) for k in k_vals]
+fx = [reg.chi_squared_cdf(k)(x) for k in k_vals]
 labels = [f"k={k}" for k in k_vals]
 title = r"$\chi^2$ CDF for Range of Degress of Freedom"
 ylabel = r"$F(x;k)$"
@@ -71,7 +71,7 @@ reg.distribution_multiplot(fx, x, labels, ylabel, [0.68, 0.3], [0.0, 1.0], title
 # %%
 
 k_vals = [1, 2, 3, 4, 6, 9, 12]
-fx = [reg.chi_squared_tail(x, k) for k in k_vals]
+fx = [reg.chi_squared_tail(k)(x) for k in k_vals]
 labels = [f"k={k}" for k in k_vals]
 title = r"$\chi^2$ CDF for Range of Degress of Freedom"
 ylabel = r"$1-F(x;k)$"
@@ -82,21 +82,21 @@ reg.distribution_multiplot(fx, x, labels, ylabel, [0.33, 0.4], [0.0, 1.0], title
 k = 2
 title = r"$\chi^2$"+f" PDF, Number of Degress of Freedom: {k}"
 ylabel = r"$f(x;2)$"
-reg.distribution_plot(reg.chi_squared_pdf(x, k), x, title, ylabel, "chi_squared_test_chi_squared_example_1_pdf")
+reg.distribution_plot(reg.chi_squared_pdf(k)(x), x, title, ylabel, "chi_squared_test_chi_squared_example_1_pdf")
 
 # %%
 
 k = 2
 title = r"$\chi^2$"+f" CDF, Number of Degress of Freedom: {k}"
 ylabel = r"$F(x;2)$"
-reg.distribution_plot(reg.chi_squared_cdf(x, k), x, title, ylabel, "chi_squared_test_chi_squared_example_1_cdf")
+reg.distribution_plot(reg.chi_squared_cdf(k)(x), x, title, ylabel, "chi_squared_test_chi_squared_example_1_cdf")
 
 # %%
 
 k = 2
 title = r"$\chi^2$"+f" CDF, Number of Degress of Freedom: {k}"
 ylabel = r"1-$F(x;2)$"
-reg.distribution_plot(reg.chi_squared_tail(x, k), x, title, ylabel, "chi_squared_test_chi_squared_example_1_tail_cdf")
+reg.distribution_plot(reg.chi_squared_tail(k)(x), x, title, ylabel, "chi_squared_test_chi_squared_example_1_tail_cdf")
 
 # %%
 
@@ -104,4 +104,23 @@ acceptance_level = 0.05
 k = 2
 title = r"$\chi^2$"+f" Tail CDF, Number of Degress of Freedom: {k}"
 ylabel = r"1-$F(x;2)$"
-reg.hypothesis_region_plot(reg.chi_squared_tail(x, k), x, acceptance_level, title, ylabel, "chi_squared_test_chi_squared_example_1_hypothesis_region")
+reg.hypothesis_region_plot(reg.chi_squared_tail(k)(x), x, acceptance_level, title, ylabel, "chi_squared_test_chi_squared_example_1_hypothesis_region")
+
+# %%
+
+k = 2
+ntrials = 10000
+nsample = 1000
+chi = numpy.zeros(ntrials)
+p = [0.18, 0.50, 0.32]
+
+for i in range(ntrials):
+    result = numpy.random.multinomial(nsample, p)
+    for j in range(len(p)):
+        chi[i] += (result[j] - nsample*p[j])**2/(nsample*p[j])
+
+# %%
+
+title = r"$\chi^2$"+f" Sampled Distribution for {ntrials} Trails with {k} Degress of Freedom"
+pdf = reg.chi_squared_pdf(k)
+reg.pdf_samples(pdf, chi, title, "chi_squared_test_chi_squared_example_1_simualtion")
