@@ -30,7 +30,6 @@ def to_noise(samples):
             noise[i,j] = samples[i,j+1] - samples[i,j]
     return noise
 
-
 def fbn_autocorrelation_matrix(H, n):
     γ = numpy.matrix(numpy.zeros([n+1, n+1]))
     for i in range(n+1):
@@ -160,6 +159,16 @@ def brownian_motion_with_drift(μ, σ, Δt, n):
 def geometric_brownian_motion(μ, σ, s0, Δt, n):
     samples = brownian_motion_with_drift(μ, σ, Δt, n)
     return s0*numpy.exp(samples)
+
+# Auto regressive Precocesses
+
+def ar1_series(n, α, σ, x0, nsamples):
+    samples = numpy.zeros(nsamples)
+    ε = numpy.random.normal(0.0, σ, nsamples)
+    samples[0] = x0
+    for i in range(1, nsamples):comparison_multiplot
+        samples[i] = α * samples[i-1] + ε[i]
+    return samples
 
 # Plots
 
