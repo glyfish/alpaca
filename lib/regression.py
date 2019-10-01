@@ -24,9 +24,10 @@ def chi_squared_tail(k):
 
 # Plots
 
-def pdf_samples(pdf, samples, title, plot, xrange=None, ylimit=None):
+def pdf_samples(pdf, samples, title, ylabel, xlabel, plot, xrange=None, ylimit=None):
     figure, axis = pyplot.subplots(figsize=(10, 7))
-    axis.set_xlabel(r"$x$")
+    axis.set_ylabel(ylabel)
+    axis.set_xlabel(xlabel)
     axis.set_title(title)
     axis.set_prop_cycle(config.distribution_sample_cycler)
     _, bins, _ = axis.hist(samples, 50, rwidth=0.8, density=True, label=f"Samples", zorder=5)
@@ -41,11 +42,11 @@ def pdf_samples(pdf, samples, title, plot, xrange=None, ylimit=None):
     axis.legend(bbox_to_anchor=(0.75, 0.9))
     config.save_post_asset(figure, "regression", plot)
 
-def distribution_multiplot(fx, x, labels, ylabel, lengend_location, ylim, title, plot_name):
+def distribution_multiplot(fx, x, labels, ylabel, xlabel, lengend_location, ylim, title, plot_name):
     nplot = len(fx)
     figure, axis = pyplot.subplots(figsize=(12, 8))
     axis.set_ylabel(ylabel)
-    axis.set_xlabel(r"$x$")
+    axis.set_xlabel(xlabel)
     axis.set_title(title)
     axis.set_ylim(ylim)
     for i in range(nplot):
@@ -53,22 +54,22 @@ def distribution_multiplot(fx, x, labels, ylabel, lengend_location, ylim, title,
     axis.legend(ncol=2, bbox_to_anchor=lengend_location)
     config.save_post_asset(figure, "regression", plot_name)
 
-def hypothesis_region_plot(fx, x, acceptance_level, title, ylabel, plot_name):
+def hypothesis_region_plot(fx, x, ylabel, xlabel, acceptance_level, title, plot_name):
     nplot = len(fx)
     figure, axis = pyplot.subplots(figsize=(12, 8))
-    axis.set_ylabel("Probability")
-    axis.set_xlabel(r"$x$")
+    axis.set_ylabel(ylabel)
+    axis.set_xlabel(xlabel)
     axis.set_title(title)
     axis.plot(x, fx, label=ylabel)
     axis.plot([x[0], x[-1]], [acceptance_level, acceptance_level], label=f"Acceptance: {acceptance_level}")
     axis.legend(bbox_to_anchor=[0.8, 0.8])
     config.save_post_asset(figure, "regression", plot_name)
 
-def distribution_plot(fx, x, title, ylabel, plot_name):
+def distribution_plot(fx, x, title, ylabel, xlabel, plot_name):
     nplot = len(fx)
     figure, axis = pyplot.subplots(figsize=(12, 8))
     axis.set_ylabel(ylabel)
-    axis.set_xlabel(r"$x$")
+    axis.set_xlabel(xlabel)
     axis.set_title(title)
     axis.plot(x, fx)
     config.save_post_asset(figure, "regression", plot_name)
