@@ -42,7 +42,7 @@ def stochastic_integral_ensemble_1(n, nsample):
 def stochastic_integral_simulation_1(bn):
     n = len(bn)
     val = 0.0
-    for i in range(1, n):
+    for i in range(1, n+1):
         val += brownian_motion(bn, i-1)*bn[i]
     return val
 
@@ -64,7 +64,7 @@ def stochastic_integral_ensemble_2(n, nsample):
 def stochastic_integral_simulation_2(bn):
     n = len(bn)
     val = 0.0
-    for i in range(1, n):
+    for i in range(1, n+1):
         val += brownian_motion(bn, i-1)**2
     return numpy.sqrt(val/n)
 
@@ -170,7 +170,7 @@ distribution_comparison_plot(modified_chi_squared, integral_samples, title, plot
 # %%
 
 n = 1000
-nsample = 1000
+nsample = 10000
 integral_samples = stochastic_integral_ensemble_2(n, nsample)
 
 # %%
@@ -180,3 +180,33 @@ sigma = numpy.sqrt(numpy.var(integral_samples))
 title = r"$\sqrt{\int_{0}^{1}B^2(s)ds}$, " + f"Sample Size={nsample}, T={n}, μ={format(mean, '1.2f')}, σ={format(sigma, '1.2f')}"
 plot_name = f"stochastic_integral_simulation_1_{nsample}"
 distribution_plot(integral_samples, title, plot_name)
+
+# %%
+
+n = 10
+nsample = 10000
+def bnoise(n):
+    return numpy.random.normal(0.0, 1.0, n)
+
+def bmotion(bn, t):
+    return sum(bn[:t])
+
+def sum_square(bn):
+    n = len(bn)
+    val = 0.0
+    for i in range(1, n+1):
+        val += bmotion(bn, i-1)**2
+    return val
+
+def ensemble(n, nsample):
+    vals = numpy.zeros(nsample)
+    for i in range(nsample):
+        vals[i] = sum_square(bnoise(n))
+    return vals
+
+# %%
+
+[i for i in range(1, n+1)]
+bn = brownian_noise(n)
+bmotion(bn, 10)
+sum_square(bn)
