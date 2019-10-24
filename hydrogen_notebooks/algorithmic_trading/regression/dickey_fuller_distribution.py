@@ -84,6 +84,16 @@ def stochastic_integral_simulation_3(bn):
         val += brownian_motion(bn, i-1)**2
     return numpy.sqrt(val/n)
 
+# Dickey-Fuller Statisti distribution
+# \frac{\frac{1}{2}[B^2(1) - 1]}{\sqrt{\int_0^1{B^2(s)ds}}
+
+def dickey_fuller_test_statistic_ensemble(n, nsample):
+    vals = numpy.zeros(nsample)
+    numerator = stochastic_integral_solution_1(nsample)
+    for i in range(nsample):
+        vals[i] = numerator[i] / stochastic_integral_simulation_3(scaled_brownian_noise(n))
+    return vals
+
 # Plots
 
 def noise_plot(samples, time, plot_name):
@@ -240,3 +250,17 @@ sigma = numpy.sqrt(numpy.var(integral_samples))
 title = r"$\sqrt{\int_{0}^{1}B^2(s)ds}$, " + f"Sample Size={nsample}, T={n}, μ={format(mean, '1.2f')}, σ={format(sigma, '1.2f')}"
 plot_name = f"stochastic_integral_simulation_3_{nsample}"
 distribution_plot(integral_samples, title, plot_name)
+
+# %%
+
+n = 1000
+nsample = 1000
+test_statistic_samples = dickey_fuller_test_statistic_ensemble(n, nsample)
+
+# %%
+
+mean = numpy.mean(test_statistic_samples)
+sigma = numpy.sqrt(numpy.var(test_statistic_samples))
+title = r"t=$\frac{\frac{1}{2}[B^2(1) - 1]}{\sqrt{\int_{0}^{1}B^2(s)ds}}$, " + f"Sample Size={nsample}, T={n}, μ={format(mean, '1.2f')}, σ={format(sigma, '1.2f')}"
+plot_name = f"dickey_fuller_distribution_simulation_{nsample}"
+distribution_comparison_plot(unit_normal, test_statistic_samples, title, plot_name)
