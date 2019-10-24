@@ -104,7 +104,7 @@ def noise_plot(samples, time, plot_name):
     axis.plot(time, samples, lw=1)
     config.save_post_asset(figure, "regression", plot_name)
 
-def distribution_comparison_plot(pdf, samples, title, plot, xrange=None, ylimit=None):
+def distribution_comparison_plot(pdf, samples, title, plot, label=None, xrange=None, ylimit=None):
     figure, axis = pyplot.subplots(figsize=(10, 7))
     axis.set_ylabel(r"$f_X(x)$")
     axis.set_xlabel(r"x")
@@ -118,7 +118,9 @@ def distribution_comparison_plot(pdf, samples, title, plot, xrange=None, ylimit=
     axis.set_xlim([xrange[0], xrange[-1]])
     if ylimit is not None:
         axis.set_ylim(ylimit)
-    axis.plot(xrange, sample_distribution, label=f"Target PDF", zorder=6)
+    if label is None:
+        label=f"Target PDF"
+    axis.plot(xrange, sample_distribution, label=label, zorder=6)
     axis.legend(bbox_to_anchor=(0.75, 0.9))
     config.save_post_asset(figure, "regression", plot)
 
@@ -263,4 +265,4 @@ mean = numpy.mean(test_statistic_samples)
 sigma = numpy.sqrt(numpy.var(test_statistic_samples))
 title = r"t=$\frac{\frac{1}{2}[B^2(1) - 1]}{\sqrt{\int_{0}^{1}B^2(s)ds}}$, " + f"Sample Size={nsample}, T={n}, μ={format(mean, '1.2f')}, σ={format(sigma, '1.2f')}"
 plot_name = f"dickey_fuller_distribution_simulation_{nsample}"
-distribution_comparison_plot(unit_normal, test_statistic_samples, title, plot_name)
+distribution_comparison_plot(unit_normal, test_statistic_samples, title, plot_name, label="Unit Normal")
