@@ -42,7 +42,7 @@ def stochastic_integral_ensemble_1(n, nsample):
 def stochastic_integral_simulation_1(bn):
     n = len(bn)
     val = 0.0
-    for i in range(1, n+1):
+    for i in range(1, n):
         val += brownian_motion(bn, i-1)*bn[i]
     return val
 
@@ -53,7 +53,7 @@ def stochastic_integral_solution_1(n):
     return 0.5*(numpy.random.normal(0.0, 1.0, n)**2 - 1.0)
 
 # stochastic integral simulation
-# \sqrt{\int_0^1{B^2(s)ds}}
+# \int_0^1{B^2(s)ds}
 
 def stochastic_integral_ensemble_2(n, nsample):
     vals = numpy.zeros(nsample)
@@ -62,6 +62,22 @@ def stochastic_integral_ensemble_2(n, nsample):
     return vals
 
 def stochastic_integral_simulation_2(bn):
+    n = len(bn)
+    val = 0.0
+    for i in range(1, n+1):
+        val += brownian_motion(bn, i-1)**2
+    return val/n
+
+# stochastic integral simulation
+# \sqrt{\int_0^1{B^2(s)ds}}
+
+def stochastic_integral_ensemble_3(n, nsample):
+    vals = numpy.zeros(nsample)
+    for i in range(nsample):
+        vals[i] = stochastic_integral_simulation_3(scaled_brownian_noise(n))
+    return vals
+
+def stochastic_integral_simulation_3(bn):
     n = len(bn)
     val = 0.0
     for i in range(1, n+1):
@@ -133,7 +149,7 @@ mean = numpy.mean(integral_solution_samples)
 sigma = numpy.sqrt(numpy.var(integral_solution_samples))
 title = r"$\frac{1}{2}[B^2(1) - 1]$, " + f"Sample Size={nsample}, μ={format(mean, '1.2f')}, σ={format(sigma, '1.2f')}"
 plot_name = f"stochastic_integral_simulation_1_solution_{nsample}"
-distribution_comparison_plot(modified_chi_squared, integral_solution_samples, title, plot_name, numpy.arange(-0.49, 3.0, 0.01))
+distribution_comparison_plot(modified_chi_squared, integral_solution_samples, title, plot_name, numpy.arange(-0.43, 3.0, 0.01))
 
 
 # %%
@@ -142,7 +158,7 @@ mean = numpy.mean(integral_samples)
 sigma = numpy.sqrt(numpy.var(integral_samples))
 title = r"$\int_{0}^{1}B(s)dB(s)$, " + f"Sample Size={nsample}, T={n}, μ={format(mean, '1.2f')}, σ={format(sigma, '1.2f')}"
 plot_name = f"stochastic_integral_simulation_1_{nsample}"
-distribution_comparison_plot(modified_chi_squared, integral_samples, title, plot_name, numpy.arange(-0.49, 3.0, 0.01))
+distribution_comparison_plot(modified_chi_squared, integral_samples, title, plot_name, numpy.arange(-0.43, 3.0, 0.01))
 
 # %%
 
@@ -156,7 +172,7 @@ mean = numpy.mean(integral_solution_samples)
 sigma = numpy.sqrt(numpy.var(integral_solution_samples))
 title = r"$\frac{1}{2}[B^2(1) - 1]$, " + f"Sample Size={nsample}, μ={format(mean, '1.2f')}, σ={format(sigma, '1.2f')}"
 plot_name = f"stochastic_integral_simulation_1_solution_{nsample}"
-distribution_comparison_plot(modified_chi_squared, integral_solution_samples, title, plot_name, numpy.arange(-0.49, 3.0, 0.01))
+distribution_comparison_plot(modified_chi_squared, integral_solution_samples, title, plot_name, numpy.arange(-0.45, 3.0, 0.01))
 
 
 # %%
@@ -165,7 +181,7 @@ mean = numpy.mean(integral_samples)
 sigma = numpy.sqrt(numpy.var(integral_samples))
 title = r"$\int_{0}^{1}B(s)dB(s)$, " + f"Sample Size={nsample}, T={n}, μ={format(mean, '1.2f')}, σ={format(sigma, '1.2f')}"
 plot_name = f"stochastic_integral_simulation_1_{nsample}"
-distribution_comparison_plot(modified_chi_squared, integral_samples, title, plot_name, numpy.arange(-0.49, 3.0, 0.01))
+distribution_comparison_plot(modified_chi_squared, integral_samples, title, plot_name, numpy.arange(-0.45, 3.0, 0.01))
 
 # %%
 
@@ -177,36 +193,50 @@ integral_samples = stochastic_integral_ensemble_2(n, nsample)
 
 mean = numpy.mean(integral_samples)
 sigma = numpy.sqrt(numpy.var(integral_samples))
-title = r"$\sqrt{\int_{0}^{1}B^2(s)ds}$, " + f"Sample Size={nsample}, T={n}, μ={format(mean, '1.2f')}, σ={format(sigma, '1.2f')}"
-plot_name = f"stochastic_integral_simulation_1_{nsample}"
+title = r"$\int_{0}^{1}B^2(s)ds$, " + f"Sample Size={nsample}, T={n}, μ={format(mean, '1.2f')}, σ={format(sigma, '1.2f')}"
+plot_name = f"stochastic_integral_simulation_2_{nsample}"
 distribution_plot(integral_samples, title, plot_name)
 
 # %%
 
-n = 10
-nsample = 10000
-def bnoise(n):
-    return numpy.random.normal(0.0, 1.0, n)
-
-def bmotion(bn, t):
-    return sum(bn[:t])
-
-def sum_square(bn):
-    n = len(bn)
-    val = 0.0
-    for i in range(1, n+1):
-        val += bmotion(bn, i-1)**2
-    return val
-
-def ensemble(n, nsample):
-    vals = numpy.zeros(nsample)
-    for i in range(nsample):
-        vals[i] = sum_square(bnoise(n))
-    return vals
+n = 1000
+nsample = 1000
+integral_samples = stochastic_integral_ensemble_2(n, nsample)
 
 # %%
 
-[i for i in range(1, n+1)]
-bn = brownian_noise(n)
-bmotion(bn, 10)
-sum_square(bn)
+mean = numpy.mean(integral_samples)
+sigma = numpy.sqrt(numpy.var(integral_samples))
+title = r"$\int_{0}^{1}B^2(s)ds$, " + f"Sample Size={nsample}, T={n}, μ={format(mean, '1.2f')}, σ={format(sigma, '1.2f')}"
+plot_name = f"stochastic_integral_simulation_2_{nsample}"
+distribution_plot(integral_samples, title, plot_name)
+
+# %%
+
+n = 1000
+nsample = 10000
+integral_samples = stochastic_integral_ensemble_3(n, nsample)
+numpy.mean(integral_samples)
+
+# %%
+
+mean = numpy.mean(integral_samples)
+sigma = numpy.sqrt(numpy.var(integral_samples))
+title = r"$\sqrt{\int_{0}^{1}B^2(s)ds}$, " + f"Sample Size={nsample}, T={n}, μ={format(mean, '1.2f')}, σ={format(sigma, '1.2f')}"
+plot_name = f"stochastic_integral_simulation_3_{nsample}"
+distribution_plot(integral_samples, title, plot_name)
+
+# %%
+
+n = 1000
+nsample = 1000
+integral_samples = stochastic_integral_ensemble_3(n, nsample)
+numpy.mean(integral_samples)
+
+# %%
+
+mean = numpy.mean(integral_samples)
+sigma = numpy.sqrt(numpy.var(integral_samples))
+title = r"$\sqrt{\int_{0}^{1}B^2(s)ds}$, " + f"Sample Size={nsample}, T={n}, μ={format(mean, '1.2f')}, σ={format(sigma, '1.2f')}"
+plot_name = f"stochastic_integral_simulation_3_{nsample}"
+distribution_plot(integral_samples, title, plot_name)
