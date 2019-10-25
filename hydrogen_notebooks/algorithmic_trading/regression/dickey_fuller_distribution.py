@@ -161,8 +161,7 @@ mean = numpy.mean(integral_solution_samples)
 sigma = numpy.sqrt(numpy.var(integral_solution_samples))
 title = r"$\frac{1}{2}[B^2(1) - 1]$, " + f"Sample Size={nsample}, μ={format(mean, '1.2f')}, σ={format(sigma, '1.2f')}"
 plot_name = f"stochastic_integral_simulation_1_solution_{nsample}"
-distribution_comparison_plot(modified_chi_squared, integral_solution_samples, title, plot_name, numpy.arange(-0.43, 3.0, 0.01))
-
+distribution_comparison_plot(modified_chi_squared, integral_solution_samples, title, plot_name, xrange=numpy.arange(-0.43, 3.0, 0.01))
 
 # %%
 
@@ -170,7 +169,7 @@ mean = numpy.mean(integral_samples)
 sigma = numpy.sqrt(numpy.var(integral_samples))
 title = r"$\int_{0}^{1}B(s)dB(s)$, " + f"Sample Size={nsample}, T={n}, μ={format(mean, '1.2f')}, σ={format(sigma, '1.2f')}"
 plot_name = f"stochastic_integral_simulation_1_{nsample}"
-distribution_comparison_plot(modified_chi_squared, integral_samples, title, plot_name, numpy.arange(-0.43, 3.0, 0.01))
+distribution_comparison_plot(modified_chi_squared, integral_samples, title, plot_name, xrange=numpy.arange(-0.43, 3.0, 0.01))
 
 # %%
 
@@ -184,8 +183,7 @@ mean = numpy.mean(integral_solution_samples)
 sigma = numpy.sqrt(numpy.var(integral_solution_samples))
 title = r"$\frac{1}{2}[B^2(1) - 1]$, " + f"Sample Size={nsample}, μ={format(mean, '1.2f')}, σ={format(sigma, '1.2f')}"
 plot_name = f"stochastic_integral_simulation_1_solution_{nsample}"
-distribution_comparison_plot(modified_chi_squared, integral_solution_samples, title, plot_name, numpy.arange(-0.45, 3.0, 0.01))
-
+distribution_comparison_plot(modified_chi_squared, integral_solution_samples, title, plot_name, xrange=numpy.arange(-0.45, 3.0, 0.01))
 
 # %%
 
@@ -193,7 +191,7 @@ mean = numpy.mean(integral_samples)
 sigma = numpy.sqrt(numpy.var(integral_samples))
 title = r"$\int_{0}^{1}B(s)dB(s)$, " + f"Sample Size={nsample}, T={n}, μ={format(mean, '1.2f')}, σ={format(sigma, '1.2f')}"
 plot_name = f"stochastic_integral_simulation_1_{nsample}"
-distribution_comparison_plot(modified_chi_squared, integral_samples, title, plot_name, numpy.arange(-0.45, 3.0, 0.01))
+distribution_comparison_plot(modified_chi_squared, integral_samples, title, plot_name, xrange=numpy.arange(-0.45, 3.0, 0.01))
 
 # %%
 
@@ -207,7 +205,7 @@ mean = numpy.mean(integral_samples)
 sigma = numpy.sqrt(numpy.var(integral_samples))
 title = r"$\int_{0}^{1}B^2(s)ds$, " + f"Sample Size={nsample}, T={n}, μ={format(mean, '1.2f')}, σ={format(sigma, '1.2f')}"
 plot_name = f"stochastic_integral_simulation_2_{nsample}"
-distribution_plot(integral_samples, title, plot_name)
+distribution_plot(integral_samples, title, plot_name, xrange=numpy.arange(0.0, 4.0, 0.01))
 
 # %%
 
@@ -221,7 +219,7 @@ mean = numpy.mean(integral_samples)
 sigma = numpy.sqrt(numpy.var(integral_samples))
 title = r"$\int_{0}^{1}B^2(s)ds$, " + f"Sample Size={nsample}, T={n}, μ={format(mean, '1.2f')}, σ={format(sigma, '1.2f')}"
 plot_name = f"stochastic_integral_simulation_2_{nsample}"
-distribution_plot(integral_samples, title, plot_name)
+distribution_plot(integral_samples, title, plot_name, xrange=numpy.arange(0.0, 4.0, 0.01))
 
 # %%
 
@@ -236,7 +234,7 @@ mean = numpy.mean(integral_samples)
 sigma = numpy.sqrt(numpy.var(integral_samples))
 title = r"$\sqrt{\int_{0}^{1}B^2(s)ds}$, " + f"Sample Size={nsample}, T={n}, μ={format(mean, '1.2f')}, σ={format(sigma, '1.2f')}"
 plot_name = f"stochastic_integral_simulation_3_{nsample}"
-distribution_plot(integral_samples, title, plot_name)
+distribution_plot(integral_samples, title, plot_name, xrange=numpy.arange(0.0, 3.0, 0.01))
 
 # %%
 
@@ -251,7 +249,7 @@ mean = numpy.mean(integral_samples)
 sigma = numpy.sqrt(numpy.var(integral_samples))
 title = r"$\sqrt{\int_{0}^{1}B^2(s)ds}$, " + f"Sample Size={nsample}, T={n}, μ={format(mean, '1.2f')}, σ={format(sigma, '1.2f')}"
 plot_name = f"stochastic_integral_simulation_3_{nsample}"
-distribution_plot(integral_samples, title, plot_name)
+distribution_plot(integral_samples, title, plot_name, xrange=numpy.arange(0.0, 3.0, 0.01))
 
 # %%
 
@@ -265,4 +263,32 @@ mean = numpy.mean(test_statistic_samples)
 sigma = numpy.sqrt(numpy.var(test_statistic_samples))
 title = r"t=$\frac{\frac{1}{2}[B^2(1) - 1]}{\sqrt{\int_{0}^{1}B^2(s)ds}}$, " + f"Sample Size={nsample}, T={n}, μ={format(mean, '1.2f')}, σ={format(sigma, '1.2f')}"
 plot_name = f"dickey_fuller_distribution_simulation_{nsample}"
-distribution_comparison_plot(unit_normal, test_statistic_samples, title, plot_name, label="Unit Normal")
+distribution_comparison_plot(unit_normal, test_statistic_samples, title, plot_name, xrange=numpy.arange(-4.0, 8.0, 0.01), label="Unit Normal")
+
+# %%
+
+n = 1000
+nsample = 10000
+test_statistic_samples = dickey_fuller_test_statistic_ensemble(n, nsample)
+
+# %%
+
+mean = numpy.mean(test_statistic_samples)
+sigma = numpy.sqrt(numpy.var(test_statistic_samples))
+title = r"t=$\frac{\frac{1}{2}[B^2(1) - 1]}{\sqrt{\int_{0}^{1}B^2(s)ds}}$, " + f"Sample Size={nsample}, T={n}, μ={format(mean, '1.2f')}, σ={format(sigma, '1.2f')}"
+plot_name = f"dickey_fuller_distribution_simulation_{nsample}"
+distribution_comparison_plot(unit_normal, test_statistic_samples, title, plot_name, xrange=numpy.arange(-4.0, 8.0, 0.01), label="Unit Normal")
+
+# %%
+
+n = 1000
+nsample = 100000
+test_statistic_samples = dickey_fuller_test_statistic_ensemble(n, nsample)
+
+# %%
+
+mean = numpy.mean(test_statistic_samples)
+sigma = numpy.sqrt(numpy.var(test_statistic_samples))
+title = r"t=$\frac{\frac{1}{2}[B^2(1) - 1]}{\sqrt{\int_{0}^{1}B^2(s)ds}}$, " + f"Sample Size={nsample}, T={n}, μ={format(mean, '1.2f')}, σ={format(sigma, '1.2f')}"
+plot_name = f"dickey_fuller_distribution_simulation_{nsample}"
+distribution_comparison_plot(unit_normal, test_statistic_samples, title, plot_name, xrange=numpy.arange(-4.0, 8.0, 0.01), label="Unit Normal")
