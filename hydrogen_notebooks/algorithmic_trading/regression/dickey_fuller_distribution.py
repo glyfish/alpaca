@@ -263,7 +263,7 @@ mean = numpy.mean(test_statistic_samples)
 sigma = numpy.sqrt(numpy.var(test_statistic_samples))
 title = r"t=$\frac{\frac{1}{2}[B^2(1) - 1]}{\sqrt{\int_{0}^{1}B^2(s)ds}}$, " + f"Sample Size={nsample}, T={n}, μ={format(mean, '1.2f')}, σ={format(sigma, '1.2f')}"
 plot_name = f"dickey_fuller_distribution_simulation_{nsample}"
-distribution_comparison_plot(unit_normal, test_statistic_samples, title, plot_name, xrange=numpy.arange(-4.0, 8.0, 0.01), label="Unit Normal", bins=100)
+distribution_comparison_plot(unit_normal, test_statistic_samples, title, plot_name, xrange=numpy.arange(-4.0, 8.0, 0.01), label="Unit Normal", bins=50, title_offset=1.05)
 
 # %%
 
