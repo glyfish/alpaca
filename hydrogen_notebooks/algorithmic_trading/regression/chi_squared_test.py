@@ -79,7 +79,7 @@ reg.distribution_multiplot(fx, x, labels, ylabel, xlabel, [0.68, 0.3], [0.0, 1.0
 k_vals = [1, 2, 3, 4, 6, 9, 12]
 fx = [reg.chi_squared_tail(k)(x) for k in k_vals]
 labels = [f"k={k}" for k in k_vals]
-title = r"$\chi^2$ CDF for Range of Degrees of Freedom"
+title = r"$\chi^2$ Tail CDF for Range of Degrees of Freedom"
 ylabel = r"$1-F(\chi^2;k)$"
 xlabel = r"$\chi^2$"
 reg.distribution_multiplot(fx, x, labels, ylabel, xlabel, [0.33, 0.4], [0.0, 1.0], title, "chi_squared_test_chi_squared_tail_cdf_scan")

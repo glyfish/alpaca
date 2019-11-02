@@ -7,6 +7,12 @@ pyplot.style.use(config.glyfish_style)
 
 # %%
 
+def normal(σ=1.0, μ=0.0):
+    def f(x):
+        ε = (x - μ)**2/(2.0*σ**2)
+        return numpy.exp(-ε)/numpy.sqrt(2.0*numpy.pi*σ**2)
+    return f
+
 def chi_squared_pdf(k):
     def f(x):
         return x**(k/2.0 - 1.0) * numpy.exp(-x/2.0) / (2.0**(k/2.0)*special.gamma(k/2.0))
@@ -20,6 +26,29 @@ def chi_squared_cdf(k):
 def chi_squared_tail(k):
     def f(x):
         return 1.0 - special.gammainc(k/2.0, x/2.0)
+    return f
+
+def student_t_pdf(n):
+    def f(x):
+        return (1.0/numpy.sqrt(numpy.pi*n))*(special.gamma((n+1)/2.0)/special.gamma(n/2.0))*(x**2/n + 1.0)**(-(n+1)/2)
+    return f
+
+def student_t_cdf(n):
+    def f(x):
+        y = n/(x**2 + n)
+        if x > 0:
+            return 1.0 - 0.5*special.betainc(n/2, 0.5, y)
+        else:
+            return 0.5*special.betainc(n/2, 0.5, y)
+    return f
+
+def student_t_tail(n):
+    def f(x):
+        y = n/(x**2 + n)
+        if x > 0:
+            return 0.5*special.betainc(n/2, 0.5, y)
+        else:
+            return 1.0 - 0.5*special.betainc(n/2, 0.5, y)
     return f
 
 # Plots
@@ -51,6 +80,19 @@ def distribution_multiplot(fx, x, labels, ylabel, xlabel, lengend_location, ylim
     axis.set_ylim(ylim)
     for i in range(nplot):
         axis.plot(x, fx[i], label=labels[i])
+    axis.legend(ncol=2, bbox_to_anchor=lengend_location)
+    config.save_post_asset(figure, "regression", plot_name)
+
+def distribution_comparission_multiplot(fx, gx, x, labels, ylabel, xlabel, lengend_location, ylim, title, plot_name):
+    nplot = len(fx)
+    figure, axis = pyplot.subplots(figsize=(12, 8))
+    axis.set_ylabel(ylabel)
+    axis.set_xlabel(xlabel)
+    axis.set_title(title)
+    axis.set_ylim(ylim)
+    for i in range(nplot):
+        axis.plot(x, fx[i], label=labels[i])
+    axis.plot(x, gx, label=labels[-1], lw=3.0, color='black')
     axis.legend(ncol=2, bbox_to_anchor=lengend_location)
     config.save_post_asset(figure, "regression", plot_name)
 
