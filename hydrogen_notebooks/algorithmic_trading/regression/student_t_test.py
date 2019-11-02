@@ -78,7 +78,7 @@ reg.distribution_comparission_multiplot(pdf, reg.normal()(x), x, labels, ylabel,
 # %%
 
 n_vals = [1, 3, 5, 8, 12]
-title = f"Student-t CDF, for Range of Degrees of Freedom Compared to Unit Normal"
+title = f"Student-t CDF, for Range of Degrees of Freedom"
 labels = [f"n={n}" for n in n_vals]
 labels.append("normal")
 ylabel = r"$f(t;n)$"
@@ -88,3 +88,17 @@ for n in n_vals:
     cdf.append([reg.student_t_cdf(n)(i) for i in x])
 
 reg.distribution_multiplot(cdf, x, labels, ylabel, xlabel, [0.33, 0.8], [0.0, 1.05], title, "student_t_test_cdf_scan")
+
+# %%
+
+n_vals = [1, 3, 5, 8, 12]
+title = f"Student-t Tail CDF, for Range of Degrees of Freedom Compared to Unit Normal"
+labels = [f"n={n}" for n in n_vals]
+labels.append("normal")
+ylabel = r"$f(t;n)$"
+xlabel = r"$t$"
+cdf = []
+for n in n_vals:
+    cdf.append([reg.student_t_tail(n)(i) for i in x])
+
+reg.distribution_multiplot(cdf, x, labels, ylabel, xlabel, [0.33, 0.5], [0.0, 1.05], title, "student_t_test_tail_cdf_scan")
