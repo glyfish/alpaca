@@ -109,20 +109,16 @@ reg.distribution_multiplot(cdf, x, labels, ylabel, xlabel, [0.33, 0.5], [0.0, 1.
 n = 3
 μ = 5.0
 σ = 4.0
-nsamples = 100
 ntrials = 1000
 t = numpy.zeros(ntrials)
 
 for k in range(ntrials):
-    samples = numpy.zeros(nsamples)
-    for i in range(nsamples):
-        for j in range(n):
-            samples[i] += numpy.random.normal(μ, σ)
-    t[k] = (numpy.mean(samples) - μ)/(numpy.sqrt(numpy.var(samples)/n))
+    samples = numpy.random.normal(μ, σ, n)
+    t[k] = (numpy.mean(samples) - μ)/numpy.sqrt(numpy.var(samples)/n)
 
 # %%
 
 ylabel = r"$f(t;3)$"
 xlabel = r"$t$"
-title = f"t-Test Sampled Distribution {ntrials} Trails, {k} Degrees of Freedom"
-reg.pdf_samples(reg.student_t_pdf(n), t, title, ylabel, xlabel, "t_test_example_0_simulation")
+title = f"t-Test Sampled Distribution {ntrials} Trails, {n} Degrees of Freedom"
+reg.pdf_samples(reg.student_t_pdf(n), t, title, ylabel, xlabel, "t_test_example_0_simulation", xrange=numpy.arange(-10.5, 10.5, 0.01), nbins=100)

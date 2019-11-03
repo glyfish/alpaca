@@ -53,13 +53,13 @@ def student_t_tail(n):
 
 # Plots
 
-def pdf_samples(pdf, samples, title, ylabel, xlabel, plot, xrange=None, ylimit=None):
+def pdf_samples(pdf, samples, title, ylabel, xlabel, plot, xrange=None, ylimit=None, nbins=50):
     figure, axis = pyplot.subplots(figsize=(10, 7))
     axis.set_ylabel(ylabel)
     axis.set_xlabel(xlabel)
     axis.set_title(title)
     axis.set_prop_cycle(config.distribution_sample_cycler)
-    _, bins, _ = axis.hist(samples, 50, rwidth=0.8, density=True, label=f"Samples", zorder=5)
+    _, bins, _ = axis.hist(samples, nbins, rwidth=0.8, density=True, label=f"Samples", zorder=5)
     if xrange is None:
         delta = (bins[-1] - bins[0]) / 500.0
         xrange = numpy.arange(bins[0], bins[-1], delta)
