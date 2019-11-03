@@ -51,6 +51,26 @@ def student_t_tail(n):
             return 1.0 - 0.5*special.betainc(n/2, 0.5, y)
     return f
 
+def bias_corrected_var(samples):
+    return numpy.var(samples, ddof=1.0)
+
+def cummean(samples):
+    nsample = len(samples)
+    mean = numpy.zeros(nsample)
+    mean[0] = samples[0]
+    for i in range(1, nsample):
+        mean[i] = (float(i) * mean[i - 1] + samples[i])/float(i + 1)
+    return mean
+
+def cumvar(samples):
+    nsample = len(samples)
+    mean = cummean(samples)
+    var = numpy.zeros(nsample)
+    var[0] = samples[0]**2
+    for i in range(1, nsample):
+        var[i] = (float(i) * var[i - 1] + samples[i]**2)/float(i + 1)
+    return var-mean**2
+
 # Plots
 
 def pdf_samples(pdf, samples, title, ylabel, xlabel, plot, xrange=None, ylimit=None, nbins=50):
@@ -115,3 +135,35 @@ def distribution_plot(fx, x, title, ylabel, xlabel, plot_name):
     axis.set_title(title)
     axis.plot(x, fx)
     config.save_post_asset(figure, "regression", plot_name)
+
+def cumulative_mean_plot(samples, μ, title, plot, legend_pos = None):
+    nsample = len(samples)
+    time = numpy.linspace(1.0, nsample, nsample)
+    figure, axis = pyplot.subplots(figsize=(12, 8))
+    axis.set_xlabel("Time")
+    axis.set_ylabel(r"$μ$")
+    axis.set_title(title)
+    axis.set_xlim([10.0, nsample])
+    axis.semilogx(time, numpy.full((len(time)), μ), label="Target μ", color="#000000")
+    axis.semilogx(time, cummean(samples), label=f"Cumulative μ")
+    if legend_pos is None:
+        axis.legend()
+    else:
+        axis.legend(bbox_to_anchor=legend_pos)
+    config.save_post_asset(figure, "regression", plot)
+
+def cumulative_var_plot(samples, σ, title, plot, legend_pos = None):
+    nsample = len(samples)
+    time = numpy.linspace(1.0, nsample, nsample)
+    figure, axis = pyplot.subplots(figsize=(12, 8))
+    axis.set_xlabel("Time")
+    axis.set_ylabel(r"$σ$")
+    axis.set_title(title)
+    axis.set_xlim([10.0, nsample])
+    axis.semilogx(time, numpy.full((len(time)), σ), label="Target σ", color="#000000")
+    axis.semilogx(time, cumvar(samples), label=f"Cumulative σ")
+    if legend_pos is None:
+        axis.legend()
+    else:
+        axis.legend(bbox_to_anchor=legend_pos)
+    config.save_post_asset(figure, "regression", plot)

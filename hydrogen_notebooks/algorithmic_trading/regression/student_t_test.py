@@ -16,7 +16,17 @@ wd = os.getcwd()
 yahoo_root = os.path.join(wd, 'data', 'yahoo')
 pyplot.style.use(config.glyfish_style)
 
- # %%
+# %%
+
+def t_distribution_simulation(n, μ, σ, ntrials):
+    t = numpy.zeros(ntrials)
+    for k in range(ntrials):
+        samples = numpy.random.normal(μ, σ, n)
+        var = reg.bias_corrected_var(samples)
+        t[k] = (numpy.mean(samples) - μ)/numpy.sqrt(var/n)
+    return t
+
+# %%
 
 npts = 1001
 xmax = 6.0
@@ -110,15 +120,98 @@ n = 3
 μ = 5.0
 σ = 4.0
 ntrials = 1000
-t = numpy.zeros(ntrials)
 
-for k in range(ntrials):
-    samples = numpy.random.normal(μ, σ, n)
-    t[k] = (numpy.mean(samples) - μ)/numpy.sqrt(numpy.var(samples)/n)
+t = t_distribution_simulation(n, μ, σ, ntrials)
 
 # %%
+
+numpy.mean(t)
+numpy.var(t)
+ylabel = r"$f(t;3)$"
+xlabel = r"$t$"
+title = f"t-Test Sampled Distribution {ntrials} Trails, {n} Degrees of Freedom"
+reg.pdf_samples(reg.student_t_pdf(n), t, title, ylabel, xlabel, f"t_test_example_0_{n}_simulation", xrange=numpy.arange(-10.5, 10.5, 0.01), nbins=100)
+
+
+# %%
+
+n = 5
+μ = 5.0
+σ = 4.0
+ntrials = 1000
+
+t = t_distribution_simulation(n, μ, σ, ntrials)
+
+# %%
+
+numpy.mean(t)
+numpy.var(t)
 
 ylabel = r"$f(t;3)$"
 xlabel = r"$t$"
 title = f"t-Test Sampled Distribution {ntrials} Trails, {n} Degrees of Freedom"
-reg.pdf_samples(reg.student_t_pdf(n), t, title, ylabel, xlabel, "t_test_example_0_simulation", xrange=numpy.arange(-10.5, 10.5, 0.01), nbins=100)
+reg.pdf_samples(reg.student_t_pdf(n), t, title, ylabel, xlabel, f"t_test_example_0_{n}_simulation", xrange=numpy.arange(-10.5, 10.5, 0.01), nbins=50)
+
+# %%
+
+n = 20
+μ = 5.0
+σ = 4.0
+ntrials = 1000
+
+t = t_distribution_simulation(n, μ, σ, ntrials)
+
+# %%
+
+numpy.mean(t)
+numpy.var(t)
+
+ylabel = r"$f(t;3)$"
+xlabel = r"$t$"
+title = f"t-Test Sampled Distribution {ntrials} Trails, {n} Degrees of Freedom"
+reg.pdf_samples(reg.student_t_pdf(n), t, title, ylabel, xlabel, f"t_test_example_0_{n}_simulation", xrange=numpy.arange(-10.5, 10.5, 0.01), nbins=25)
+
+# %%
+
+n = 3
+μ = 5.0
+σ = 4.0
+ntrials = 100000
+
+t = t_distribution_simulation(n, μ, σ, ntrials)
+
+# %%
+
+title = f"t-Test Cumulative μ {ntrials} Trails, {n} Degrees of Freedom"
+plot = f"t_test_example_0_{n}_cumulative_μ"
+reg.cumulative_mean_plot(t, 0.0, title, plot, legend_pos=[0.3, 0.5])
+
+# %%
+
+title = f"t-Test Cumulative σ {ntrials} Trails, {n} Degrees of Freedom"
+plot = f"t_test_example_0_{n}_cumulative_σ"
+var = n/(n-2.0)
+reg.cumulative_var_plot(t, var, title, plot, legend_pos=[0.3, 0.7])
+
+# %%
+
+n = 20
+μ = 5.0
+σ = 4.0
+ntrials = 100000
+
+t = t_distribution_simulation(n, μ, σ, ntrials)
+
+# %%
+
+title = f"t-Test Cumulative μ {ntrials} Trails, {n} Degrees of Freedom"
+plot = f"t_test_example_0_{n}_cumulative_μ"
+reg.cumulative_mean_plot(t, 0.0, title, plot, legend_pos=[0.7, 0.8])
+
+# %%
+
+title = f"t-Test Cumulative σ {ntrials} Trails, {n} Degrees of Freedom"
+plot = f"t_test_example_0_{n}_cumulative_σ"
+var = n/(n-2.0)
+reg.cumvar(t)
+reg.cumulative_var_plot(t, var, title, plot, legend_pos=[0.7, 0.5])
