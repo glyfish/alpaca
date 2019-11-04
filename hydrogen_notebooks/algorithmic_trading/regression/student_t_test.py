@@ -130,8 +130,7 @@ numpy.var(t)
 ylabel = r"$f(t;3)$"
 xlabel = r"$t$"
 title = f"t-Test Sampled Distribution {ntrials} Trails, {n} Degrees of Freedom"
-reg.pdf_samples(reg.student_t_pdf(n), t, title, ylabel, xlabel, f"t_test_example_0_{n}_simulation", xrange=numpy.arange(-10.5, 10.5, 0.01), nbins=100)
-
+reg.pdf_samples(reg.student_t_pdf(n), t, title, ylabel, xlabel, f"t_test_example_0_{n}_simulation", xrange=numpy.arange(-10.5, 10.5, 0.01), nbins=200)
 
 # %%
 
@@ -215,3 +214,15 @@ plot = f"t_test_example_0_{n}_cumulative_σ"
 var = n/(n-2.0)
 reg.cumvar(t)
 reg.cumulative_var_plot(t, var, title, plot, legend_pos=[0.7, 0.5])
+
+# %%
+# Latte Problem
+
+μ=4.0
+x=4.6
+s = 0.22
+n = 25
+df=n-1
+
+t = numpy.sqrt(n)*(x-μ)/s
+reg.student_t_tail(df)(2.064)
