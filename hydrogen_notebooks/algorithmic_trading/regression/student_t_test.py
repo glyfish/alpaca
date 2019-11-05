@@ -219,10 +219,19 @@ reg.cumulative_var_plot(t, var, title, plot, legend_pos=[0.7, 0.5])
 # Latte Problem
 
 μ=4.0
-x=4.6
+x_bar=4.6
 s = 0.22
 n = 25
 df=n-1
 
-t = numpy.sqrt(n)*(x-μ)/s
+t = numpy.sqrt(n)*(x_bar-μ)/s
+t
 reg.student_t_tail(df)(2.064)
+
+# %%
+
+title = f"Student-t Tail CDF, Number of Degrees of Freedom: {df}"
+ylabel = r"$f(t;3)$"
+xlabel = r"$t$"
+cdf = [reg.student_t_tail(df)(i) for i in x]
+reg.distribution_plot(cdf, x, title, ylabel, xlabel, "student_t_test_example_1_tail_cdf")
