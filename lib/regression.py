@@ -71,6 +71,15 @@ def cumvar(samples):
         var[i] = (float(i) * var[i - 1] + samples[i]**2)/float(i + 1)
     return var-mean**2
 
+def autocorrelate(x):
+    n = len(x)
+    x_shifted = x - x.mean()
+    x_padded = numpy.concatenate((x_shifted, numpy.zeros(n-1)))
+    x_fft = numpy.fft.fft(x_padded)
+    h_fft = numpy.conj(x_fft) * x_fft
+    ac = numpy.fft.ifft(h_fft)
+    return ac[0:n]/ac[0]
+
 # Plots
 
 def pdf_samples(pdf, samples, title, ylabel, xlabel, plot, xrange=None, ylimit=None, nbins=50):
@@ -136,10 +145,12 @@ def distribution_plot(fx, x, title, ylabel, xlabel, plot_name):
     axis.plot(x, fx)
     config.save_post_asset(figure, "regression", plot_name)
 
-def cumulative_mean_plot(samples, μ, title, plot, legend_pos = None):
+def cumulative_mean_plot(samples, μ, title, plot, ylim=None, legend_pos = None):
     nsample = len(samples)
     time = numpy.linspace(1.0, nsample, nsample)
     figure, axis = pyplot.subplots(figsize=(12, 8))
+    if ylim is not None:
+        axis.set_ylim(ylim)
     axis.set_xlabel("Time")
     axis.set_ylabel(r"$μ$")
     axis.set_title(title)
@@ -152,10 +163,12 @@ def cumulative_mean_plot(samples, μ, title, plot, legend_pos = None):
         axis.legend(bbox_to_anchor=legend_pos)
     config.save_post_asset(figure, "regression", plot)
 
-def cumulative_var_plot(samples, σ, title, plot, legend_pos = None):
+def cumulative_var_plot(samples, σ, title, plot, ylim=None, legend_pos = None):
     nsample = len(samples)
     time = numpy.linspace(1.0, nsample, nsample)
     figure, axis = pyplot.subplots(figsize=(12, 8))
+    if ylim is not None:
+        axis.set_ylim(ylim)
     axis.set_xlabel("Time")
     axis.set_ylabel(r"$σ$")
     axis.set_title(title)

@@ -162,11 +162,11 @@ def geometric_brownian_motion(μ, σ, s0, Δt, n):
 
 # Auto regressive Precocesses
 
-def ar1_series(n, α, σ, x0, nsamples):
+def ar1_series(α, σ, x0, nsamples):
     samples = numpy.zeros(nsamples)
     ε = numpy.random.normal(0.0, σ, nsamples)
     samples[0] = x0
-    for i in range(1, nsamples):comparison_multiplot
+    for i in range(1, nsamples):
         samples[i] = α * samples[i-1] + ε[i]
     return samples
 
