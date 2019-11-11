@@ -38,7 +38,7 @@ def ar1_auto_correlation(n, φ, σ):
 def ar1_comparission_multiplot(series, φ, ylim, title, plot_name):
     nplot = len(series)
     nsample = len(series[0])
-    figure, axis = pyplot.subplots(3, sharex=True, figsize=(12, 9))
+    figure, axis = pyplot.subplots(nplot, sharex=True, figsize=(12, 9))
     axis[0].set_title(title)
     axis[nplot-1].set_xlabel(r"$t$")
     time = numpy.linspace(0, nsample-1, nsample)
@@ -63,6 +63,7 @@ def ar1_auto_correlation_plot(series, φ, nplot, title, plot_name, ylim):
     axis.set_title(title)
     axis.plot(range(nplot), numpy.real(ac[:nplot]), marker='o', markersize=10.0, linestyle="None", markeredgewidth=1.0, alpha=0.75, label="Simulation", zorder=6)
     axis.plot(range(nplot), ac_eq, lw="2", label=r"$φ^{\tau}$", zorder=5)
+    axis.legend(bbox_to_anchor=(0.8, 0.8), fontsize=16)
     config.save_post_asset(figure, "regression", plot_name)
 
 # %%
@@ -223,3 +224,35 @@ series = arq_series(1, [φ], σ, nsample)
 title = f"AR(1) Cumulative Autocorrelation: σ={σ}, φ={format(φ, '2.1f')}"
 plot = f"ar1_equilibrium_series_autocorelation_φ_{format(φ, '2.1f')}"
 ar1_auto_correlation_plot(series, φ, 30, title, plot, ylim=[-0.1, 1.1])
+
+# %%
+
+nsample = 10000
+σ = 1.0
+φ = -0.5
+var = ar1_var(φ, σ)
+series = arq_series(1, [φ], σ, nsample)
+
+# %%
+
+title = f"AR(1) Cumulative Autocorrelation: σ={σ}, φ={format(φ, '2.1f')}"
+plot = f"ar1_equilibrium_series_autocorelation_φ_{format(φ, '2.1f')}"
+ar1_auto_correlation_plot(series, φ, 30, title, plot, ylim=[-1.1, 1.1])
+
+# %%
+
+nseries = 2
+nsample = 500
+σ = 1.0
+
+φ = numpy.array([0.99, 1.01])
+
+series = []
+for i in range(0, nseries):
+    series.append(arq_series(1, [φ[i]], σ, nsample))
+
+# %%
+
+title = f"AR(1) Series Comparison: σ={σ}"
+plot_name = "ar1_equilibrium_series_comparison_3"
+ar1_comparission_multiplot(series, φ, [-60.0, 20.0], title, plot_name)
