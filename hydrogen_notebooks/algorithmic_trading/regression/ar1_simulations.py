@@ -17,9 +17,6 @@ pyplot.style.use(config.glyfish_style)
 
 # %%
 
-def brownian_noise(σ, n):
-    return numpy.random.normal(0.0, σ, n)
-
 def arq_series(q, φ, σ, n):
     samples = numpy.zeros(n)
     ε = brownian_noise(σ, n)
@@ -255,4 +252,4 @@ for i in range(0, nseries):
 
 title = f"AR(1) Series Comparison: σ={σ}"
 plot_name = "ar1_equilibrium_series_comparison_3"
-ar1_comparission_multiplot(series, φ, [-60.0, 20.0], title, plot_name)
+ar1_comparission_multiplot(series, φ, [-20.0, 600.0], title, plot_name)

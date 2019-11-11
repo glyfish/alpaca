@@ -80,6 +80,18 @@ def autocorrelate(x):
     ac = numpy.fft.ifft(h_fft)
     return ac[0:n]/ac[0]
 
+def arq_series(q, φ, σ, n):
+    samples = numpy.zeros(n)
+    ε = brownian_noise(σ, n)
+    for i in range(q, n):
+        samples[i] = ε[i]
+        for j in range(0, q):
+            samples[i] += φ[j] * samples[i-(j+1)]
+    return samples
+
+def brownian_noise(σ, n):
+    return numpy.random.normal(0.0, σ, n)
+
 # Plots
 
 def pdf_samples(pdf, samples, title, ylabel, xlabel, plot, xrange=None, ylimit=None, nbins=50):
