@@ -222,4 +222,4 @@ series = arq_series(1, [φ], σ, nsample)
 
 title = f"AR(1) Cumulative Autocorrelation: σ={σ}, φ={format(φ, '2.1f')}"
 plot = f"ar1_equilibrium_series_autocorelation_φ_{format(φ, '2.1f')}"
-ar1_auto_correlation_plot(series, φ, 50, title, plot, ylim=[-0.1, 1.1])
+ar1_auto_correlation_plot(series, φ, 30, title, plot, ylim=[-0.1, 1.1])
