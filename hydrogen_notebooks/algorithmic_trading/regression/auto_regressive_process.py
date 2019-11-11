@@ -98,20 +98,28 @@ for i in range(0, nseries):
 # %%
 
 title = f"AR(1) Series Comparison: σ={σ}"
-plot_name = "ar1_equilibrium_series_comparison_1"
+plot_name = "ar1_equilibrium_series_comparison_2"
 ar1_comparission_multiplot(series, φ, [-8.0, 8.0], title, plot_name)
+
+# %%
+
+nsample = 100000
+σ = 1.0
+φ = 0.1
+var = ar1_var(φ, σ)
+series = arq_series(1, [φ], σ, nsample)
 
 # %%
 
 title = f"AR(1) Cumulative Μean: σ={σ}, φ={format(φ, '2.1f')}"
 plot = f"ar1_equilibrium_series_cumulative_μ_φ_{format(φ, '2.1f')}"
-reg.cumulative_mean_plot(series, 0.0, title, plot, ylim=[-0.5, 0.25], legend_pos=[0.85, 0.9])
+reg.cumulative_mean_plot(series, 0.0, title, plot, ylim=[-0.55, 0.25], legend_pos=[0.85, 0.9])
 
 # %%
 
 title = f"AR(1) Cumulative Variance: σ={σ}, φ={format(φ, '2.1f')}"
 plot = f"ar1_equilibrium_series_cumulative_var_φ_{format(φ, '2.1f')}"
-reg.cumulative_var_plot(series, var, title, plot, ylim=[0.6, 1.75], legend_pos=[0.85, 0.9])
+reg.cumulative_var_plot(series, var, title, plot, ylim=[0.55, 1.2], legend_pos=[0.85, 0.9])
 
 # %%
 
@@ -125,13 +133,13 @@ series = arq_series(1, [φ], σ, nsample)
 
 title = f"AR(1) Cumulative Μean: σ={σ}, φ={format(φ, '2.1f')}"
 plot = f"ar1_equilibrium_series_cumulative_μ_φ_{format(φ, '2.1f')}"
-reg.cumulative_mean_plot(series, 0.0, title, plot, ylim=[-0.1, 0.6], legend_pos=[0.85, 0.9])
+reg.cumulative_mean_plot(series, 0.0, title, plot, ylim=[-0.15, 0.6], legend_pos=[0.85, 0.9])
 
 # %%
 
 title = f"AR(1) Cumulative Variance: σ={σ}, φ={format(φ, '2.1f')}"
 plot = f"ar1_equilibrium_series_cumulative_var_φ_{format(φ, '2.1f')}"
-reg.cumulative_var_plot(series, var, title, plot, ylim=[1.0, 2.0], legend_pos=[0.85, 0.9])
+reg.cumulative_var_plot(series, var, title, plot, ylim=[0.55, 1.4], legend_pos=[0.75, 0.7])
 
 # %%
 
@@ -145,13 +153,13 @@ series = arq_series(1, [φ], σ, nsample)
 
 title = f"AR(1) Cumulative Μean: σ={σ}, φ={format(φ, '2.1f')}"
 plot = f"ar1_equilibrium_series_cumulative_μ_φ_{format(φ, '2.1f')}"
-reg.cumulative_mean_plot(series, 0.0, title, plot, ylim=[-1.0, 2.0], legend_pos=[0.85, 0.9])
+reg.cumulative_mean_plot(series, 0.0, title, plot, ylim=[-0.8, 1.8], legend_pos=[0.85, 0.9])
 
 # %%
 
 title = f"AR(1) Cumulative Variance: σ={σ}, φ={format(φ, '2.1f')}"
 plot = f"ar1_equilibrium_series_cumulative_var_φ_{format(φ, '2.1f')}"
-reg.cumulative_var_plot(series, var, title, plot, ylim=[0.1, 7.5], legend_pos=[0.85, 0.5])
+reg.cumulative_var_plot(series, var, title, plot, ylim=[0.5, 6.5], legend_pos=[0.85, 0.5])
 
 # %%
 
@@ -165,18 +173,18 @@ series = arq_series(1, [φ], σ, nsample)
 
 title = f"AR(1) Cumulative Μean: σ={σ}, φ={format(φ, '2.1f')}"
 plot = f"ar1_equilibrium_series_cumulative_μ_φ_{format(φ, '2.1f')}"
-reg.cumulative_mean_plot(series, 0.0, title, plot, ylim=[-0.1, 0.6], legend_pos=[0.85, 0.9])
+reg.cumulative_mean_plot(series, 0.0, title, plot, ylim=[-0.2, 0.2], legend_pos=[0.85, 0.9])
 
 # %%
 
 title = f"AR(1) Cumulative Variance: σ={σ}, φ={format(φ, '2.1f')}"
 plot = f"ar1_equilibrium_series_cumulative_var_φ_{format(φ, '2.1f')}"
-reg.cumulative_var_plot(series, var, title, plot, ylim=[1.0, 2.0], legend_pos=[0.85, 0.9])
+reg.cumulative_var_plot(series, var, title, plot, ylim=[0.9, 2.75], legend_pos=[0.85, 0.9])
 
 
 # %%
 
-nsample = 1000
+nsample = 10000
 σ = 1.0
 φ = 0.9
 var = ar1_var(φ, σ)
@@ -186,4 +194,32 @@ series = arq_series(1, [φ], σ, nsample)
 
 title = f"AR(1) Cumulative Autocorrelation: σ={σ}, φ={format(φ, '2.1f')}"
 plot = f"ar1_equilibrium_series_autocorelation_φ_{format(φ, '2.1f')}"
-ar1_auto_correlation_plot(series, φ, 150, title, plot, ylim=[-0.5, 1.1])
+ar1_auto_correlation_plot(series, φ, 150, title, plot, ylim=[-0.1, 1.1])
+
+# %%
+
+nsample = 10000
+σ = 1.0
+φ = -0.9
+var = ar1_var(φ, σ)
+series = arq_series(1, [φ], σ, nsample)
+
+# %%
+
+title = f"AR(1) Cumulative Autocorrelation: σ={σ}, φ={format(φ, '2.1f')}"
+plot = f"ar1_equilibrium_series_autocorelation_φ_{format(φ, '2.1f')}"
+ar1_auto_correlation_plot(series, φ, 150, title, plot, ylim=[-1.1, 1.1])
+
+# %%
+
+nsample = 10000
+σ = 1.0
+φ = 0.5
+var = ar1_var(φ, σ)
+series = arq_series(1, [φ], σ, nsample)
+
+# %%
+
+title = f"AR(1) Cumulative Autocorrelation: σ={σ}, φ={format(φ, '2.1f')}"
+plot = f"ar1_equilibrium_series_autocorelation_φ_{format(φ, '2.1f')}"
+ar1_auto_correlation_plot(series, φ, 50, title, plot, ylim=[-0.1, 1.1])
