@@ -131,3 +131,20 @@ r_squared = φ_r_squared(series, φ)
 title = f"AR(1) Series: σ={σ}, φ={φ}"
 plot_name = f"ar1_parameter_estimation_σ_{σ}_φ_{φ}"
 ar1_parameter_plot(series, φ_hat, φ_hat_var, r_squared, [0.85, 0.85], title, plot_name)
+
+# %%
+
+nsample = 1000
+σ = 1.0
+φ = 0.1
+
+series = reg.arq_series(1, [φ], σ, nsample)
+φ_hat = φ_estimate(series)
+φ_hat_var = φ_estimate_var(series)
+r_squared = φ_r_squared(series, φ)
+
+# %%
+
+title = f"AR(1) Series: σ={σ}, φ={φ}"
+plot_name = f"ar1_parameter_estimation_σ_{σ}_φ_{φ}"
+ar1_parameter_plot(series, φ_hat, φ_hat_var, r_squared, [0.25, 0.8], title, plot_name)
