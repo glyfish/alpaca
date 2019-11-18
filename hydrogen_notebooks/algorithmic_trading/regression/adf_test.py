@@ -35,8 +35,31 @@ def time_series_plot(f, t, φ_hat, φ_hat_var, φ_r_squared, title, plot_name):
               bbox=bbox, fontsize=14.0, zorder=7)
     config.save_post_asset(figure, "regression", plot_name)
 
-def adf_test(series):
+def adf_time_series_plot(f, title, plot_name):
+    time = numpy.linspace(0.0, len(f)-1, len(f))
+    figure, axis = pyplot.subplots(figsize=(12, 8))
+    axis.set_ylabel(r"$x_t$")
+    axis.set_xlabel(r"$t$")
+    axis.set_title(title)
+    axis.plot(time, f, lw=1)
+    config.save_post_asset(figure, "regression", plot_name)
+
+def df_test(series):
     adf_result = stattools.adfuller(series, regression='nc')
+    print('ADF Statistic: %f' % adf_result[0])
+    print('p-value: %f' % adf_result[1])
+    for key, value in adf_result[4].items():
+	       print('\t%s: %.3f' % (key, value))
+
+def adf_test(series):
+    adf_result = stattools.adfuller(series, regression='c')
+    print('ADF Statistic: %f' % adf_result[0])
+    print('p-value: %f' % adf_result[1])
+    for key, value in adf_result[4].items():
+	       print('\t%s: %.3f' % (key, value))
+
+def adf_test_with_trend(series):
+    adf_result = stattools.adfuller(series, regression='ct')
     print('ADF Statistic: %f' % adf_result[0])
     print('p-value: %f' % adf_result[1])
     for key, value in adf_result[4].items():
@@ -86,7 +109,7 @@ time_series_plot(series, t, φ_hat, φ_hat_var, r_squared, title, plot_name)
 
 # %%
 
-adf_test(series)
+df_test(series)
 
 # %%
 
@@ -106,7 +129,7 @@ time_series_plot(series, t, φ_hat, φ_hat_var, r_squared, title, plot_name)
 
 # %%
 
-adf_test(series)
+df_test(series)
 
 # %%
 
@@ -123,6 +146,61 @@ t = adf.adf_statistic(series)
 title = f"AR(1) Series: φ={φ}, σ={σ}"
 plot_name = "adf_example_3"
 time_series_plot(series, t, φ_hat, φ_hat_var, r_squared, title, plot_name)
+
+# %%
+
+df_test(series)
+
+# %%
+
+nsample = 1000
+σ = 1.0
+φ = 0.5
+μ = 1.0
+
+series = reg.ar1_series_with_offset(φ, μ, σ, nsample)
+
+title = f"AR(1) Series with constant offset: φ={φ}, σ={σ}, μ={μ}"
+plot_name = "adf_example_with_mean_1"
+adf_time_series_plot(series, title, plot_name)
+
+# %%
+
+adf_test(series)
+
+# %%
+
+nsample = 1000
+σ = 1.0
+φ = 0.99
+μ = 1.0
+
+series = reg.ar1_series_with_offset(φ, μ, σ, nsample)
+
+title = f"AR(1) Series with constant offset: φ={φ}, σ={σ}, μ={μ}"
+plot_name = "adf_example_with_mean_1"
+adf_time_series_plot(series, title, plot_name)
+
+# %%
+
+adf_test(series)
+
+# %%
+
+nsample = 1000
+σ = 1.0
+φ = 1.01
+μ = 1.0
+
+series = reg.ar1_series_with_offset(φ, μ, σ, nsample)
+φ_hat = reg.φ_estimate(series)
+φ_hat_var = reg.φ_estimate_var(series)
+r_squared = reg.φ_r_squared(series, φ)
+t = adf.adf_statistic(series)
+
+title = f"AR(1) Series with constant offset: φ={φ}, σ={σ}, μ={μ}"
+plot_name = "adf_example_with_mean_1"
+adf_time_series_plot(series, title, plot_name)
 
 # %%
 

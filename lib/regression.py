@@ -83,7 +83,7 @@ def autocorrelate(x):
 def arq_series(q, φ, σ, n, x0=None):
     samples = numpy.zeros(n)
     if x0 is not None:
-        for i in range(q, n):
+        for i in range(0, q):
             samples[i] = x0[i]
     ε = brownian_noise(σ, n)
     for i in range(q, n):
@@ -92,12 +92,19 @@ def arq_series(q, φ, σ, n, x0=None):
             samples[i] += φ[j] * samples[i-(j+1)]
     return samples
 
-def ar1_series_with_drift(φ, γ, σ, n, x0):
+def ar1_series_with_offset(φ, μ, σ, n):
+    samples = numpy.zeros(n)
+    ε = brownian_noise(σ, n)
+    for i in range(1, n):
+        samples[i] += φ*samples[i-1] + ε[i] + μ
+    return samples
+
+def ar1_series_with_drift(φ, μ, γ, σ, n, x0):
     samples = numpy.zeros(n)
     ε = brownian_noise(σ, n)
     samples[0] = x0
     for i in range(1, n):
-        samples[i] += φ*samples[i-1] + ε[i] + γ*i
+        samples[i] += φ*samples[i-1] + ε[i] + γ*i + μ
     return samples
 
 def brownian_noise(σ, n):
