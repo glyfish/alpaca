@@ -80,8 +80,11 @@ def autocorrelate(x):
     ac = numpy.fft.ifft(h_fft)
     return ac[0:n]/ac[0]
 
-def arq_series(q, φ, σ, n):
+def arq_series(q, φ, σ, n, x0=None):
     samples = numpy.zeros(n)
+    if x0 is not None:
+        for i in range(q, n):
+            samples[i] = x0[i]
     ε = brownian_noise(σ, n)
     for i in range(q, n):
         samples[i] = ε[i]
@@ -89,8 +92,35 @@ def arq_series(q, φ, σ, n):
             samples[i] += φ[j] * samples[i-(j+1)]
     return samples
 
+def ar1_series_with_drift(φ, γ, σ, n, x0):
+    samples = numpy.zeros(n)
+    ε = brownian_noise(σ, n)
+    samples[0] = x0
+    for i in range(1, n):
+        samples[i] += φ*samples[i-1] + ε[i] + γ*i
+    return samples
+
 def brownian_noise(σ, n):
     return numpy.random.normal(0.0, σ, n)
+
+# SLR Estimates
+
+def φ_estimate(series):
+    cov = numpy.sum(series[1:]*series[0:-1])
+    var = numpy.sum(series[0:-1]**2)
+    return cov/var
+
+def φ_estimate_var(series, var=1.0):
+    return var/numpy.sum(series[0:-1]**2)
+
+def φ_r_squared(series, φ):
+    y = series[1:]
+    x = series[0:-1]
+    y_bar = numpy.mean(y)
+    ε = y - φ*x
+    ssr = numpy.sum(ε**2)
+    sst = numpy.sum((y-y_bar)**2)
+    return 1.0 - ssr/sst
 
 # Plots
 

@@ -11,6 +11,7 @@ from scipy.stats import chi2
 from matplotlib import pyplot
 from lib import config
 from lib import regression as reg
+from lib import adf
 
 wd = os.getcwd()
 yahoo_root = os.path.join(wd, 'data', 'yahoo')
@@ -124,13 +125,13 @@ def distribution_comparison_plot(pdf, samples, title, plot, label=None, xrange=N
     axis.legend(bbox_to_anchor=(0.75, 0.9))
     config.save_post_asset(figure, "regression", plot)
 
-def distribution_plot(samples, title, plot, xrange=None, ylimit=None):
+def distribution_plot(samples, title, plot, xrange=None, ylimit=None, bins=50, title_offset=1.0):
     figure, axis = pyplot.subplots(figsize=(10, 7))
     axis.set_ylabel(r"$f_X(x)$")
     axis.set_xlabel(r"x")
-    axis.set_title(title)
+    axis.set_title(title, y=title_offset)
     axis.set_prop_cycle(config.distribution_sample_cycler)
-    _, bins, _ = axis.hist(samples, 50, rwidth=0.8, density=True, label=f"Samples", zorder=5)
+    _, bins, _ = axis.hist(samples, bins, rwidth=0.8, density=True, label=f"Samples", zorder=5)
     if xrange is None:
         delta = (bins[-1] - bins[0]) / 500.0
         xrange = numpy.arange(bins[0], bins[-1], delta)
@@ -292,3 +293,11 @@ sigma = numpy.sqrt(numpy.var(test_statistic_samples))
 title = r"t=$\frac{\frac{1}{2}[B^2(1) - 1]}{\sqrt{\int_{0}^{1}B^2(s)ds}}$, " + f"Sample Size={nsample}, T={n}, μ={format(mean, '1.2f')}, σ={format(sigma, '1.2f')}"
 plot_name = f"dickey_fuller_distribution_simulation_{nsample}"
 distribution_comparison_plot(unit_normal, test_statistic_samples, title, plot_name, xrange=numpy.arange(-4.0, 8.0, 0.01), label="Unit Normal", bins=200, title_offset=1.05)
+
+# %%
+
+mean = numpy.mean(test_statistic_samples)
+sigma = numpy.sqrt(numpy.var(test_statistic_samples))
+title = r"t=$\frac{\frac{1}{2}[B^2(1) - 1]}{\sqrt{\int_{0}^{1}B^2(s)ds}}$, " + f"Sample Size={nsample}, T={n}, μ={format(mean, '1.2f')}, σ={format(sigma, '1.2f')}"
+plot_name = f"dickey_fuller_distribution_simulation"
+distribution_plot(test_statistic_samples, title, plot_name, bins=200, xrange=numpy.arange(-4.0, 8.0, 0.01), title_offset=1.05)

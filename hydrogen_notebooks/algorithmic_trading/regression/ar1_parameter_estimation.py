@@ -17,12 +17,17 @@ pyplot.style.use(config.glyfish_style)
 
 # %%
 
-def ar1_parameter_plot(series, φ_hat, φ_hat_var, φ_r_squared, legend_anchor, title, plot_name):
+def ar1_parameter_plot(series, φ_hat, φ_hat_var, φ_r_squared, legend_anchor, title, plot_name, lim=None):
     nsample = len(series)
     figure, axis = pyplot.subplots(figsize=(12, 8))
     axis.set_ylabel(r"$x_{t}$")
     axis.set_xlabel(r"$x_{t-1}$")
-    x = numpy.linspace(numpy.min(series), numpy.max(series), 100)
+    if lim is not None:
+        axis.set_xlim(lim)
+        axis.set_ylim(lim)
+        x = numpy.linspace(lim[0], lim[1], 100)
+    else:
+        x = numpy.linspace(numpy.min(series), numpy.max(series), 100)
     y_hat = x * φ_hat
     axis.set_title(title)
     axis.plot(series[1:], series[0:-1], marker='o', markersize=5.0, linestyle="None", markeredgewidth=1.0, alpha=0.75, zorder=5, label="Simulation")
@@ -148,3 +153,37 @@ r_squared = φ_r_squared(series, φ)
 title = f"AR(1) Series: σ={σ}, φ={φ}"
 plot_name = f"ar1_parameter_estimation_σ_{σ}_φ_{φ}"
 ar1_parameter_plot(series, φ_hat, φ_hat_var, r_squared, [0.25, 0.8], title, plot_name)
+
+# %%
+
+nsample = 1000
+σ = 1.0
+φ = 0.99
+
+series = reg.arq_series(1, [φ], σ, nsample)
+φ_hat = φ_estimate(series)
+φ_hat_var = φ_estimate_var(series)
+r_squared = φ_r_squared(series, φ)
+
+# %%
+
+title = f"AR(1) Series: σ={σ}, φ={φ}"
+plot_name = f"ar1_parameter_estimation_σ_{σ}_φ_{φ}"
+ar1_parameter_plot(series, φ_hat, φ_hat_var, r_squared, [0.5, 0.85], title, plot_name)
+
+# %%
+
+nsample = 1000
+σ = 1.0
+φ = 1.01
+
+series = reg.arq_series(1, [φ], σ, nsample)
+φ_hat = φ_estimate(series)
+φ_hat_var = φ_estimate_var(series)
+r_squared = φ_r_squared(series, φ)
+
+# %%
+
+title = f"AR(1) Series: σ={σ}, φ={φ}"
+plot_name = f"ar1_parameter_estimation_σ_{σ}_φ_{φ}"
+ar1_parameter_plot(series, φ_hat, φ_hat_var, r_squared, [0.5, 0.85], title, plot_name, lim=[-11.0, 10.0])
