@@ -99,10 +99,9 @@ def ar1_series_with_offset(φ, μ, σ, n):
         samples[i] += φ*samples[i-1] + ε[i] + μ
     return samples
 
-def ar1_series_with_drift(φ, μ, γ, σ, n, x0):
+def ar1_series_with_drift(φ, μ, γ, σ, n):
     samples = numpy.zeros(n)
     ε = brownian_noise(σ, n)
-    samples[0] = x0
     for i in range(1, n):
         samples[i] += φ*samples[i-1] + ε[i] + γ*i + μ
     return samples

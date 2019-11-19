@@ -45,23 +45,21 @@ def adf_time_series_plot(f, title, plot_name):
     config.save_post_asset(figure, "regression", plot_name)
 
 def df_test(series):
-    adf_result = stattools.adfuller(series, regression='nc')
-    print('ADF Statistic: %f' % adf_result[0])
-    print('p-value: %f' % adf_result[1])
-    for key, value in adf_result[4].items():
-	       print('\t%s: %.3f' % (key, value))
+    adfuller(series, 'nc')
 
 def adf_test(series):
-    adf_result = stattools.adfuller(series, regression='c')
-    print('ADF Statistic: %f' % adf_result[0])
-    print('p-value: %f' % adf_result[1])
-    for key, value in adf_result[4].items():
-	       print('\t%s: %.3f' % (key, value))
+    adfuller(series, 'c')
 
 def adf_test_with_trend(series):
-    adf_result = stattools.adfuller(series, regression='ct')
+    adfuller(series, 'ct')
+
+def adfuller(series, test_type):
+    adf_result = stattools.adfuller(series, regression=test_type)
     print('ADF Statistic: %f' % adf_result[0])
     print('p-value: %f' % adf_result[1])
+    isStationary = adf_result[0] < adf_result[4]["5%"]
+    print(f"Is Stationary at 5%: {isStationary}")
+    print("Critical Values")
     for key, value in adf_result[4].items():
 	       print('\t%s: %.3f' % (key, value))
 
@@ -104,7 +102,7 @@ r_squared = reg.φ_r_squared(series, φ)
 t = adf.adf_statistic(series)
 
 title = f"AR(1) Series: φ={φ}, σ={σ}"
-plot_name = "adf_example_1"
+plot_name = f"adf_example_φ={φ}"
 time_series_plot(series, t, φ_hat, φ_hat_var, r_squared, title, plot_name)
 
 # %%
@@ -124,7 +122,7 @@ r_squared = reg.φ_r_squared(series, φ)
 t = adf.adf_statistic(series)
 
 title = f"AR(1) Series: φ={φ}, σ={σ}"
-plot_name = "adf_example_2"
+plot_name = f"adf_example_φ={φ}"
 time_series_plot(series, t, φ_hat, φ_hat_var, r_squared, title, plot_name)
 
 # %%
@@ -144,7 +142,7 @@ r_squared = reg.φ_r_squared(series, φ)
 t = adf.adf_statistic(series)
 
 title = f"AR(1) Series: φ={φ}, σ={σ}"
-plot_name = "adf_example_3"
+plot_name = f"adf_example_φ={φ}"
 time_series_plot(series, t, φ_hat, φ_hat_var, r_squared, title, plot_name)
 
 # %%
@@ -161,7 +159,7 @@ nsample = 1000
 series = reg.ar1_series_with_offset(φ, μ, σ, nsample)
 
 title = f"AR(1) Series with constant offset: φ={φ}, σ={σ}, μ={μ}"
-plot_name = "adf_example_with_mean_1"
+plot_name = f"adf_example_φ={φ}_μ={μ}"
 adf_time_series_plot(series, title, plot_name)
 
 # %%
@@ -178,7 +176,7 @@ nsample = 1000
 series = reg.ar1_series_with_offset(φ, μ, σ, nsample)
 
 title = f"AR(1) Series with constant offset: φ={φ}, σ={σ}, μ={μ}"
-plot_name = "adf_example_with_mean_1"
+plot_name = f"adf_example_φ={φ}_μ={μ}"
 adf_time_series_plot(series, title, plot_name)
 
 # %%
@@ -199,9 +197,63 @@ r_squared = reg.φ_r_squared(series, φ)
 t = adf.adf_statistic(series)
 
 title = f"AR(1) Series with constant offset: φ={φ}, σ={σ}, μ={μ}"
-plot_name = "adf_example_with_mean_1"
+plot_name = f"adf_example_φ={φ}_μ={μ}"
 adf_time_series_plot(series, title, plot_name)
 
 # %%
 
 adf_test(series)
+
+# %%
+
+nsample = 1000
+σ = 1.0
+φ = 0.5
+μ = 1.0
+γ = 0.5
+
+series = reg.ar1_series_with_drift(φ, μ, γ, σ, nsample)
+
+title = f"AR(1) Series with constant offset and trend: φ={φ}, σ={σ}, μ={μ}, γ={γ}"
+plot_name = f"adf_example_φ={φ}_μ={μ}_γ={γ}"
+adf_time_series_plot(series, title, plot_name)
+
+# %%
+
+adf_test_with_trend(series)
+
+# %%
+
+nsample = 1000
+σ = 1.0
+φ = 0.99
+μ = 1.0
+γ = 0.1
+
+series = reg.ar1_series_with_drift(φ, μ, γ, σ, nsample)
+
+title = f"AR(1) Series with constant offset and trend: φ={φ}, σ={σ}, μ={μ}, γ={γ}"
+plot_name = f"adf_example_φ={φ}_μ={μ}_γ={γ}"
+adf_time_series_plot(series, title, plot_name)
+
+# %%
+
+adf_test_with_trend(series)
+
+# %%
+
+nsample = 1000
+σ = 1.0
+φ = 1.01
+μ = 1.0
+γ = 0.5
+
+series = reg.ar1_series_with_drift(φ, μ, γ, σ, nsample)
+
+title = f"AR(1) Series with constant offset and trend: φ={φ}, σ={σ}, μ={μ}, γ={γ}"
+plot_name = f"adf_example_φ={φ}_μ={μ}_γ={γ}"
+adf_time_series_plot(series, title, plot_name)
+
+# %%
+
+adf_test_with_trend(series)
