@@ -210,7 +210,7 @@ nsample = 1000
 σ = 1.0
 φ = 0.5
 μ = 1.0
-γ = 0.5
+γ = 0.01
 
 series = reg.ar1_series_with_drift(φ, μ, γ, σ, nsample)
 
@@ -228,7 +228,7 @@ nsample = 1000
 σ = 1.0
 φ = 0.99
 μ = 1.0
-γ = 0.1
+γ = 0.01
 
 series = reg.ar1_series_with_drift(φ, μ, γ, σ, nsample)
 
@@ -246,7 +246,7 @@ nsample = 1000
 σ = 1.0
 φ = 1.01
 μ = 1.0
-γ = 0.5
+γ = 0.01
 
 series = reg.ar1_series_with_drift(φ, μ, γ, σ, nsample)
 
