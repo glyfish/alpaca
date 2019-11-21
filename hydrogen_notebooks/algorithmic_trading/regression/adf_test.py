@@ -150,6 +150,48 @@ time_series_plot(series, t, φ_hat, φ_hat_var, r_squared, title, plot_name)
 df_test(series)
 
 # %%
+# Dickey-Fuller test example
+
+nsample = 1000
+σ = 1.0
+φ = -0.5
+
+series = reg.arq_series(1, [φ], σ, nsample)
+φ_hat = reg.φ_estimate(series)
+φ_hat_var = reg.φ_estimate_var(series)
+r_squared = reg.φ_r_squared(series, φ)
+t = adf.adf_statistic(series)
+
+title = f"AR(1) Series: φ={φ}, σ={σ}"
+plot_name = f"adf_example_φ={φ}"
+time_series_plot(series, t, φ_hat, φ_hat_var, r_squared, title, plot_name)
+
+# %%
+
+df_test(series)
+
+ # %%
+# Dickey-Fuller test example
+
+nsample = 1000
+σ = 1.0
+φ = -0.99
+
+series = reg.arq_series(1, [φ], σ, nsample)
+φ_hat = reg.φ_estimate(series)
+φ_hat_var = reg.φ_estimate_var(series)
+r_squared = reg.φ_r_squared(series, φ)
+t = adf.adf_statistic(series)
+
+title = f"AR(1) Series: φ={φ}, σ={σ}"
+plot_name = f"adf_example_φ={φ}"
+time_series_plot(series, t, φ_hat, φ_hat_var, r_squared, title, plot_name)
+
+# %%
+
+df_test(series)
+
+# %%
 
 nsample = 1000
 σ = 1.0
