@@ -10,6 +10,8 @@ from matplotlib import pyplot
 from lib import config
 from lib import brownian_motion
 from lib import regression as reg
+from statsmodels.tsa import stattools
+import statsmodels.api as sm
 
 wd = os.getcwd()
 yahoo_root = os.path.join(wd, 'data', 'yahoo')
@@ -75,16 +77,12 @@ plot_name = f"ar1_parameter_estimation_σ_{σ}_φ_{φ}"
 ar1_parameter_plot(series, φ_hat, φ_hat_var, r_squared, [0.2, 0.8], title, plot_name)
 
 # %%
-# y = φx + c
 
 x = series[0:-1]
 y = series[1:]
-A = numpy.vstack([x,numpy.ones(len(x))]).T
-
-a, residuals, rank, b = numpy.linalg.lstsq(A, y, rcond=None)
-a
-residuals
-numpy.sum((0.5*x-y)**2)
+est = sm.OLS(y, x)
+est = est.fit()
+est.summary()
 
 # %%
 
