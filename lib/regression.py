@@ -6,6 +6,7 @@ from scipy import special
 pyplot.style.use(config.glyfish_style)
 
 # %%
+# Distributions
 
 def normal(σ=1.0, μ=0.0):
     def f(x):
@@ -51,6 +52,31 @@ def student_t_tail(n):
             return 1.0 - 0.5*special.betainc(n/2, 0.5, y)
     return f
 
+def f_pdf(a, b):
+    def f(x):
+        num = (a/b)**(a/2.0)*x**(a/2.0-1.0)
+        den = (a*x/b + 1.0)**(a/2.0+b/2.0)
+        return num/(den*special.beta(a/2.0,b/2.0))
+    return f
+
+def f_cdf(a, b):
+    def f(x):
+        z = a*x/(a*x + b)
+        return special.betainc(a/2.0, b/2.0, z)
+    return f
+
+def f_tail_cdf(a, b):
+    def f(x):
+        z = a*x/(a*x + b)
+        return 1.0 - special.betainc(a/2.0, b/2.0, z)
+    return f
+
+def brownian_noise(σ, n):
+    return numpy.random.normal(0.0, σ, n)
+
+# %%
+# Moments
+
 def bias_corrected_var(samples):
     return numpy.var(samples, ddof=1.0)
 
@@ -80,6 +106,9 @@ def autocorrelate(x):
     ac = numpy.fft.ifft(h_fft)
     return ac[0:n]/ac[0]
 
+# %%
+# ARMA
+
 def arq_series(q, φ, σ, n, x0=None):
     samples = numpy.zeros(n)
     if x0 is not None:
@@ -106,9 +135,6 @@ def ar1_series_with_drift(φ, μ, γ, σ, n):
         samples[i] += φ*samples[i-1] + ε[i] + γ*i + μ
     return samples
 
-def brownian_noise(σ, n):
-    return numpy.random.normal(0.0, σ, n)
-
 # SLR Estimates
 
 def φ_estimate(series):
@@ -128,6 +154,7 @@ def φ_r_squared(series, φ):
     sst = numpy.sum((y-y_bar)**2)
     return 1.0 - ssr/sst
 
+# %%
 # Plots
 
 def pdf_samples(pdf, samples, title, ylabel, xlabel, plot, xrange=None, ylimit=None, nbins=50):
