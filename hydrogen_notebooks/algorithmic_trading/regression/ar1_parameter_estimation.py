@@ -80,13 +80,12 @@ ar1_parameter_plot(series, φ_hat, φ_hat_var, r_squared, [0.2, 0.8], title, plo
 
 x = series[0:-1]
 y = series[1:]
-est = sm.OLS(y, x)
-est = est.fit
-est.rsquared
-est.params
-est.bse
-dir(est)
-est.summary()
+model = sm.OLS(y, x)
+results = model.fit()
+results.rsquared
+results.params
+results.bse 
+results.summary()
 
 # %%
 
