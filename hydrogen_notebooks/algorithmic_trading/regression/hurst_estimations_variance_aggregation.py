@@ -45,9 +45,18 @@ def aggregated_variance(samples, npts, m_min):
 def m_logspace(nagg, m_min, npts):
     return numpy.logspace(numpy.log10(m_min), numpy.log10(npts/10.0), nagg)
 
+def agg_var_H_estimate(agg_var, m_vals):
+    x = numpy.log10(m_vals)
+    y = numpy.log10(agg_var)
+    x = sm.add_constant(x)
+    model = sm.OLS(y, x)
+    results = model.fit()
+    results.summary()
+    return results.params, results.bse
+
 def agg_var_plot(agg_var, m_vals, title, plot_name):
     β, σ = agg_var_H_estimate(agg_var, m_vals)
-    Η = 1.0 + β[1]/2.0
+    h = float(1.0 + β[1]/2.0)
     y_fit = 10**β[0]*m_vals**(β[1])
     figure, axis = pyplot.subplots(figsize=(12, 8))
     axis.set_ylabel(r"$Var(X^{m})$")
@@ -57,22 +66,13 @@ def agg_var_plot(agg_var, m_vals, title, plot_name):
     x_text = int(0.8*len(m_vals))
     y_text = int(0.4*len(agg_var))
     axis.text(m_vals[x_text], agg_var[y_text],
-              r"$\hat{Η}=$" + f"{format(H, '2.3f')}\n" +
-              r"$\sigma_{\hat{H}}=$" + f"{format(numpy.sqrt(σ[1]), '2.3f')}",
+              r"$\hat{Η}=$" + f"{format(h, '2.3f')}\n" +
+              r"$\sigma_{\hat{H}}=$" + f"{format(σ[1], '2.3f')}",
               bbox=bbox, fontsize=14.0, zorder=7)
     axis.loglog(m_vals, agg_var, marker='o', markersize=5.0, linestyle="None", markeredgewidth=1.0, alpha=0.75, zorder=10, label="Simulation")
     axis.loglog(m_vals, y_fit, zorder=5, label=r"$Var(X^{m})=C*m^{2H-2}$")
     axis.legend(bbox_to_anchor=[0.4, 0.4])
     config.save_post_asset(figure, "regression", plot_name)
-
-def agg_var_H_estimate(agg_var, m_vals):
-    x = numpy.log10(m_vals)
-    y = numpy.log10(agg_var)
-    x = sm.add_constant(x)
-    model = sm.OLS(y, x)
-    results = model.fit()
-    results.summary()
-    return results.params, results.bse
 
 def agg_process_comparission_multiplot(series, m, ylim, title, plot_name):
     nplot = len(series)
