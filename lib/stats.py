@@ -62,6 +62,14 @@ def autocorrelate(x):
     ac = numpy.fft.ifft(h_fft)
     return ac[0:n]/ac[0]
 
+def power_spectrum(x):
+    n = len(x)
+    x_shifted = x - x.mean()
+    x_padded = numpy.concatenate((x_shifted, numpy.zeros(n-1)))
+    x_fft = numpy.fft.fft(x_padded)
+    power = numpy.conj(x_fft) * x_fft
+    return power[1:n].real
+
 def autocorrelate_sum(x, max_lag):
     n = len(x)
     x_shifted = x - x.mean()
