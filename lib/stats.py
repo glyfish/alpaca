@@ -53,6 +53,14 @@ def cum_covaraince(x, y):
         cov[i] = (float(i) * cov[i - 1] + x[i] * y[i])/float(i + 1)
     return cov - meanx * meany
 
+def power_spectrum(x):
+    n = len(x)
+    x_shifted = x - x.mean()
+    x_padded = numpy.concatenate((x_shifted, numpy.zeros(n-1)))
+    x_fft = numpy.fft.fft(x_padded)
+    power = numpy.conj(x_fft) * x_fft
+    return power[1:n].real
+
 def autocorrelate(x):
     n = len(x)
     x_shifted = x - x.mean()
@@ -61,14 +69,6 @@ def autocorrelate(x):
     h_fft = numpy.conj(x_fft) * x_fft
     ac = numpy.fft.ifft(h_fft)
     return ac[0:n]/ac[0]
-
-def power_spectrum(x):
-    n = len(x)
-    x_shifted = x - x.mean()
-    x_padded = numpy.concatenate((x_shifted, numpy.zeros(n-1)))
-    x_fft = numpy.fft.fft(x_padded)
-    power = numpy.conj(x_fft) * x_fft
-    return power[1:n].real
 
 def autocorrelate_sum(x, max_lag):
     n = len(x)

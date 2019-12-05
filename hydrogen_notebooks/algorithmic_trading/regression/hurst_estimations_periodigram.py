@@ -28,6 +28,14 @@ def power_spec_H_estimate(power_spec, freq):
     results.summary()
     return results.params, results.bse
 
+def plot(sample, t, title, plot_name):
+    figure, axis = pyplot.subplots(figsize=(12, 8))
+    axis.set_ylabel(r"$x_t$")
+    axis.set_xlabel(r"t")
+    axis.set_title(title)
+    axis.plot(t, sample)
+    config.save_post_asset(figure, "regression", plot_name)
+
 def periodogram_plot(power_spec, freq, title, plot_name):
     β, σ = power_spec_H_estimate(power_spec, freq)
     h = float(1.0 + β[1]/2.0)
@@ -54,10 +62,18 @@ H = 0.8
 Δt = 1.0
 npts = 2**16
 samples = bm.fbn_fft(H, Δt, npts)
+time = numpy.linspace(0.0, Δt*npts - 1, npts)
+
+# %%
+
+title = f"Aggregated Fractional Brownian Noise: Δt={Δt}, H={H}"
+plot_name =f"peridigram_fbn_fft_H_{H}"
+plot(samples, time, title, plot_name)
 
 # %%
 
 ps = stats.power_spectrum(samples)
+
 len(ps)
 
-ps
+numpy.sum(ps)
