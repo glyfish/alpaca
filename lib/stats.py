@@ -55,11 +55,13 @@ def cum_covaraince(x, y):
 
 def power_spectrum(x):
     n = len(x)
-    x_shifted = x - x.mean()
+    μ = x.mean()
+    x_shifted = x - μ
+    energy = numpy.sum(x_shifted**2)
     x_padded = numpy.concatenate((x_shifted, numpy.zeros(n-1)))
     x_fft = numpy.fft.fft(x_padded)
     power = numpy.conj(x_fft) * x_fft
-    return power[1:n].real
+    return power[1:n].real / (n * energy)
 
 def autocorrelate(x):
     n = len(x)
