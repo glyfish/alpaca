@@ -52,11 +52,12 @@ def agg_var_H_estimate(agg_var, m_vals):
     model = sm.OLS(y, x)
     results = model.fit()
     results.summary()
-    return results.params, results.bse
+    return results.params, results.bse, results.rsquared
 
 def agg_var_plot(agg_var, m_vals, title, plot_name):
-    β, σ = agg_var_H_estimate(agg_var, m_vals)
+    β, σ, r2 = agg_var_H_estimate(agg_var, m_vals)
     h = float(1.0 + β[1]/2.0)
+    σ = σ[1] / 2.0
     y_fit = 10**β[0]*m_vals**(β[1])
     figure, axis = pyplot.subplots(figsize=(12, 8))
     axis.set_ylabel(r"$Var(X^{m})$")
@@ -67,7 +68,8 @@ def agg_var_plot(agg_var, m_vals, title, plot_name):
     y_text = int(0.4*len(agg_var))
     axis.text(m_vals[x_text], agg_var[y_text],
               r"$\hat{Η}=$" + f"{format(h, '2.3f')}\n" +
-              r"$\sigma_{\hat{H}}=$" + f"{format(σ[1], '2.3f')}",
+              r"$\sigma_{\hat{H}}=$" + f"{format(σ, '2.3f')}\n" +
+              r"$R^2=$" + f"{format(r2, '2.3f')}",
               bbox=bbox, fontsize=14.0, zorder=7)
     axis.loglog(m_vals, agg_var, marker='o', markersize=5.0, linestyle="None", markeredgewidth=1.0, alpha=0.75, zorder=10, label="Simulation")
     axis.loglog(m_vals, y_fit, zorder=5, label=r"$Var(X^{m})=C*m^{2H-2}$")
