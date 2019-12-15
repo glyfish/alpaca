@@ -284,6 +284,7 @@ title = f"Variance Ratio Test: Δt={Δt}, H={H}, α={α}"
 plot_name =f"variance_ratio_test_lag_scan_H_{H}"
 multi_vr_test_plot(samples, s, α, title, plot_name)
 
+
 # %%
 
 H = 0.55
@@ -318,16 +319,51 @@ multi_vr_test_plot(samples, s, α, title, plot_name)
 
 # %%
 
-H = 0.3
+H = 0.45
 Δt = 1.0
-npts = 2**16
+npts = 2**10
 samples = bm.fbm_fft(H, Δt, npts)
 time = numpy.linspace(0.0, Δt*npts - 1, npts)
 α = 0.05
-s = [100, 1000, 10000]
+s = [2, 10, 20]
 
 # %%
 
 title = f"Variance Ratio Test: Δt={Δt}, H={H}, α={α}"
-plot_name =f"variance_ratio_test_lag_scan_H_{H}"
+plot_name =f"variance_ratio_test_lag_scan_H_{H}_2"
+multi_vr_test_plot(samples, s, α, title, plot_name)
+
+# %%
+
+H = 0.55
+Δt = 1.0
+Δt = 1.0
+npts = 2**10
+samples = bm.fbm_fft(H, Δt, npts)
+time = numpy.linspace(0.0, Δt*npts - 1, npts)
+α = 0.05
+s = [2, 10, 20]
+
+# %%
+
+title = f"Variance Ratio Test: Δt={Δt}, H={H}, α={α}"
+plot_name =f"variance_ratio_test_lag_scan_H_{H}_2"
+multi_vr_test_plot(samples, s, α, title, plot_name)
+
+
+# %%
+
+H = 0.5
+Δt = 1.0
+Δt = 1.0
+npts = 2**10
+samples = bm.fbm_fft(H, Δt, npts)
+time = numpy.linspace(0.0, Δt*npts - 1, npts)
+α = 0.05
+s = [2, 10, 20]
+
+# %%
+
+title = f"Variance Ratio Test: Δt={Δt}, H={H}, α={α}"
+plot_name =f"variance_ratio_test_lag_scan_H_{H}_2"
 multi_vr_test_plot(samples, s, α, title, plot_name)
