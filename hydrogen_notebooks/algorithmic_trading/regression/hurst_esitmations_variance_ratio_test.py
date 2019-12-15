@@ -21,7 +21,7 @@ pyplot.style.use(config.glyfish_style)
 def s_period_variance(x, s):
     t = len(x) - 1
     μ = (x[t] - x[0]) / t
-    m = s*(t - s + 1.0)/(1.0 - s/t)
+    m = (t - s + 1.0)*(1.0 - s/t)
     σ = 0.0
     for i in range(s, t+1):
         σ += (x[i] - x[i-s] - μ*s)**2
@@ -31,7 +31,7 @@ def vr_statistic(x, s):
     t = len(x) - 1
     var_s = s_period_variance(x, s)
     var_1 = s_period_variance(x, 1)
-    vr = var_s/var_1
+    vr = var_s/(s*var_1)
     θ = 2.0*(2.0*s - 1.0)*(s - 1.0)/(3.0*s*t)
     return (vr - 1.0)/numpy.sqrt(θ)
 
@@ -75,7 +75,3 @@ plot_name =f"variance_ration_fbm_H_{H}"
 plot(samples, time, title, plot_name)
 
 # %%
-
-s_var = [s_period_variance(samples, s) for s in s_vals]
-
-s_var
