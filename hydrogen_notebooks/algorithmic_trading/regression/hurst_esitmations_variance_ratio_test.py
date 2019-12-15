@@ -159,13 +159,13 @@ npts = 2**16
 samples = bm.fbm_fft(H, Δt, npts)
 time = numpy.linspace(0.0, Δt*npts - 1, npts)
 α = 0.05
+s = 1000
 
 # %%
 
-title = f"Variance Ratio Test: Δt={Δt}, H={H}, α={α}"
+title = f"Variance Ratio Test: Δt={Δt}, H={H}, α={α}, s={s}"
 plot_name =f"variance_ratio_test_H_{H}"
-vr_test_plot(samples, 1000, α, title, plot_name)
-
+vr_test_plot(samples, s, α, title, plot_name)
  # %%
 
 H = 0.55
@@ -174,54 +174,58 @@ npts = 2**16
 samples = bm.fbm_fft(H, Δt, npts)
 time = numpy.linspace(0.0, Δt*npts - 1, npts)
 α = 0.05
+s = 1000
 
 # %%
 
-title = f"Variance Ratio Test: Δt={Δt}, H={H}, α={α}"
+title = f"Variance Ratio Test: Δt={Δt}, H={H}, α={α}, s={s}"
 plot_name =f"variance_ratio_test_H_{H}"
-vr_test_plot(samples, 1000, α, title, plot_name)
+vr_test_plot(samples, s, α, title, plot_name)
 
 # %%
 
-H = 0.4
+H = 0.45
 Δt = 1.0
 npts = 2**16
 samples = bm.fbm_fft(H, Δt, npts)
 time = numpy.linspace(0.0, Δt*npts - 1, npts)
 α = 0.05
+s = 1000
 
 # %%
 
-title = f"Variance Ratio Test: Δt={Δt}, H={H}, α={α}"
+title = f"Variance Ratio Test: Δt={Δt}, H={H}, α={α}, s={s}"
 plot_name =f"variance_ratio_test_H_{H}"
-vr_test_plot(samples, 1000, α, title, plot_name)
+vr_test_plot(samples, s, α, title, plot_name)
 
 # %%
 
-H = 0.52
+H = 0.3
 Δt = 1.0
 npts = 2**16
 samples = bm.fbm_fft(H, Δt, npts)
 time = numpy.linspace(0.0, Δt*npts - 1, npts)
 α = 0.05
+s = 1000
 
 # %%
 
-title = f"Variance Ratio Test: Δt={Δt}, H={H}, α={α}"
+title = f"Variance Ratio Test: Δt={Δt}, H={H}, α={α}, s={s}"
 plot_name =f"variance_ratio_test_H_{H}"
-vr_test_plot(samples, 1000, α, title, plot_name)
+vr_test_plot(samples, s, α, title, plot_name)
 
 # %%
 
-H = 0.48
+H = 0.6
 Δt = 1.0
 npts = 2**16
 samples = bm.fbm_fft(H, Δt, npts)
 time = numpy.linspace(0.0, Δt*npts - 1, npts)
 α = 0.05
+s = 1000
 
 # %%
 
-title = f"Variance Ratio Test: Δt={Δt}, H={H}, α={α}"
+title = f"Variance Ratio Test: Δt={Δt}, H={H}, α={α}, s={s}"
 plot_name =f"variance_ratio_test_H_{H}"
-vr_test_plot(samples, 1000, α, title, plot_name)
+vr_test_plot(samples, s, α, title, plot_name)
