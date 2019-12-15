@@ -73,6 +73,28 @@ def vr_test_plot(samples, s, sig_level, title, plot_name):
     axis.legend()
     config.save_post_asset(figure, "regression", plot_name)
 
+def multi_vr_test_plot(samples, s, sig_level, title, plot_name):
+    nvals = len(s)
+    x_vals = numpy.linspace(-8.0, 8.0, 100)
+    y_vals = [scipy.stats.norm.cdf(x, 0.0, 1.0) for x in x_vals]
+    left_critical_value = scipy.stats.norm.ppf(sig_level/2.0, 0.0, 1.0)
+    right_critical_value = -left_critical_value
+    vr_test_stat = []
+    for i in range(nvals):
+        vr_test_stat.append(vr_statistic(samples, s[i]))
+    figure, axis = pyplot.subplots(figsize=(12, 8))
+    axis.set_ylabel(r"$CDF$")
+    axis.set_xlabel(r"s")
+    axis.set_title(title)
+    axis.set_ylim([0.0, 1.0])
+    axis.plot(x_vals, y_vals)
+    axis.plot([left_critical_value, left_critical_value], [0.0, 1.0], color='red', label="Left Critical Value")
+    axis.plot([right_critical_value, right_critical_value], [0.0, 1.0], color='black', label="Right Critical Value")
+    for i in range(nvals):
+        axis.plot([vr_test_stat[i], vr_test_stat[i]], [0.0, 1.0], label=f"s={s[i]}")
+    axis.legend()
+    config.save_post_asset(figure, "regression", plot_name)
+
 # %%
 
 npts = 50
@@ -229,3 +251,83 @@ s = 1000
 title = f"Variance Ratio Test: Δt={Δt}, H={H}, α={α}, s={s}"
 plot_name =f"variance_ratio_test_H_{H}"
 vr_test_plot(samples, s, α, title, plot_name)
+
+# %%
+
+H = 0.5
+Δt = 1.0
+npts = 2**16
+samples = bm.fbm_fft(H, Δt, npts)
+time = numpy.linspace(0.0, Δt*npts - 1, npts)
+α = 0.05
+s = [100, 1000, 10000]
+
+# %%
+
+title = f"Variance Ratio Test: Δt={Δt}, H={H}, α={α}"
+plot_name =f"variance_ratio_test_lag_scan_H_{H}"
+multi_vr_test_plot(samples, s, α, title, plot_name)
+
+# %%
+
+H = 0.45
+Δt = 1.0
+npts = 2**16
+samples = bm.fbm_fft(H, Δt, npts)
+time = numpy.linspace(0.0, Δt*npts - 1, npts)
+α = 0.05
+s = [100, 1000, 10000]
+
+# %%
+
+title = f"Variance Ratio Test: Δt={Δt}, H={H}, α={α}"
+plot_name =f"variance_ratio_test_lag_scan_H_{H}"
+multi_vr_test_plot(samples, s, α, title, plot_name)
+
+# %%
+
+H = 0.55
+Δt = 1.0
+npts = 2**16
+samples = bm.fbm_fft(H, Δt, npts)
+time = numpy.linspace(0.0, Δt*npts - 1, npts)
+α = 0.05
+s = [100, 1000, 10000]
+
+# %%
+
+title = f"Variance Ratio Test: Δt={Δt}, H={H}, α={α}"
+plot_name =f"variance_ratio_test_lag_scan_H_{H}"
+multi_vr_test_plot(samples, s, α, title, plot_name)
+
+# %%
+
+H = 0.6
+Δt = 1.0
+npts = 2**16
+samples = bm.fbm_fft(H, Δt, npts)
+time = numpy.linspace(0.0, Δt*npts - 1, npts)
+α = 0.05
+s = [100, 1000, 10000]
+
+# %%
+
+title = f"Variance Ratio Test: Δt={Δt}, H={H}, α={α}"
+plot_name =f"variance_ratio_test_lag_scan_H_{H}"
+multi_vr_test_plot(samples, s, α, title, plot_name)
+
+# %%
+
+H = 0.3
+Δt = 1.0
+npts = 2**16
+samples = bm.fbm_fft(H, Δt, npts)
+time = numpy.linspace(0.0, Δt*npts - 1, npts)
+α = 0.05
+s = [100, 1000, 10000]
+
+# %%
+
+title = f"Variance Ratio Test: Δt={Δt}, H={H}, α={α}"
+plot_name =f"variance_ratio_test_lag_scan_H_{H}"
+multi_vr_test_plot(samples, s, α, title, plot_name)
