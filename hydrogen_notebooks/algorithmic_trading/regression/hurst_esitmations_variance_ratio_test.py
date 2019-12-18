@@ -36,7 +36,15 @@ def hetero_theta_factor(x, s):
     for j in range(1, s):
         delta = hetero_delta_factor(x, j)
         factor += delta*(2.0*(s-j)/s)**2
-    return factor
+    return factor/t**2
+
+def hetero_vr_statistic(x, s):
+    t = len(x) - 1
+    var_s = s_period_variance(x, s)
+    var_1 = s_period_variance(x, 1)
+    vr = var_s/(s*var_1)
+    θ = hetero_theta_factor(x, s)
+    return (vr - 1.0)/numpy.sqrt(θ)
 
 def s_period_variance(x, s):
     t = len(x) - 1
@@ -46,14 +54,6 @@ def s_period_variance(x, s):
     for i in range(s, t+1):
         σ += (x[i] - x[i-s] - μ*s)**2
     return σ / m
-
-def hetero_vr_statistic(x, s):
-    t = len(x) - 1
-    var_s = s_period_variance(x, s)
-    var_1 = s_period_variance(x, 1)
-    vr = var_s/(s*var_1)
-    θ = hetero_theta_factor(x, s)
-    return (vr - 1.0)/numpy.sqrt(θ)
 
 def vr_statistic(x, s):
     t = len(x) - 1
@@ -428,10 +428,9 @@ time = numpy.linspace(0.0, Δt*npts - 1, npts)
 α = 0.05
 s = [2, 10, 20]
 
-hetero_vr_statistic(samples, 20)
 # %%
 
-title = f"Heteroscedasticity Variance Ratio Test: Δt={Δt}, H={H}, α={α}"
+title = f"Heteroscedastic Variance Ratio Test: Δt={Δt}, H={H}, α={α}"
 plot_name =f"variance_ratio_hetero_test_lag_scan_H_{H}"
 multi_hetero_vr_test_plot(samples, s, α, title, plot_name)
 
@@ -448,4 +447,6 @@ s = [2, 10, 20]
 
 # %%
 
-hetero_vr_statistic(samples, 20)
+title = f"Heteroscedasticity Variance Ratio Test: Δt={Δt}, H={H}, α={α}"
+plot_name =f"variance_ratio_hetero_test_lag_scan_H_{H}"
+multi_hetero_vr_test_plot(samples, s, α, title, plot_name)
