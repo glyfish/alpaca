@@ -5,7 +5,7 @@
 import os
 import sys
 import numpy
-import scipy
+from scipy import stats as scipy_stats
 from matplotlib import pyplot
 from lib import config
 from lib import brownian_motion as bm
@@ -84,15 +84,15 @@ def plot(samples, t, title, plot_name):
 
 def vr_test_plot(samples, s, sig_level, title, plot_name):
     x_vals = numpy.linspace(-8.0, 8.0, 100)
-    y_vals = [scipy.stats.norm.cdf(x, 0.0, 1.0) for x in x_vals]
-    left_critical_value = scipy.stats.norm.ppf(sig_level/2.0, 0.0, 1.0)
+    y_vals = [scipy_stats.norm.cdf(x, 0.0, 1.0) for x in x_vals]
+    left_critical_value = scipy_stats.norm.ppf(sig_level/2.0, 0.0, 1.0)
     right_critical_value = -left_critical_value
     vr_test_stat = vr_statistic(samples, s)
     figure, axis = pyplot.subplots(figsize=(12, 8))
     axis.set_ylabel(r"$CDF$")
     axis.set_xlabel(r"s")
     axis.set_title(title)
-    axis.set_ylim([0.0, 1.0])
+    axis.set_ylim([-0.05, 1.05])
     axis.plot(x_vals, y_vals)
     axis.plot([left_critical_value, left_critical_value], [0.0, 1.0], color='red', label="Left Critical Value")
     axis.plot([right_critical_value, right_critical_value], [0.0, 1.0], color='black', label="Right Critical Value")
@@ -103,8 +103,8 @@ def vr_test_plot(samples, s, sig_level, title, plot_name):
 def multi_vr_test_plot(samples, s, sig_level, title, plot_name):
     nvals = len(s)
     x_vals = numpy.linspace(-8.0, 8.0, 100)
-    y_vals = [scipy.stats.norm.cdf(x, 0.0, 1.0) for x in x_vals]
-    left_critical_value = scipy.stats.norm.ppf(sig_level/2.0, 0.0, 1.0)
+    y_vals = [scipy_stats.norm.cdf(x, 0.0, 1.0) for x in x_vals]
+    left_critical_value = scipy_stats.norm.ppf(sig_level/2.0, 0.0, 1.0)
     right_critical_value = -left_critical_value
     vr_test_stat = []
     for i in range(nvals):
@@ -113,7 +113,7 @@ def multi_vr_test_plot(samples, s, sig_level, title, plot_name):
     axis.set_ylabel(r"$CDF$")
     axis.set_xlabel(r"s")
     axis.set_title(title)
-    axis.set_ylim([0.0, 1.0])
+    axis.set_ylim([-0.05, 1.05])
     axis.plot(x_vals, y_vals)
     axis.plot([left_critical_value, left_critical_value], [0.0, 1.0], color='red', label="Left Critical Value")
     axis.plot([right_critical_value, right_critical_value], [0.0, 1.0], color='black', label="Right Critical Value")
@@ -125,8 +125,8 @@ def multi_vr_test_plot(samples, s, sig_level, title, plot_name):
 def multi_hetero_vr_test_plot(samples, s, sig_level, title, plot_name):
     nvals = len(s)
     x_vals = numpy.linspace(-8.0, 8.0, 100)
-    y_vals = [scipy.stats.norm.cdf(x, 0.0, 1.0) for x in x_vals]
-    left_critical_value = scipy.stats.norm.ppf(sig_level/2.0, 0.0, 1.0)
+    y_vals = [scipy_stats.norm.cdf(x, 0.0, 1.0) for x in x_vals]
+    left_critical_value = scipy_stats.norm.ppf(sig_level/2.0, 0.0, 1.0)
     right_critical_value = -left_critical_value
     vr_test_stat = []
     for i in range(nvals):
@@ -135,7 +135,7 @@ def multi_hetero_vr_test_plot(samples, s, sig_level, title, plot_name):
     axis.set_ylabel(r"$CDF$")
     axis.set_xlabel(r"s")
     axis.set_title(title)
-    axis.set_ylim([0.0, 1.0])
+    axis.set_ylim([-0.05, 1.05])
     axis.plot(x_vals, y_vals)
     axis.plot([left_critical_value, left_critical_value], [0.0, 1.0], color='red', label="Left Critical Value")
     axis.plot([right_critical_value, right_critical_value], [0.0, 1.0], color='black', label="Right Critical Value")
@@ -237,7 +237,8 @@ s = 1000
 title = f"Variance Ratio Test: Δt={Δt}, H={H}, α={α}, s={s}"
 plot_name =f"variance_ratio_test_H_{H}"
 vr_test_plot(samples, s, α, title, plot_name)
- # %%
+
+# %%
 
 H = 0.55
 Δt = 1.0
@@ -449,4 +450,72 @@ s = [2, 10, 20]
 
 title = f"Heteroscedasticity Variance Ratio Test: Δt={Δt}, H={H}, α={α}"
 plot_name =f"variance_ratio_hetero_test_lag_scan_H_{H}"
+multi_hetero_vr_test_plot(samples, s, α, title, plot_name)
+
+# %%
+
+H = 0.55
+Δt = 1.0
+Δt = 1.0
+npts = 2**10
+samples = bm.fbm_fft(H, Δt, npts)
+time = numpy.linspace(0.0, Δt*npts - 1, npts)
+α = 0.05
+s = [2, 10, 20]
+
+# %%
+
+title = f"Heteroscedasticity Variance Ratio Test: Δt={Δt}, H={H}, α={α}"
+plot_name =f"variance_ratio_hetero_test_lag_scan_H_{H}"
+multi_hetero_vr_test_plot(samples, s, α, title, plot_name)
+
+# %%
+
+H = 0.4
+Δt = 1.0
+Δt = 1.0
+npts = 2**10
+samples = bm.fbm_fft(H, Δt, npts)
+time = numpy.linspace(0.0, Δt*npts - 1, npts)
+α = 0.05
+s = [2, 10, 20]
+
+# %%
+
+title = f"Heteroscedasticity Variance Ratio Test: Δt={Δt}, H={H}, α={α}"
+plot_name =f"variance_ratio_hetero_test_lag_scan_H_{H}"
+multi_hetero_vr_test_plot(samples, s, α, title, plot_name)
+
+# %%
+
+H = 0.45
+Δt = 1.0
+Δt = 1.0
+npts = 2**10
+samples = bm.fbm_fft(H, Δt, npts)
+time = numpy.linspace(0.0, Δt*npts - 1, npts)
+α = 0.05
+s = [2, 10, 20]
+
+# %%
+
+title = f"Heteroscedasticity Variance Ratio Test: Δt={Δt}, H={H}, α={α}"
+plot_name =f"variance_ratio_hetero_test_lag_scan_H_{H}"
+multi_hetero_vr_test_plot(samples, s, α, title, plot_name)
+
+# %%
+
+H = 0.5
+Δt = 1.0
+Δt = 1.0
+npts = 2**14
+samples = bm.fbm_fft(H, Δt, npts)
+time = numpy.linspace(0.0, Δt*npts - 1, npts)
+α = 0.05
+s = [2, 10, 20]
+
+# %%
+
+title = f"Heteroscedastic Variance Ratio Test: Δt={Δt}, H={H}, α={α}"
+plot_name =f"variance_ratio_hetero_test_lag_scan_H_{H}_2"
 multi_hetero_vr_test_plot(samples, s, α, title, plot_name)
