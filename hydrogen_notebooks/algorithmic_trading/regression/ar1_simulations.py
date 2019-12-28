@@ -8,7 +8,7 @@ import sys
 import numpy
 from matplotlib import pyplot
 from lib import config
-from lib import brownian_motion
+from lib import brownian_motion as bm
 from lib import regression as reg
 
 wd = os.getcwd()
@@ -16,6 +16,9 @@ yahoo_root = os.path.join(wd, 'data', 'yahoo')
 pyplot.style.use(config.glyfish_style)
 
 # %%
+
+def brownian_noise(σ, n):
+    return numpy.random.normal(0.0, σ, n)
 
 def arq_series(q, φ, σ, n):
     samples = numpy.zeros(n)

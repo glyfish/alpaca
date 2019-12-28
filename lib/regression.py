@@ -154,6 +154,27 @@ def φ_r_squared(series, φ):
     sst = numpy.sum((y-y_bar)**2)
     return 1.0 - ssr/sst
 
+# ADF Test
+
+def df_test(series):
+    adfuller(series, 'nc')
+
+def adf_test(series):
+    adfuller(series, 'c')
+
+def adf_test_with_trend(series):
+    adfuller(series, 'ct')
+
+def adfuller(series, test_type):
+    adf_result = stattools.adfuller(series, regression=test_type)
+    print('ADF Statistic: %f' % adf_result[0])
+    print('p-value: %f' % adf_result[1])
+    isStationary = adf_result[0] < adf_result[4]["5%"]
+    print(f"Is Stationary at 5%: {isStationary}")
+    print("Critical Values")
+    for key, value in adf_result[4].items():
+	       print('\t%s: %.3f' % (key, value))
+
 # %%
 # Plots
 
