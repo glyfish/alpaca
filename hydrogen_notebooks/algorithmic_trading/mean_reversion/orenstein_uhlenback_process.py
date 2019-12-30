@@ -36,8 +36,8 @@ def covariance(σ, λ, μ):
 
 def orenstein_uhlenbeck(x0, σ, λ, μ, t, nsample=1):
     μ_t = mean(x0, λ, μ)(t)
-    σ_t = variance(σ, λ, μ)
-    return numpy.normal.random(μ_t, σ_t)
+    σ_t = numpy.sqrt(variance(σ, λ, μ)(t))
+    return numpy.random.normal(μ_t, σ_t, nsample)
 
 def orenstein_uhlenbeck_series(x0, σ, λ, μ, Δt, nsample):
     samples = numpy.zeros(nsample)
@@ -45,13 +45,22 @@ def orenstein_uhlenbeck_series(x0, σ, λ, μ, Δt, nsample):
         samples[i] = orenstein_uhlenbeck(samples[i-1], σ, λ, μ, Δt)
     return samples
 
-def time_series_plot(f, title, ylabel, plot_name):
-    time = numpy.linspace(0.0, len(f)-1, len(f))
+def orenstein_uhlenbeck_difference_series(x0, σ, λ, μ, Δt, nsample):
+    samples = numpy.zeros(nsample)
+    for i in range(1, nsample):
+        dxt = λ*samples[i-1]*Δt + μ*Δt + σ*numpy.sqrt(Δt)*numpy.random.normal(0.0, 1.0)
+        samples[i] = samples[i-1] + dxt
+    return samples
+
+def time_series_plot(samples, time, text_pos, title, ylabel, plot_name):
     figure, axis = pyplot.subplots(figsize=(12, 8))
+    stats=f"Simulation Stats\n\nμ={format(numpy.mean(samples), '2.2f')}\nσ={format(numpy.var(samples), '2.2f')}"
+    bbox = dict(boxstyle='square,pad=1', facecolor="#FEFCEC", edgecolor="#FEFCEC", alpha=0.75)
+    axis.text(text_pos[0], text_pos[1], stats, fontsize=15, bbox=bbox)
     axis.set_ylabel(ylabel)
     axis.set_xlabel(r"$t$")
     axis.set_title(title)
-    axis.plot(time, f, lw=1)
+    axis.plot(time, samples, lw=1)
     config.save_post_asset(figure, "mean_reversion", plot_name)
 
 def time_series_multiplot(series, time, λ_vals, ylabel, title, plot_name):
@@ -65,6 +74,12 @@ def time_series_multiplot(series, time, λ_vals, ylabel, title, plot_name):
         axis.plot(time, series[i], label=f"λ={λ_vals[i]}", lw=3.0)
     axis.legend(fontsize=16)
     config.save_post_asset(figure, "mean_reversion", plot_name)
+
+def ar1_ensemble(φ, μ, σ, tmax, nsample):
+    samples = numpy.zeros(nsample)
+    for i in range(nsample):
+        samples[i] = reg.ar1_series_with_offset(φ, μ, σ, tmax)[-1]
+    return samples
 
 # %%
 
@@ -101,14 +116,189 @@ vars = [variance(σ, λ_vals[i], μ)(time) for i in range(len(λ_vals))]
 time_series_multiplot(vars, time, λ_vals, ylabel, title, plot_name)
 
 # %%
+# Verify ornstein-uhlenbeck implementaion and compare with ar1 simulation
+
+φ = -0.4
+λ = φ - 1
+μ = 1.0
+x0 = 0.0
+σ = 1.0
+
+tmax = 100
+nsample = 100000
+
+ar1_samples = ar1_ensemble(φ, μ, σ, tmax, nsample)
+print(f"ΑR(1) μ={numpy.mean(ar1_samples)}")
+print(f"ΑR(1) σ={numpy.var(ar1_samples)}")
+
+oh_samples = orenstein_uhlenbeck(x0, σ, λ, μ, tmax, nsample)
+print(f"OH μ={numpy.mean(oh_samples)}")
+print(f"OH σ={numpy.var(oh_samples)}")
+
+# %%
 
 nsample = 200
 σ = 1.0
 φ = -0.4
 μ = 1.0
 
+tmax = 200
+time = numpy.linspace(0, tmax, nsample)
 series = reg.ar1_series_with_offset(φ, μ, σ, nsample)
 
 title = f"AR(1) Series with constant offset: φ={φ}, σ={σ}, μ={μ}"
-plot_name = f"ar1_example_φ={φ}_μ={μ}"
-time_series_plot(series, title, r"$x_t$", plot_name)
+plot_name = f"ornstein_uhlenbeck_ar1_example_φ={φ}_μ={μ}"
+text_pos = [150.0, 2.0]
+time_series_plot(series, time, text_pos, title, r"$x_t$", plot_name)
+
+# %%
+
+φ = -0.4
+λ = φ - 1.0
+μ = 1.0
+x0 = 0.0
+σ = 1.0
+
+Δt = 1.0
+nsample = 200
+time = numpy.linspace(0, Δt*(nsample-1), nsample)
+
+series = orenstein_uhlenbeck_difference_series(x0, σ, λ, μ, Δt, nsample)
+
+title = f"Ornstein-Uhlenbeck Difference Series: λ={λ}, σ={σ}, μ={μ}, σ={σ}, Δt={Δt}"
+plot_name = f"ornstein_uhlenbeck_difference_simulation_λ={λ}_μ={μ}_σ={σ}_Δt={Δt}"
+text_pos = [150.0, 2.0]
+time_series_plot(series, time, text_pos, title, r"$x_t$", plot_name)
+
+# %%
+
+φ = -0.4
+λ = φ - 1.0
+μ = 1.0
+x0 = 0.0
+σ = 1.0
+
+Δt = 0.9
+nsample = 200
+time = numpy.linspace(0, Δt*(nsample-1), nsample)
+
+series = orenstein_uhlenbeck_difference_series(x0, σ, λ, μ, Δt, nsample)
+
+title = f"Ornstein-Uhlenbeck Difference Series: λ={λ}, σ={σ}, μ={μ}, σ={σ}, Δt={Δt}"
+plot_name = f"ornstein_uhlenbeck_difference_simulation_λ={λ}_μ={μ}_σ={σ}_Δt={Δt}"
+text_pos = [125.0, 2.0]
+time_series_plot(series, time, text_pos, title, r"$x_t$", plot_name)
+
+# %%
+
+φ = -0.4
+λ = φ - 1.0
+μ = 1.0
+x0 = 0.0
+σ = 1.0
+
+Δt = 0.5
+nsample = 200
+time = numpy.linspace(0, Δt*(nsample-1), nsample)
+
+series = orenstein_uhlenbeck_difference_series(x0, σ, λ, μ, Δt, nsample)
+
+title = f"Ornstein-Uhlenbeck Difference Series: λ={λ}, σ={σ}, μ={μ}, σ={σ}, Δt={Δt}"
+plot_name = f"ornstein_uhlenbeck_difference_simulation_λ={λ}_μ={μ}_σ={σ}_Δt={Δt}"
+text_pos = [75.0, 1.75]
+time_series_plot(series, time, text_pos, title, r"$x_t$", plot_name)
+
+# %%
+
+φ = -0.4
+λ = φ - 1.0
+μ = 1.0
+x0 = 0.0
+σ = 1.0
+
+Δt = 0.1
+nsample = 200
+time = numpy.linspace(0, Δt*(nsample-1), nsample)
+
+series = orenstein_uhlenbeck_difference_series(x0, σ, λ, μ, Δt, nsample)
+
+title = f"Ornstein-Uhlenbeck Difference Series: λ={λ}, σ={σ}, μ={μ}, σ={σ}, Δt={Δt}"
+plot_name = f"ornstein_uhlenbeck_difference_simulation_λ={λ}_μ={μ}_σ={σ}_Δt={Δt}"
+text_pos = [15.0, 1.5]
+time_series_plot(series, time, text_pos, title, r"$x_t$", plot_name)
+
+# %%
+
+φ = -0.4
+λ = φ - 1.0
+μ = 1.0
+x0 = 0.0
+σ = 1.0
+
+Δt = 0.01
+nsample = 2000
+time = numpy.linspace(0, Δt*(nsample-1), nsample)
+
+series = orenstein_uhlenbeck_difference_series(x0, σ, λ, μ, Δt, nsample)
+
+title = f"Ornstein-Uhlenbeck Difference Series: λ={λ}, σ={σ}, μ={μ}, σ={σ}, Δt={Δt}"
+plot_name = f"ornstein_uhlenbeck_difference_simulation_λ={λ}_μ={μ}_σ={σ}_Δt={Δt}"
+text_pos = [15.0, 1.5]
+time_series_plot(series, time, text_pos, title, r"$x_t$", plot_name)
+
+# %%
+
+φ = -0.4
+λ = φ - 1.0
+μ = 1.0
+x0 = 0.0
+σ = 1.0
+
+Δt = 1.0
+nsample = 200
+time = numpy.linspace(0, Δt*(nsample-1), nsample)
+
+series = orenstein_uhlenbeck_series(x0, σ, λ, μ, Δt, nsample)
+
+title = f"Ornstein-Uhlenbeck Difference Series: φ={φ}, σ={σ}, μ={μ}, Δt={Δt}"
+plot_name = f"ornstein_uhlenbeck_simulation__λ={λ}_μ={μ}_σ={σ}_Δt={Δt}"
+text_pos = [150.0, 1.5]
+time_series_plot(series, time, text_pos, title, r"$x_t$", plot_name)
+
+# %%
+
+φ = -0.4
+λ = φ - 1.0
+μ = 1.0
+x0 = 0.0
+σ = 1.0
+
+Δt = 0.1
+nsample = 200
+time = numpy.linspace(0, Δt*(nsample-1), nsample)
+
+series = orenstein_uhlenbeck_series(x0, σ, λ, μ, Δt, nsample)
+
+title = f"Ornstein-Uhlenbeck Difference Series: φ={φ}, σ={σ}, μ={μ}, Δt={Δt}"
+plot_name = f"ornstein_uhlenbeck_simulation__λ={λ}_μ={μ}_σ={σ}_Δt={Δt}"
+text_pos = [15.0, 1.5]
+time_series_plot(series, time, text_pos, title, r"$x_t$", plot_name)
+
+# %%
+
+φ = -0.4
+λ = φ - 1.0
+μ = 1.0
+x0 = 0.0
+σ = 1.0
+
+Δt = 0.01
+nsample = 2000
+time = numpy.linspace(0, Δt*(nsample-1), nsample)
+
+series = orenstein_uhlenbeck_series(x0, σ, λ, μ, Δt, nsample)
+
+title = f"Ornstein-Uhlenbeck Difference Series: φ={φ}, σ={σ}, μ={μ}, Δt={Δt}"
+plot_name = f"ornstein_uhlenbeck_simulation__λ={λ}_μ={μ}_σ={σ}_Δt={Δt}"
+text_pos = [15.0, 1.5]
+time_series_plot(series, time, text_pos, title, r"$x_t$", plot_name)
