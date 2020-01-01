@@ -52,6 +52,14 @@ def orenstein_uhlenbeck_difference_series(x0, σ, λ, μ, Δt, nsample):
         samples[i] = samples[i-1] + dxt
     return samples
 
+def plot(f, x, title, xlabel, ylabel, plot_name):
+    figure, axis = pyplot.subplots(figsize=(12, 8))
+    axis.set_ylabel(ylabel)
+    axis.set_xlabel(xlabel)
+    axis.set_title(title)
+    axis.plot(x, f, lw=1)
+    config.save_post_asset(figure, "mean_reversion", plot_name)
+
 def time_series_plot(samples, time, text_pos, title, ylabel, plot_name):
     figure, axis = pyplot.subplots(figsize=(12, 8))
     stats=f"Simulation Stats\n\nμ={format(numpy.mean(samples), '2.2f')}\nσ={format(numpy.var(samples), '2.2f')}"
@@ -63,12 +71,12 @@ def time_series_plot(samples, time, text_pos, title, ylabel, plot_name):
     axis.plot(time, samples, lw=1)
     config.save_post_asset(figure, "mean_reversion", plot_name)
 
-def time_series_multiplot(series, time, λ_vals, ylabel, title, plot_name):
+def multiplot(series, time, λ_vals, xlabel, ylabel, title, plot_name):
     nplot = len(series)
     nsample = len(series[0])
     figure, axis = pyplot.subplots(figsize=(12, 8))
     axis.set_title(title)
-    axis.set_xlabel(r"$t$")
+    axis.set_xlabel(xlabel)
     axis.set_ylabel(ylabel)
     for i in range(nplot):
         axis.plot(time, series[i], label=f"λ={λ_vals[i]}", lw=3.0)
@@ -91,12 +99,13 @@ tmax = 5.0
 λ_vals = [-2.0, -1.75, -1.5, -1.25, -1.0, -0.75, -0.5, -0.25]
 title = f"Ornstein-Uhlenbeck Process Mean: σ={σ}, μ={μ}"
 ylabel = r"$μ(t)$"
+xlabel = r"$t$"
 plot_name = f"ornstein_uhlenbeck_mean_μ={μ}_x0={x0}"
 
 time = numpy.linspace(0, tmax, nsample)
 means = [mean(x0, λ_vals[i], μ)(time) for i in range(len(λ_vals))]
 
-time_series_multiplot(means, time, λ_vals, ylabel, title, plot_name)
+multiplot(means, time, λ_vals, xlabel, ylabel, title, plot_name)
 
 # %%
 
@@ -108,12 +117,25 @@ tmax = 5.0
 λ_vals = [-2.0, -1.75, -1.5, -1.25, -1.0, -0.75, -0.5, -0.25]
 title = f"Ornstein-Uhlenbeck Process Variance: σ={σ}, μ={μ}"
 ylabel = r"$σ(t)$"
+xlabel = r"$t$"
 plot_name = f"ornstein_uhlenbeck_variance_μ={μ}_x0={x0}"
 
 time = numpy.linspace(0, tmax, nsample)
 vars = [variance(σ, λ_vals[i], μ)(time) for i in range(len(λ_vals))]
 
-time_series_multiplot(vars, time, λ_vals, ylabel, title, plot_name)
+multiplot(vars, time, λ_vals, xlabel, ylabel, title, plot_name)
+
+# %%
+
+title = f"Ornstein-Uhlenbeck Half-Life of Mean Decay"
+ylabel = r"$\frac{\ln{2}}{\lambda}$"
+xlabel = r"$\lambda$"
+plot_name = f"ornstein_uhlenbeck_variance_half_life_of_mean_decay"
+
+λ = numpy.linspace(-2.0, -0.1, 100)
+halflife = [-numpy.log(2)/i for i in λ]
+
+plot(halflife, λ, title, xlabel, ylabel, plot_name)
 
 # %%
 # Verify ornstein-uhlenbeck implementaion and compare with ar1 simulation
@@ -260,8 +282,8 @@ time = numpy.linspace(0, Δt*(nsample-1), nsample)
 
 series = orenstein_uhlenbeck_series(x0, σ, λ, μ, Δt, nsample)
 
-title = f"Ornstein-Uhlenbeck Difference Series: φ={φ}, σ={σ}, μ={μ}, Δt={Δt}"
-plot_name = f"ornstein_uhlenbeck_simulation__λ={λ}_μ={μ}_σ={σ}_Δt={Δt}"
+title = f"Ornstein-Uhlenbeck Simulated Series: φ={φ}, σ={σ}, μ={μ}, Δt={Δt}"
+plot_name = f"ornstein_uhlenbeck_simulation_λ={λ}_μ={μ}_σ={σ}_Δt={Δt}"
 text_pos = [150.0, 1.5]
 time_series_plot(series, time, text_pos, title, r"$x_t$", plot_name)
 
@@ -279,8 +301,8 @@ time = numpy.linspace(0, Δt*(nsample-1), nsample)
 
 series = orenstein_uhlenbeck_series(x0, σ, λ, μ, Δt, nsample)
 
-title = f"Ornstein-Uhlenbeck Difference Series: φ={φ}, σ={σ}, μ={μ}, Δt={Δt}"
-plot_name = f"ornstein_uhlenbeck_simulation__λ={λ}_μ={μ}_σ={σ}_Δt={Δt}"
+title = f"Ornstein-Uhlenbeck Simulated Series: φ={φ}, σ={σ}, μ={μ}, Δt={Δt}"
+plot_name = f"ornstein_uhlenbeck_simulation_λ={λ}_μ={μ}_σ={σ}_Δt={Δt}"
 text_pos = [15.0, 1.5]
 time_series_plot(series, time, text_pos, title, r"$x_t$", plot_name)
 
@@ -299,6 +321,6 @@ time = numpy.linspace(0, Δt*(nsample-1), nsample)
 series = orenstein_uhlenbeck_series(x0, σ, λ, μ, Δt, nsample)
 
 title = f"Ornstein-Uhlenbeck Difference Series: φ={φ}, σ={σ}, μ={μ}, Δt={Δt}"
-plot_name = f"ornstein_uhlenbeck_simulation__λ={λ}_μ={μ}_σ={σ}_Δt={Δt}"
+plot_name = f"ornstein_uhlenbeck_simulation_λ={λ}_μ={μ}_σ={σ}_Δt={Δt}"
 text_pos = [15.0, 1.5]
 time_series_plot(series, time, text_pos, title, r"$x_t$", plot_name)
