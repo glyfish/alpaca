@@ -17,17 +17,28 @@ pyplot.style.use(config.glyfish_style)
 def brownian_noise(n):
     return numpy.random.normal(0.0, 1.0, n)
 
-def bivatiate_pdf(x, y, μ, Ω):
+def bivatiate_normal_pdf(x, y, μ, Ω):
     pos = numpy.empty(x.shape+(2,))
     pos[:,:,0] = x
     pos[:,:,1] = y
     return stats.multivariate_normal.pdf(pos, μ, Ω)
 
-def bivatiate_pdf_sample(μ, Ω, n):
+def multivariate_normal_sample(μ, Ω, n):
     return numpy.random.multivariate_normal(μ, Ω, n)
 
 def cholesky_decompose(Ω):
     return numpy.linalg.cholesky(Ω)
+
+def cholesky_multivariate_normal_sample(μ, Ω, n):
+    l = cholesky_decompose(Ω)
+    _, m = l.shape
+    samples = numpy.zeros((n,2))
+    for i in range(n):
+        bn = numpy.matrix(brownian_noise(m))
+        s = l*bn.T
+        for j in range(m):
+            samples[i][j] = s[j,0] + μ[j]
+    return samples
 
 def bivatiate_pdf_mesh(μ, Ω, n):
     σ = max(Ω[0][0], Ω[1][1])
@@ -41,7 +52,7 @@ def bivatiate_pdf_mesh(μ, Ω, n):
 
 def bivatiate_pdf_contour_plot(μ, Ω, n, contour_values, plot_name):
     x, y = bivatiate_pdf_mesh(μ, Ω, n)
-    f = bivatiate_pdf(x, y, μ, Ω)
+    f = bivatiate_normal_pdf(x, y, μ, Ω)
     figure, axis = pyplot.subplots(figsize=(9, 9))
     axis.set_xlabel(r"$x$")
     axis.set_ylabel(r"$y$")
@@ -60,9 +71,9 @@ def bivatiate_pdf_contour_plot(μ, Ω, n, contour_values, plot_name):
     axis.clabel(contour, contour.levels[::2], fmt="%.3f", inline=True, fontsize=15)
     config.save_post_asset(figure, "mean_reversion", plot_name)
 
-def bivatiate_pdf_samples_plot(p, q, μ, Ω, n, contour_values, plot_name):
+def bivatiate_pdf_samples_plot(samples, μ, Ω, n, contour_values, plot_name):
     x, y = bivatiate_pdf_mesh(μ, Ω, n)
-    f = bivatiate_pdf(x, y, μ, Ω)
+    f = bivatiate_normal_pdf(x, y, μ, Ω)
     figure, axis = pyplot.subplots(figsize=(9, 9))
     axis.set_xlabel(r"$x$")
     axis.set_ylabel(r"$y$")
@@ -73,11 +84,12 @@ def bivatiate_pdf_samples_plot(p, q, μ, Ω, n, contour_values, plot_name):
     y2 = 3.2*σ + μ[1]
     axis.set_xlim([x1, x2])
     axis.set_ylim([y1, y2])
+    bins = [numpy.linspace(x1, x2, 100), numpy.linspace(y1, y2, 100)]
     title = f"Bivariate Normal Distribution: γ={format(Ω[0][1], '2.2f')}, " + \
              r"$σ_x$=" + f"{format(Ω[0][0], '2.2f')}, " + r"$σ_y$=" + \
              f"{format(Ω[1][1], '2.2f')}"
     axis.set_title(title)
-    _, _, _, image = axis.hist2d(p, q, normed=True, bins=bins, cmap=config.alternate_color_map)
+    _, _, _, image = axis.hist2d(samples[:,0], samples[:,1], normed=True, bins=bins, cmap=config.alternate_color_map)
     contour = axis.contour(x, y, f, contour_values, cmap=config.contour_color_map)
     axis.clabel(contour, contour.levels[::2], fmt="%.3f", inline=True, fontsize=15)
     figure.colorbar(image)
@@ -132,9 +144,18 @@ bivatiate_pdf_contour_plot(μ, Ω, n,  [0.001, 0.025, 0.05, 0.075, 0.1], plot_na
 
 μ = [0.0, 0.0]
 Ω = [[1.0, 0.5], [0.5, 1.0]]
-n = 100
+n = 10000
 plot_name = "var_simulation_bivatiate_gaussian_samples_0.0_0.0_1.0_1.0_0.5"
 
-samples = bivatiate_pdf_sample(μ, Ω, n)
+samples = multivariate_normal_sample(μ, Ω, n)
+bivatiate_pdf_samples_plot(samples, μ, Ω, n, [0.01, 0.025, 0.05, 0.075, 0.1, 0.125], plot_name)
 
-# bivatiate_pdf_samples_plot(μ, Ω, n, [0.01, 0.025, 0.05, 0.075, 0.1, 0.125], plot_name)
+# %%
+
+μ = [0.0, 0.0]
+Ω = [[1.0, 0.5], [0.5, 1.0]]
+n = 10000
+plot_name = "var_simulation_bivatiate_gaussian_cholesky_samples_0.0_0.0_1.0_1.0_0.5"
+
+samples = cholesky_multivariate_normal_sample(μ, numpy.matrix(Ω), n)
+bivatiate_pdf_samples_plot(samples, μ, Ω, n, [0.01, 0.025, 0.05, 0.075, 0.1, 0.125], plot_name)
