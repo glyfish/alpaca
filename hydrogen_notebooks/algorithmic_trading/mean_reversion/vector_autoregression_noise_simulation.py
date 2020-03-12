@@ -6,7 +6,7 @@
 import os
 import sys
 import numpy
-import scipy
+from scipy import stats as scipy_stats
 from matplotlib import pyplot
 from lib import config
 from lib import stats
@@ -22,7 +22,7 @@ def bivatiate_normal_pdf(x, y, μ, Ω):
     pos = numpy.empty(x.shape+(2,))
     pos[:,:,0] = x
     pos[:,:,1] = y
-    return scipy.stats.multivariate_normal.pdf(pos, μ, Ω)
+    return scipy_stats.multivariate_normal.pdf(pos, μ, Ω)
 
 def multivariate_normal_sample(μ, Ω, n):
     return numpy.random.multivariate_normal(μ, Ω, n)
@@ -143,6 +143,21 @@ def cumulative_correlation(title, x, y, γ, file):
     axis.semilogx(time, γt)
     config.save_post_asset(figure, "mean_reversion", file)
 
+def timeseries_plot(samples, ylabel, title, plot_name):
+    nsample, nplot = samples.shape
+    ymin = numpy.amin(samples)
+    ymax = numpy.amax(samples)
+    figure, axis = pyplot.subplots(nplot, sharex=True, figsize=(12, 9))
+    axis[0].set_title(title)
+    axis[nplot-1].set_xlabel(r"$t$")
+    time = numpy.linspace(0, nsample-1, nsample)
+    for i in range(nplot):
+        axis[i].set_ylabel(ylabel[i])
+        axis[i].set_ylim([ymin, ymax])
+        axis[i].set_xlim([0.0, nsample])
+        axis[i].plot(time, samples[:,i], lw=1.0)
+    config.save_post_asset(figure, "mean_reversion", plot_name)
+
 # %%
 
 μ = [0.0, 0.0]
@@ -200,6 +215,15 @@ bivatiate_pdf_samples_plot(samples, μ, Ω, n, [0.01, 0.025, 0.05, 0.075, 0.1, 0
 
 # %%
 
+plot_name = "var_simulation_bivatiate_gaussian_samples_x_y_0.0_0.0_1.0_1.0_0.5"
+title = f"Bivariate Normal Distribution " + r"$\mu_x$" + f" Convergence: γ={format(Ω[0][1], '2.2f')}, " + \
+         r"$σ_x$=" + f"{format(Ω[0][0], '2.2f')}, " + r"$σ_y$=" + \
+         f"{format(Ω[1][1], '2.2f')}"
+ylabel = [r"$x$", r"$y$"]
+timeseries_plot(samples[8000:9000,:], ylabel, title, plot_name)
+
+# %%
+
 plot_name = "var_simulation_bivatiate_gaussian_samples_μ_x_0.0_0.0_1.0_1.0_0.5"
 title = f"Bivariate Normal Distribution " + r"$\mu_x$" + f" Convergence: γ={format(Ω[0][1], '2.2f')}, " + \
          r"$σ_x$=" + f"{format(Ω[0][0], '2.2f')}, " + r"$σ_y$=" + \
@@ -228,7 +252,7 @@ plot_name = "var_simulation_bivatiate_gaussian_samples_σ_y_0.0_0.0_1.0_1.0_0.5"
 title = f"Bivariate Normal Distribution " + r"$\sigma_y$" + f" Convergence: γ={format(Ω[0][1], '2.2f')}, " + \
          r"$σ_x$=" + f"{format(Ω[0][0], '2.2f')}, " + r"$σ_y$=" + \
          f"{format(Ω[1][1], '2.2f')}"
-cumulative_standard_deviation(title, samples[:,0], Ω[0][0], plot_name)
+cumulative_standard_deviation(title, samples[:,1], Ω[0][0], plot_name)
 
 # %%
 
@@ -247,6 +271,15 @@ plot_name = "var_simulation_bivatiate_gaussian_cholesky_samples_0.0_0.0_1.0_1.0_
 
 samples = cholesky_multivariate_normal_sample(μ, numpy.matrix(Ω), n)
 bivatiate_pdf_samples_plot(samples, μ, Ω, n, [0.01, 0.025, 0.05, 0.075, 0.1, 0.125], plot_name)
+
+# %%
+
+plot_name = "var_simulation_bivatiate_gaussian_cholesky_samples_x_y_0.0_0.0_1.0_1.0_0.5"
+title = f"Bivariate Normal Distribution " + r"$\mu_x$" + f" Convergence: γ={format(Ω[0][1], '2.2f')}, " + \
+         r"$σ_x$=" + f"{format(Ω[0][0], '2.2f')}, " + r"$σ_y$=" + \
+         f"{format(Ω[1][1], '2.2f')}"
+ylabel = [r"$x$", r"$y$"]
+timeseries_plot(samples[8000:9000,:], ylabel, title, plot_name)
 
 # %%
 
@@ -278,7 +311,7 @@ plot_name = "var_simulation_bivatiate_gaussian_cholesky_samples_σ_y_0.0_0.0_1.0
 title = f"Bivariate Normal Distribution " + r"$\sigma_y$" + f" Convergence: γ={format(Ω[0][1], '2.2f')}, " + \
          r"$σ_x$=" + f"{format(Ω[0][0], '2.2f')}, " + r"$σ_y$=" + \
          f"{format(Ω[1][1], '2.2f')}"
-cumulative_standard_deviation(title, samples[:,0], Ω[0][0], plot_name)
+cumulative_standard_deviation(title, samples[:,1], Ω[0][0], plot_name)
 
 # %%
 
