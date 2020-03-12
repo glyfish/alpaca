@@ -117,7 +117,7 @@ def cumulative_standard_deviation(title, samples, σ, file):
     figure, axis = pyplot.subplots(figsize=(10, 7))
     axis.set_xlabel("Time")
     axis.set_ylabel(r"$σ$")
-    axis.set_title(title)
+    axis.set_title(title, y=1.05)
     axis.set_ylim([min(sigma[10:]), max(sigma[10:])])
     axis.set_xlim([10.0, nsample])
     axis.semilogx(time, numpy.full((len(time)), σ), label="Target σ", color="#000000")
@@ -136,7 +136,7 @@ def cumulative_correlation(title, x, y, γ, file):
     figure, axis = pyplot.subplots(figsize=(10, 7))
     axis.set_xlabel("Time")
     axis.set_ylabel(r"$γ$")
-    axis.set_title(title)
+    axis.set_title(title, y=1.05)
     axis.set_ylim([-1.1, 1.1])
     axis.set_xlim([10.0, nsample])
     axis.semilogx(time, numpy.full((len(time)), γ), label="Target γ", color="#000000")
@@ -274,7 +274,7 @@ cumulative_standard_deviation(title, samples[:,0], Ω[0][0], plot_name)
 
 # %%
 
-plot_name = "var_simulation_bivatiate_gaussian_samples_σ_y_0.0_0.0_1.0_1.0_0.5"
+plot_name = "var_simulation_bivatiate_gaussian_cholesky_samples_σ_y_0.0_0.0_1.0_1.0_0.5"
 title = f"Bivariate Normal Distribution " + r"$\sigma_y$" + f" Convergence: γ={format(Ω[0][1], '2.2f')}, " + \
          r"$σ_x$=" + f"{format(Ω[0][0], '2.2f')}, " + r"$σ_y$=" + \
          f"{format(Ω[1][1], '2.2f')}"
@@ -282,7 +282,7 @@ cumulative_standard_deviation(title, samples[:,0], Ω[0][0], plot_name)
 
 # %%
 
-plot_name = "var_simulation_bivatiate_gaussian_samples_γ_0.0_0.0_1.0_1.0_0.5"
+plot_name = "var_simulation_bivatiate_gaussian_cholesky_samples_γ_0.0_0.0_1.0_1.0_0.5"
 title = f"Bivariate Normal Distribution " + r"$\gamma$" + f" Convergence: γ={format(Ω[0][1], '2.2f')}, " + \
          r"$σ_x$=" + f"{format(Ω[0][0], '2.2f')}, " + r"$σ_y$=" + \
          f"{format(Ω[1][1], '2.2f')}"
