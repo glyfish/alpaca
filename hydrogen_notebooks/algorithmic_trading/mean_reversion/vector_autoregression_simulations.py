@@ -42,7 +42,7 @@ def var_simulate(x0, μ, φ, Ω, n):
     for i in range(l):
         xt[:,i] = x0[:,i]
     for i in range(l, n):
-        xt[:,i] = μ + ε[i]
+        xt[:,i] = ε[i]
         for j in range(l):
             t1 = φ[j]*numpy.matrix(xt[:,i-j-1]).T
             t2 = numpy.squeeze(numpy.array(t1), axis=1)
@@ -329,7 +329,7 @@ timeseries_plot(xt, ylabel, title, plot_name)
 
 # %%
 
-μ = [1.0, 1.0]
+μ = [1.0, 2.0]
 ω = numpy.matrix([[1.0, 0.0], [0.0, 1.0]])
 φ = numpy.array([
         numpy.matrix([[0.2, 0.1],
@@ -339,7 +339,7 @@ timeseries_plot(xt, ylabel, title, plot_name)
 ])
 eigen_values(φ)
 x0 = numpy.array([[0.0, 1.0], [0.0, 1.0]])
-n = 50000
+n = 5000
 xt = var_simulate(x0, μ, φ, ω, n)
 
 # %%
