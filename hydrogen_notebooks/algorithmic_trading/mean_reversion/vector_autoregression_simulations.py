@@ -7,7 +7,7 @@ import os
 import sys
 import numpy
 from matplotlib import pyplot
-from scipy import stats
+from lib import stats
 from lib import config
 
 pyplot.style.use(config.glyfish_style)
@@ -113,6 +113,11 @@ def stationary_covariance_matrix(φ, ω):
     vec_var = inv_tmp * vec(Ω)
     return unvec(vec_var)
 
+def eigen_values(φ):
+    Φ = phi_companion_form(φ)
+    λ, _ = numpy.linalg.eig(Φ)
+    return λ
+
 # %%
 
 φ = numpy.array([
@@ -204,6 +209,7 @@ stationary_covariance_matrix(φ, ω)
         numpy.matrix([[0.0, 0.0],
                      [0.0, 0.0]])
 ])
+eigen_values(φ)
 x0 = numpy.array([[0.0, 1.0], [0.0, 1.0]])
 n = 5000
 xt = var_simulate(x0, μ, φ, ω, n)
@@ -220,8 +226,10 @@ numpy.linalg.inv(v)*Φ*v
 
 M = stationary_mean(φ, μ)
 Σ = stationary_covariance_matrix(φ, ω)
+cov = stats.covaraince(xt[0], xt[1])
 plot_name = "var_2_simulation_1_x_y_timeseries"
 title = f"VAR(2) Simulation: γ={format(Σ[0,1], '2.2f')}, " + \
+         r"$\hat{\gamma}$=" + f"{format(cov, '2.2f')}, " + \
          r"$μ_x$=" + f"{format(M[0,0], '2.2f')}, " + \
          r"$σ_x$=" + f"{format(numpy.sqrt(Σ[0,0]), '2.2f')}, " + \
          r"$μ_y$=" + f"{format(M[1,0], '2.2f')}, " + \
@@ -239,6 +247,7 @@ timeseries_plot(xt, ylabel, title, plot_name)
         numpy.matrix([[0.0, 0.0],
                      [0.0, 0.0]])
 ])
+eigen_values(φ)
 x0 = numpy.array([[0.0, 1.0], [0.0, 1.0]])
 n = 5000
 xt = var_simulate(x0, μ, φ, ω, n)
@@ -247,8 +256,100 @@ xt = var_simulate(x0, μ, φ, ω, n)
 
 M = stationary_mean(φ, μ)
 Σ = stationary_covariance_matrix(φ, ω)
+cov = stats.covaraince(xt[0], xt[1])
 plot_name = "var_2_simulation_2_x_y_timeseries"
 title = f"VAR(2) Simulation: γ={format(Σ[0,1], '2.2f')}, " + \
+         r"$\hat{\gamma}$=" + f"{format(cov, '2.2f')}, " + \
+         r"$μ_x$=" + f"{format(M[0,0], '2.2f')}, " + \
+         r"$σ_x$=" + f"{format(numpy.sqrt(Σ[0,0]), '2.2f')}, " + \
+         r"$μ_y$=" + f"{format(M[1,0], '2.2f')}, " + \
+         r"$σ_y$=" + f"{format(numpy.sqrt(Σ[1,1]), '2.2f')}"
+ylabel = [r"$x$", r"$y$"]
+timeseries_plot(xt, ylabel, title, plot_name)
+
+# %%
+
+μ = [0.0, 0.0]
+ω = numpy.matrix([[1.0, 0.0], [0.0, 1.0]])
+φ = numpy.array([
+        numpy.matrix([[0.0, 0.0],
+                     [0.0, 0.0]]),
+        numpy.matrix([[0.5, 0.25],
+                     [0.25, 0.75]])
+])
+eigen_values(φ)
+x0 = numpy.array([[0.0, 1.0], [0.0, 1.0]])
+n = 5000
+xt = var_simulate(x0, μ, φ, ω, n)
+
+# %%
+
+M = stationary_mean(φ, μ)
+Σ = stationary_covariance_matrix(φ, ω)
+cov = stats.covaraince(xt[0], xt[1])
+plot_name = "var_2_simulation_3_x_y_timeseries"
+title = f"VAR(2) Simulation: γ={format(Σ[0,1], '2.2f')}, " + \
+         r"$\hat{\gamma}$=" + f"{format(cov, '2.2f')}, " + \
+         r"$μ_x$=" + f"{format(M[0,0], '2.2f')}, " + \
+         r"$σ_x$=" + f"{format(numpy.sqrt(Σ[0,0]), '2.2f')}, " + \
+         r"$μ_y$=" + f"{format(M[1,0], '2.2f')}, " + \
+         r"$σ_y$=" + f"{format(numpy.sqrt(Σ[1,1]), '2.2f')}"
+ylabel = [r"$x$", r"$y$"]
+timeseries_plot(xt, ylabel, title, plot_name)
+
+# %%
+
+μ = [0.0, 0.0]
+ω = numpy.matrix([[1.0, 0.0], [0.0, 1.0]])
+φ = numpy.array([
+        numpy.matrix([[0.2, 0.1],
+                      [0.1, 0.3]]),
+        numpy.matrix([[0.2, 0.25],
+                     [0.25, 0.3]])
+])
+eigen_values(φ)
+x0 = numpy.array([[0.0, 1.0], [0.0, 1.0]])
+n = 5000
+xt = var_simulate(x0, μ, φ, ω, n)
+
+# %%
+
+M = stationary_mean(φ, μ)
+Σ = stationary_covariance_matrix(φ, ω)
+cov = stats.covaraince(xt[0], xt[1])
+plot_name = "var_2_simulation_3_x_y_timeseries"
+title = f"VAR(2) Simulation: γ={format(Σ[0,1], '2.2f')}, " + \
+         r"$\hat{\gamma}$=" + f"{format(cov, '2.2f')}, " + \
+         r"$μ_x$=" + f"{format(M[0,0], '2.2f')}, " + \
+         r"$σ_x$=" + f"{format(numpy.sqrt(Σ[0,0]), '2.2f')}, " + \
+         r"$μ_y$=" + f"{format(M[1,0], '2.2f')}, " + \
+         r"$σ_y$=" + f"{format(numpy.sqrt(Σ[1,1]), '2.2f')}"
+ylabel = [r"$x$", r"$y$"]
+timeseries_plot(xt, ylabel, title, plot_name)
+
+# %%
+
+μ = [1.0, 1.0]
+ω = numpy.matrix([[1.0, 0.0], [0.0, 1.0]])
+φ = numpy.array([
+        numpy.matrix([[0.2, 0.1],
+                      [0.1, 0.3]]),
+        numpy.matrix([[0.2, 0.25],
+                     [0.25, 0.3]])
+])
+eigen_values(φ)
+x0 = numpy.array([[0.0, 1.0], [0.0, 1.0]])
+n = 50000
+xt = var_simulate(x0, μ, φ, ω, n)
+
+# %%
+
+M = stationary_mean(φ, μ)
+Σ = stationary_covariance_matrix(φ, ω)
+cov = stats.covaraince(xt[0], xt[1])
+plot_name = "var_2_simulation_4_x_y_timeseries"
+title = f"VAR(2) Simulation: γ={format(Σ[0,1], '2.2f')}, " + \
+         r"$\hat{\gamma}$=" + f"{format(cov, '2.2f')}, " + \
          r"$μ_x$=" + f"{format(M[0,0], '2.2f')}, " + \
          r"$σ_x$=" + f"{format(numpy.sqrt(Σ[0,0]), '2.2f')}, " + \
          r"$μ_y$=" + f"{format(M[1,0], '2.2f')}, " + \
