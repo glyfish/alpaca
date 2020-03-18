@@ -317,7 +317,7 @@ xt = var_simulate(x0, μ, φ, ω, n)
 M = stationary_mean(φ, μ)
 Σ = stationary_covariance_matrix(φ, ω)
 cov = stats.covaraince(xt[0], xt[1])
-plot_name = "var_2_simulation_3_x_y_timeseries"
+plot_name = "var_2_simulation_4_x_y_timeseries"
 title = f"VAR(2) Simulation: γ={format(Σ[0,1], '2.2f')}, " + \
          r"$\hat{\gamma}$=" + f"{format(cov, '2.2f')}, " + \
          r"$μ_x$=" + f"{format(M[0,0], '2.2f')}, " + \
@@ -347,7 +347,7 @@ xt = var_simulate(x0, μ, φ, ω, n)
 M = stationary_mean(φ, μ)
 Σ = stationary_covariance_matrix(φ, ω)
 cov = stats.covaraince(xt[0], xt[1])
-plot_name = "var_2_simulation_4_x_y_timeseries"
+plot_name = "var_2_simulation_5_x_y_timeseries"
 title = f"VAR(2) Simulation: γ={format(Σ[0,1], '2.2f')}, " + \
          r"$\hat{\gamma}$=" + f"{format(cov, '2.2f')}, " + \
          r"$μ_x$=" + f"{format(M[0,0], '2.2f')}, " + \
