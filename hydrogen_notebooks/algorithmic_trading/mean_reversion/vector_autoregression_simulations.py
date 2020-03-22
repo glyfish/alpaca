@@ -102,7 +102,7 @@ def mean_companion_form(μ):
     return numpy.matrix([p]).T
 
 def omega_companion_form(ω):
-    n, _ = Ω.shape
+    n, _ = ω.shape
     p = numpy.zeros((n**2, n**2))
     p[:n, :n] = ω
     return numpy.matrix(p)
