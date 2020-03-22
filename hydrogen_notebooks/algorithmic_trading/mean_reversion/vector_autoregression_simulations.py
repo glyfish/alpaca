@@ -530,27 +530,3 @@ plot_name = "var_2_simulation_1_yx_autocorrelation"
 γt = [Σt[i, 1, 0] for i in range(l)]
 
 cross_correlation_plot(title, xt[1], xt[0], γt, plot_name)
-
-# %%
-
-l = 50
-ω = numpy.matrix([[1.0, 0.0], [0.0, 1.0]])
-φ = numpy.array([
-        numpy.matrix([[0.5, 0.1],
-                      [0.1, 0.1]]),
-        numpy.matrix([[0.2, 0.05],
-                     [0.05, 0.1]])
-])
-Σt = stationary_autocovariance_matrix(φ, ω, l)
-
-x0 = numpy.array([[0.0, 1.0], [0.0, 1.0]])
-n = 5000
-xt = var_simulate(x0, μ, φ, ω, n)
-
-# %%
-
-title = f"VAR(2) Simulation x(t) Autocorrelation"
-plot_name = "var_2_simulation_2_x_autocorrelation"
-γt = [Σt[i, 0, 0] for i in range(l)] / Σt[0, 0, 0]
-
-autocorrelation_plot(title, xt[0], γt, plot_name)
