@@ -35,31 +35,31 @@ def timeseries_plot(samples, ylabel, title, plot_name):
         axis[i].plot(time, samples[i], lw=1.0)
     config.save_post_asset(figure, "mean_reversion", plot_name)
 
-def autocorrelation_plot(title, samples, γt, plot):
+def autocorrelation_plot(title, samples, γt, ylim, plot):
     max_lag = len(γt)
     figure, axis = pyplot.subplots(figsize=(10, 7))
     axis.set_title(title)
     axis.set_ylabel(r"$\gamma_{\tau}$")
     axis.set_xlabel("Time Lag (τ)")
     axis.set_xlim([-1.0, max_lag])
-    axis.set_ylim([-1.05, 1.05])
+    axis.set_ylim(ylim)
     ac = autocorrelation(samples)
     axis.plot(range(max_lag), numpy.real(ac[:max_lag]), marker='o', markersize=10.0, linestyle="None", markeredgewidth=1.0, alpha=0.75, label="Simulation", zorder=6)
     axis.plot(range(max_lag), γt, lw="2", label=r"$γ_{\tau}$", zorder=5)
     axis.legend(fontsize=16)
     config.save_post_asset(figure, "mean_reversion", plot)
 
-def cross_correlation_plot(title, x, y, γt, plot):
+def cross_correlation_plot(title, x, y, γt, ylim, σx, σy, plot):
     max_lag = len(γt)
     figure, axis = pyplot.subplots(figsize=(10, 7))
     axis.set_title(title)
     axis.set_ylabel(r"$\gamma_{\tau}$")
     axis.set_xlabel("Time Lag (τ)")
-    cc = cross_correlation(x, y)
+    cc = cross_correlation(x, y) / (σx*σy)
     axis.set_xlim([-1.0, max_lag])
-    axis.set_ylim([min(min(numpy.real(cc)), min(γt)), max(max(numpy.real(cc)), max(γt))])
+    axis.set_ylim(ylim)
     axis.plot(range(max_lag), numpy.real(cc[:max_lag]), marker='o', markersize=10.0, linestyle="None", markeredgewidth=1.0, alpha=0.75, label="Simulation", zorder=6)
-    axis.plot(range(max_lag), γt, lw="2", label=r"$γ_{\tau}$", zorder=5)
+    axis.plot(range(max_lag), γt / (σx*σy), lw="2", label=r"$γ_{\tau}$", zorder=5)
     axis.legend(fontsize=16)
     config.save_post_asset(figure, "mean_reversion", plot)
 
@@ -147,7 +147,7 @@ def stationary_autocovariance_matrix(φ, ω, n):
     Σ = stationary_covariance_matrix(φ, ω)
     l, _ = Φ.shape
     γ = numpy.zeros((n, l, l))
-    γ[0] = numpy.eye(l)
+    γ[0] = numpy.matrix(numpy.eye(l))
     for i in range(1,n):
         γ[i] = γ[i-1]*Φ
     for i in range(n):
@@ -455,7 +455,38 @@ timeseries_plot(xt, ylabel, title, plot_name)
 # %%
 
 μ = [0.0, 0.0]
-ω = numpy.matrix([[1.0, 0.5], [0.5, 1.0]])
+ω = numpy.matrix([[1.0, 0.0], [0.0, 1.0]])
+φ = numpy.array([
+        numpy.matrix([[0.2, -0.25],
+                      [-0.25, 0.1]]),
+        numpy.matrix([[0.2, -0.25],
+                     [-0.25, 0.3]])
+])
+phi_companion_form(φ)
+eigen_values(φ)
+x0 = numpy.array([[0.0, 1.0], [0.0, 1.0]])
+n = 5000
+xt = var_simulate(x0, μ, φ, ω, n)
+
+# %%
+
+M = stationary_mean(φ, μ)
+Σ = stationary_covariance_matrix(φ, ω)
+cov = stats.covaraince(xt[0], xt[1])
+plot_name = "var_2_simulation_7_x_y_timeseries"
+title = f"VAR(2) Simulation: γ={format(Σ[0,1], '2.2f')}, " + \
+         r"$\hat{\gamma}$=" + f"{format(cov, '2.2f')}, " + \
+         r"$μ_x$=" + f"{format(M[0,0], '2.2f')}, " + \
+         r"$σ_x$=" + f"{format(numpy.sqrt(Σ[0,0]), '2.2f')}, " + \
+         r"$μ_y$=" + f"{format(M[1,0], '2.2f')}, " + \
+         r"$σ_y$=" + f"{format(numpy.sqrt(Σ[1,1]), '2.2f')}"
+ylabel = [r"$x$", r"$y$"]
+timeseries_plot(xt, ylabel, title, plot_name)
+
+# %%
+
+μ = [0.0, 0.0]
+ω = numpy.matrix([[1.0, 0.0], [0.0, 1.0]])
 φ = numpy.array([
         numpy.matrix([[0.2, 0.1],
                       [0.1, 0.3]]),
@@ -473,7 +504,7 @@ xt = var_simulate(x0, μ, φ, ω, n)
 M = stationary_mean(φ, μ)
 Σ = stationary_covariance_matrix(φ, ω)
 cov = stats.covaraince(xt[0], xt[1])
-plot_name = "var_2_simulation_7_x_y_timeseries"
+plot_name = "var_2_simulation_8_x_y_timeseries"
 title = f"VAR(2) Simulation: γ={format(Σ[0,1], '2.2f')}, " + \
          r"$\hat{\gamma}$=" + f"{format(cov, '2.2f')}, " + \
          r"$μ_x$=" + f"{format(M[0,0], '2.2f')}, " + \
@@ -505,7 +536,7 @@ title = f"VAR(2) Simulation x(t) Autocorrelation"
 plot_name = "var_2_simulation_1_x_autocorrelation"
 γt = [Σt[i, 0, 0] for i in range(l)] / Σt[0, 0, 0]
 
-autocorrelation_plot(title, xt[0], γt, plot_name)
+autocorrelation_plot(title, xt[0], γt, [-0.05, 1.05], plot_name)
 
 # %%
 
@@ -513,20 +544,77 @@ title = f"VAR(2) Simulation y(t) Autocorrelation"
 plot_name = "var_2_simulation_1_y_autocorrelation"
 γt = [Σt[i, 1, 1] for i in range(l)] / Σt[0, 1, 1]
 
-autocorrelation_plot(title, xt[1], γt, plot_name)
+autocorrelation_plot(title, xt[1], γt, [-0.05, 1.05], plot_name)
 
 # %%
 
 title = f"VAR(2) Simulation x(t)y(t) Cross Correlation"
 plot_name = "var_2_simulation_1_xy_autocorrelation"
 γt = [Σt[i, 0, 1] for i in range(l)]
+σx = Σt[0, 0, 0]
+σy = Σt[0, 1, 1]
 
-cross_correlation_plot(title, xt[0], xt[1], γt, plot_name)
+cross_correlation_plot(title, xt[0], xt[1], γt, [-0.05, 0.35], σx, σy, plot_name)
 
 # %%
 
 title = f"VAR(2) Simulation y(t)x(t) Cross Correlation"
 plot_name = "var_2_simulation_1_yx_autocorrelation"
 γt = [Σt[i, 1, 0] for i in range(l)]
+σx = Σt[0, 0, 0]
+σy = Σt[0, 1, 1]
 
-cross_correlation_plot(title, xt[1], xt[0], γt, plot_name)
+cross_correlation_plot(title, xt[1], xt[0], γt, [-0.05, 0.35], σx, σy, plot_name)
+
+# %%
+
+μ = [0.0, 0.0]
+ω = numpy.matrix([[1.0, 0.0], [0.0, 1.0]])
+φ = numpy.array([
+        numpy.matrix([[0.2, -0.25],
+                      [-0.25, 0.1]]),
+        numpy.matrix([[0.2, -0.25],
+                     [-0.25, 0.3]])
+])
+
+Σt = stationary_autocovariance_matrix(φ, ω, l)
+
+x0 = numpy.array([[0.0, 1.0], [0.0, 1.0]])
+n = 10000
+xt = var_simulate(x0, μ, φ, ω, n)
+
+# %%
+
+title = f"VAR(2) Simulation x(t) Autocorrelation"
+plot_name = "var_2_simulation_2_x_autocorrelation"
+γt = [Σt[i, 0, 0] for i in range(l)] / Σt[0, 0, 0]
+
+autocorrelation_plot(title, xt[0], γt, [-0.05, 1.05], plot_name)
+
+# %%
+
+title = f"VAR(2) Simulation y(t) Autocorrelation"
+plot_name = "var_2_simulation_2_y_autocorrelation"
+γt = [Σt[i, 1, 1] for i in range(l)] / Σt[0, 1, 1]
+
+autocorrelation_plot(title, xt[1], γt, [-0.05, 1.05], plot_name)
+
+# %%
+
+title = f"VAR(2) Simulation x(t)y(t) Cross Correlation"
+plot_name = "var_2_simulation_2_xy_autocorrelation"
+γt = [Σt[i, 0, 1] for i in range(l)]
+σx = Σt[0, 0, 0]
+σy = Σt[0, 1, 1]
+
+cross_correlation_plot(title, xt[0], xt[1], γt, [-0.5, 0.05], σx, σy, plot_name)
+
+# %%
+
+title = f"VAR(2) Simulation y(t)x(t) Cross Correlation"
+plot_name = "var_2_simulation_2_yx_autocorrelation"
+γt = [Σt[i, 1, 0] for i in range(l)]
+σx = Σt[0, 0, 0]
+σy = Σt[0, 1, 1]
+
+cross_correlation_plot(title, xt[1], xt[0], γt, [-0.5, 0.05], σx, σy, plot_name)
