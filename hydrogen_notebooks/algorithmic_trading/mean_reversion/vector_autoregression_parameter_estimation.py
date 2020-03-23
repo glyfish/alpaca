@@ -41,3 +41,5 @@ title = f"VAR(2) Simulation: γ={format(Σ[0,1], '2.2f')}, " + \
          r"$σ_y$=" + f"{format(numpy.sqrt(Σ[1,1]), '2.2f')}"
 ylabel = [r"$x$", r"$y$"]
 var.timeseries_plot(xt, ylabel, title, plot_name)
+
+# %%
