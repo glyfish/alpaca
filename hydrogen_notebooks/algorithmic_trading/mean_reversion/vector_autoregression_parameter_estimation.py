@@ -15,11 +15,25 @@ pyplot.style.use(config.glyfish_style)
 
 # %%
 
-def yt_form(xt1, xt2):
+def yt_parameter_estimation_form(xt1, xt2):
     m, n = xt1.shape
     ones = numpy.ones((m, n))
     return numpy.concatenate((ones, xt1, xt2), axis=0)
 
+def theta_parameter_estimation_form(xt):
+    l, n = xt1.shape
+    xt1 = xt[:,1:n-1]
+    xt2 = xt[:,:n-2]
+    yt = yt_parameter_estimation_form(xt1, xt2)
+    m, _ = yt.shape
+    yy = numpy.matrix(numpy.zeros((m, m)))
+    xy = numpy.matrix(numpy.zeros(l, m))
+    for i in range(l, n):
+        x = numpy.matrix(xt[:,i]).T
+        y = numpy.matrix(yt[:,i-l]).T
+        yy += y*y.T
+        xy += x*y.T
+    return xy*numpy.linalg.inv(yy)
 
 # %%
 
@@ -34,9 +48,9 @@ def yt_form(xt1, xt2):
 x0 = numpy.array([[0.0, 1.0], [0.0, 1.0]])
 n = 5000
 xt = var.var_simulate(x0, μ, φ, ω, n)
-xt1 = xt[:,1:n-1]
-xt2 = xt[:,:n-2]
-yt = yt_form(xt1, xt2)
+yt = yt_parameter_estimation_form(xt1, xt2)
+yt.shape
+numpy.matrix(xt[:,2]).T
 
 # %%
 
