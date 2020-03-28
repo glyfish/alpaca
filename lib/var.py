@@ -5,22 +5,22 @@ from lib import config
 def multivariate_normal_sample(μ, Ω, n):
     return numpy.random.multivariate_normal(μ, Ω, n)
 
-def timeseries_plot(samples, ylabel, title, plot_name):
+def timeseries_plot(samples, tmax, ylabel, title, plot_name):
     nplot, nsample = samples.shape
     ymin = numpy.amin(samples)
     ymax = numpy.amax(samples)
     figure, axis = pyplot.subplots(nplot, sharex=True, figsize=(12, 9))
     axis[0].set_title(title)
     axis[nplot-1].set_xlabel(r"$t$")
-    time = numpy.linspace(0, nsample-1, nsample)
+    time = numpy.linspace(0, tmax-1, tmax)
     for i in range(nplot):
         stats=f"μ={format(numpy.mean(samples[i]), '2.2f')}\nσ={format(numpy.std(samples[i]), '2.2f')}"
         bbox = dict(boxstyle='square,pad=1', facecolor="#FEFCEC", edgecolor="#FEFCEC", alpha=0.75)
         axis[i].text(0.05, 0.75, stats, fontsize=15, bbox=bbox, transform=axis[i].transAxes)
         axis[i].set_ylabel(ylabel[i])
         axis[i].set_ylim([ymin, ymax])
-        axis[i].set_xlim([0.0, nsample])
-        axis[i].plot(time, samples[i], lw=1.0)
+        axis[i].set_xlim([0.0, tmax])
+        axis[i].plot(time, samples[i,:tmax], lw=1.0)
     config.save_post_asset(figure, "mean_reversion", plot_name)
 
 def autocorrelation_plot(title, samples, γt, ylim, plot):
