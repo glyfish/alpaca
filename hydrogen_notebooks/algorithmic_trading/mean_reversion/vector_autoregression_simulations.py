@@ -49,17 +49,17 @@ def autocorrelation_plot(title, samples, γt, ylim, plot):
     axis.legend(fontsize=16)
     config.save_post_asset(figure, "mean_reversion", plot)
 
-def cross_correlation_plot(title, x, y, γt, ylim, σx, σy, plot):
+def cross_correlation_plot(title, x, y, γt, ylim, plot):
     max_lag = len(γt)
     figure, axis = pyplot.subplots(figsize=(10, 7))
     axis.set_title(title)
     axis.set_ylabel(r"$\gamma_{\tau}$")
     axis.set_xlabel("Time Lag (τ)")
-    cc = cross_correlation(x, y) / (σx*σy)
+    cc = cross_correlation(x, y)
     axis.set_xlim([-1.0, max_lag])
     axis.set_ylim(ylim)
     axis.plot(range(max_lag), numpy.real(cc[:max_lag]), marker='o', markersize=10.0, linestyle="None", markeredgewidth=1.0, alpha=0.75, label="Simulation", zorder=6)
-    axis.plot(range(max_lag), γt / (σx*σy), lw="2", label=r"$γ_{\tau}$", zorder=5)
+    axis.plot(range(max_lag), γt, lw="2", label=r"$γ_{\tau}$", zorder=5)
     axis.legend(fontsize=16)
     config.save_post_asset(figure, "mean_reversion", plot)
 
@@ -176,7 +176,7 @@ def cross_correlation(x, y):
     y_padded = numpy.concatenate((y_shifted, numpy.zeros(n-1)))
     x_fft = numpy.fft.fft(x_padded)
     y_fft = numpy.fft.fft(y_padded)
-    h_fft = numpy.conj(y_fft) * x_fft
+    h_fft = numpy.conj(x_fft) * y_fft
     cc = numpy.fft.ifft(h_fft)
     return cc[0:n] / float(n)
 
@@ -288,7 +288,7 @@ numpy.linalg.inv(v)*Φ*v
 
 M = stationary_mean(φ, μ)
 Σ = stationary_covariance_matrix(φ, ω)
-cov = stats.covaraince(xt[0], xt[1])
+cov = stats.covariance(xt[0], xt[1])
 plot_name = "var_2_simulation_1_x_y_timeseries"
 title = f"VAR(2) Simulation: γ={format(Σ[0,1], '2.2f')}, " + \
          r"$\hat{\gamma}$=" + f"{format(cov, '2.2f')}, " + \
@@ -318,7 +318,7 @@ xt = var_simulate(x0, μ, φ, ω, n)
 
 M = stationary_mean(φ, μ)
 Σ = stationary_covariance_matrix(φ, ω)
-cov = stats.covaraince(xt[0], xt[1])
+cov = stats.covariance(xt[0], xt[1])
 plot_name = "var_2_simulation_2_x_y_timeseries"
 title = f"VAR(2) Simulation: γ={format(Σ[0,1], '2.2f')}, " + \
          r"$\hat{\gamma}$=" + f"{format(cov, '2.2f')}, " + \
@@ -349,7 +349,7 @@ xt = var_simulate(x0, μ, φ, ω, n)
 
 M = stationary_mean(φ, μ)
 Σ = stationary_covariance_matrix(φ, ω)
-cov = stats.covaraince(xt[0], xt[1])
+cov = stats.covariance(xt[0], xt[1])
 plot_name = "var_2_simulation_3_x_y_timeseries"
 title = f"VAR(2) Simulation: γ={format(Σ[0,1], '2.2f')}, " + \
          r"$\hat{\gamma}$=" + f"{format(cov, '2.2f')}, " + \
@@ -380,7 +380,7 @@ xt = var_simulate(x0, μ, φ, ω, n)
 
 M = stationary_mean(φ, μ)
 Σ = stationary_covariance_matrix(φ, ω)
-cov = stats.covaraince(xt[0], xt[1])
+cov = stats.covariance(xt[0], xt[1])
 plot_name = "var_2_simulation_4_x_y_timeseries"
 title = f"VAR(2) Simulation: γ={format(Σ[0,1], '2.2f')}, " + \
          r"$\hat{\gamma}$=" + f"{format(cov, '2.2f')}, " + \
@@ -410,7 +410,7 @@ xt = var_simulate(x0, μ, φ, ω, n)
 
 M = stationary_mean(φ, μ)
 Σ = stationary_covariance_matrix(φ, ω)
-cov = stats.covaraince(xt[0], xt[1])
+cov = stats.covariance(xt[0], xt[1])
 plot_name = "var_2_simulation_5_x_y_timeseries"
 title = f"VAR(2) Simulation: γ={format(Σ[0,1], '2.2f')}, " + \
          r"$\hat{\gamma}$=" + f"{format(cov, '2.2f')}, " + \
@@ -441,7 +441,7 @@ xt = var_simulate(x0, μ, φ, ω, n)
 
 M = stationary_mean(φ, μ)
 Σ = stationary_covariance_matrix(φ, ω)
-cov = stats.covaraince(xt[0], xt[1])
+cov = stats.covariance(xt[0], xt[1])
 plot_name = "var_2_simulation_6_x_y_timeseries"
 title = f"VAR(2) Simulation: γ={format(Σ[0,1], '2.2f')}, " + \
          r"$\hat{\gamma}$=" + f"{format(cov, '2.2f')}, " + \
@@ -472,7 +472,7 @@ xt = var_simulate(x0, μ, φ, ω, n)
 
 M = stationary_mean(φ, μ)
 Σ = stationary_covariance_matrix(φ, ω)
-cov = stats.covaraince(xt[0], xt[1])
+cov = stats.covariance(xt[0], xt[1])
 plot_name = "var_2_simulation_7_x_y_timeseries"
 title = f"VAR(2) Simulation: γ={format(Σ[0,1], '2.2f')}, " + \
          r"$\hat{\gamma}$=" + f"{format(cov, '2.2f')}, " + \
@@ -503,7 +503,7 @@ xt = var_simulate(x0, μ, φ, ω, n)
 
 M = stationary_mean(φ, μ)
 Σ = stationary_covariance_matrix(φ, ω)
-cov = stats.covaraince(xt[0], xt[1])
+cov = stats.covariance(xt[0], xt[1])
 plot_name = "var_2_simulation_8_x_y_timeseries"
 title = f"VAR(2) Simulation: γ={format(Σ[0,1], '2.2f')}, " + \
          r"$\hat{\gamma}$=" + f"{format(cov, '2.2f')}, " + \
@@ -551,20 +551,16 @@ autocorrelation_plot(title, xt[1], γt, [-0.05, 1.05], plot_name)
 title = f"VAR(2) Simulation x(t)y(t) Cross Correlation"
 plot_name = "var_2_simulation_1_xy_autocorrelation"
 γt = [Σt[i, 0, 1] for i in range(l)]
-σx = Σt[0, 0, 0]
-σy = Σt[0, 1, 1]
 
-cross_correlation_plot(title, xt[0], xt[1], γt, [-0.05, 0.35], σx, σy, plot_name)
+cross_correlation_plot(title, xt[0], xt[1], γt, [-0.05, 1.25], plot_name)
 
 # %%
 
 title = f"VAR(2) Simulation y(t)x(t) Cross Correlation"
 plot_name = "var_2_simulation_1_yx_autocorrelation"
 γt = [Σt[i, 1, 0] for i in range(l)]
-σx = Σt[0, 0, 0]
-σy = Σt[0, 1, 1]
 
-cross_correlation_plot(title, xt[1], xt[0], γt, [-0.05, 0.35], σx, σy, plot_name)
+cross_correlation_plot(title, xt[1], xt[0], γt, [-0.05, 1.25], plot_name)
 
 # %%
 
@@ -604,17 +600,13 @@ autocorrelation_plot(title, xt[1], γt, [-0.05, 1.05], plot_name)
 title = f"VAR(2) Simulation x(t)y(t) Cross Correlation"
 plot_name = "var_2_simulation_2_xy_autocorrelation"
 γt = [Σt[i, 0, 1] for i in range(l)]
-σx = Σt[0, 0, 0]
-σy = Σt[0, 1, 1]
 
-cross_correlation_plot(title, xt[0], xt[1], γt, [-0.5, 0.05], σx, σy, plot_name)
+cross_correlation_plot(title, xt[0], xt[1], γt, [-1.75, 0.05], plot_name)
 
 # %%
 
 title = f"VAR(2) Simulation y(t)x(t) Cross Correlation"
 plot_name = "var_2_simulation_2_yx_autocorrelation"
 γt = [Σt[i, 1, 0] for i in range(l)]
-σx = Σt[0, 0, 0]
-σy = Σt[0, 1, 1]
 
-cross_correlation_plot(title, xt[1], xt[0], γt, [-0.5, 0.05], σx, σy, plot_name)
+cross_correlation_plot(title, xt[1], xt[0], γt, [-1.75, 0.05], plot_name)

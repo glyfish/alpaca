@@ -37,17 +37,17 @@ def autocorrelation_plot(title, samples, γt, ylim, plot):
     axis.legend(fontsize=16)
     config.save_post_asset(figure, "mean_reversion", plot)
 
-def cross_correlation_plot(title, x, y, γt, ylim, σx, σy, plot):
+def cross_correlation_plot(title, x, y, γt, ylim, plot):
     max_lag = len(γt)
     figure, axis = pyplot.subplots(figsize=(10, 7))
     axis.set_title(title)
     axis.set_ylabel(r"$\gamma_{\tau}$")
     axis.set_xlabel("Time Lag (τ)")
-    cc = cross_correlation(x, y) / (σx*σy)
+    cc = cross_correlation(x, y)
     axis.set_xlim([-1.0, max_lag])
     axis.set_ylim(ylim)
     axis.plot(range(max_lag), numpy.real(cc[:max_lag]), marker='o', markersize=10.0, linestyle="None", markeredgewidth=1.0, alpha=0.75, label="Simulation", zorder=6)
-    axis.plot(range(max_lag), γt / (σx*σy), lw="2", label=r"$γ_{\tau}$", zorder=5)
+    axis.plot(range(max_lag), γt, lw="2", label=r"$γ_{\tau}$", zorder=5)
     axis.legend(fontsize=16)
     config.save_post_asset(figure, "mean_reversion", plot)
 
@@ -164,6 +164,41 @@ def cross_correlation(x, y):
     y_padded = numpy.concatenate((y_shifted, numpy.zeros(n-1)))
     x_fft = numpy.fft.fft(x_padded)
     y_fft = numpy.fft.fft(y_padded)
-    h_fft = numpy.conj(y_fft) * x_fft
+    h_fft = numpy.conj(x_fft)*y_fft
     cc = numpy.fft.ifft(h_fft)
     return cc[0:n] / float(n)
+
+def yt_parameter_estimation_form(xt):
+    l, n = xt.shape
+    yt = xt[:,l-1:n-1]
+    for i in range(2,l+1):
+        yt = numpy.concatenate((yt, xt[:,l-i:n-i]), axis=0)
+    return yt
+
+def theta_parameter_estimation(xt):
+    l, n = xt.shape
+    yt = yt_parameter_estimation_form(xt)
+    m, _ = yt.shape
+    yy = numpy.matrix(numpy.zeros((m, m)))
+    xy = numpy.matrix(numpy.zeros((l, m)))
+    for i in range(l, n):
+        x = numpy.matrix(xt[:,i]).T
+        y = numpy.matrix(yt[:,i-l]).T
+        yy += y*y.T
+        xy += x*y.T
+    return xy*numpy.linalg.inv(yy)
+
+def split_theta(theta):
+    l, _ = theta.shape
+    return numpy.split(theta, l, axis=1)
+
+def omega_parameter_estimation(xt, theta):
+    l, n = xt.shape
+    yt = yt_parameter_estimation_form(xt)
+    omega = numpy.matrix(numpy.zeros((l, l)))
+    for i in range(l, n):
+        x = numpy.matrix(xt[:,i]).T
+        y = numpy.matrix(yt[:,i-l]).T
+        term = x - theta*y
+        omega += term*term.T
+    return omega / float(n-l)

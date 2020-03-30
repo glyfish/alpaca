@@ -127,7 +127,7 @@ def cumulative_standard_deviation(title, samples, σ, file):
 def cumulative_correlation(title, x, y, γ, file):
     nsample = len(x)
     time = numpy.linspace(0, nsample-1, nsample)
-    cov = stats.cum_covaraince(x, y)
+    cov = stats.cum_covariance(x, y)
     sigmax = stats.cumsigma(x)
     sigmay = stats.cumsigma(y)
     γt = numpy.zeros(len(cov))

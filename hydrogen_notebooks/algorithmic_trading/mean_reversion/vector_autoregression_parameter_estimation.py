@@ -20,7 +20,7 @@ def yt_parameter_estimation_form(xt1, xt2):
     ones = numpy.ones((1, n))
     return numpy.concatenate((xt1, xt2), axis=0)
 
-def theta_parameter_estimation_form(xt):
+def theta_parameter_estimation(xt):
     l, n = xt.shape
     xt1 = xt[:,1:n-1]
     xt2 = xt[:,:n-2]
@@ -39,7 +39,7 @@ def split_theta(theta):
     l, _ = theta.shape
     return numpy.split(theta, l, axis=1)
 
-def omega_parameter_estimation_form(xt, theta):
+def omega_parameter_estimation(xt, theta):
     l, n = xt.shape
     xt1 = xt[:,1:n-1]
     xt2 = xt[:,:n-2]
@@ -71,7 +71,7 @@ xt = var.var_simulate(x0, μ, φ, ω, n)
 
 M = var.stationary_mean(φ, μ)
 Σ = var.stationary_covariance_matrix(φ, ω)
-cov = stats.covaraince(xt[0], xt[1])
+cov = stats.covariance(xt[0], xt[1])
 plot_name = "var_2_estimation_1_x_y_timeseries"
 title = f"VAR(2) Simulation: γ={format(Σ[0,1], '2.2f')}, " + \
          r"$\hat{\gamma}$=" + f"{format(cov, '2.2f')}, " + \
@@ -84,12 +84,12 @@ var.timeseries_plot(xt, 1000, ylabel, title, plot_name)
 
 # %%
 
-theta = theta_parameter_estimation_form(xt)
+theta = theta_parameter_estimation(xt)
 split_theta(theta)
 
 # %%
 
-omega_parameter_estimation_form(xt, theta)
+omega_parameter_estimation(xt, theta)
 
 # %%
 
@@ -110,7 +110,7 @@ xt = var.var_simulate(x0, μ, φ, ω, n)
 
 M = var.stationary_mean(φ, μ)
 Σ = var.stationary_covariance_matrix(φ, ω)
-cov = stats.covaraince(xt[0], xt[1])
+cov = stats.covariance(xt[0], xt[1])
 plot_name = "var_2_estimation_2_x_y_timeseries"
 title = f"VAR(2) Simulation: γ={format(Σ[0,1], '2.2f')}, " + \
          r"$\hat{\gamma}$=" + f"{format(cov, '2.2f')}, " + \
@@ -123,12 +123,12 @@ var.timeseries_plot(xt, 1000, ylabel, title, plot_name)
 
 # %%
 
-theta = theta_parameter_estimation_form(xt)
+theta = theta_parameter_estimation(xt)
 split_theta(theta)
 
 # %%
 
-omega_parameter_estimation_form(xt, theta)
+omega_parameter_estimation(xt, theta)
 
 
 # %%
@@ -150,7 +150,7 @@ xt = var.var_simulate(x0, μ, φ, ω, n)
 
 M = var.stationary_mean(φ, μ)
 Σ = var.stationary_covariance_matrix(φ, ω)
-cov = stats.covaraince(xt[0], xt[1])
+cov = stats.covariance(xt[0], xt[1])
 plot_name = "var_2_estimation_3_x_y_timeseries"
 title = f"VAR(2) Simulation: γ={format(Σ[0,1], '2.2f')}, " + \
          r"$\hat{\gamma}$=" + f"{format(cov, '2.2f')}, " + \
@@ -163,12 +163,12 @@ var.timeseries_plot(xt, 1000, ylabel, title, plot_name)
 
 # %%
 
-theta = theta_parameter_estimation_form(xt)
+theta = theta_parameter_estimation(xt)
 split_theta(theta)
 
 # %%
 
-omega_parameter_estimation_form(xt, theta)
+omega_parameter_estimation(xt, theta)
 
 # %%
 
@@ -189,7 +189,7 @@ xt = var.var_simulate(x0, μ, φ, ω, n)
 
 M = var.stationary_mean(φ, μ)
 Σ = var.stationary_covariance_matrix(φ, ω)
-cov = stats.covaraince(xt[0], xt[1])
+cov = stats.covariance(xt[0], xt[1])
 plot_name = "var_2_estimation_4_x_y_timeseries"
 title = f"VAR(2) Simulation: γ={format(Σ[0,1], '2.2f')}, " + \
          r"$\hat{\gamma}$=" + f"{format(cov, '2.2f')}, " + \
@@ -202,12 +202,12 @@ var.timeseries_plot(xt, 1000, ylabel, title, plot_name)
 
 # %%
 
-theta = theta_parameter_estimation_form(xt)
+theta = theta_parameter_estimation(xt)
 split_theta(theta)
 
 # %%
 
-omega_parameter_estimation_form(xt, theta)
+omega_parameter_estimation(xt, theta)
 
 # %%
 
@@ -228,7 +228,7 @@ xt = var.var_simulate(x0, μ, φ, ω, n)
 
 M = var.stationary_mean(φ, μ)
 Σ = var.stationary_covariance_matrix(φ, ω)
-cov = stats.covaraince(xt[0], xt[1])
+cov = stats.covariance(xt[0], xt[1])
 plot_name = "var_2_estimation_5_x_y_timeseries"
 title = f"VAR(2) Simulation: γ={format(Σ[0,1], '2.2f')}, " + \
          r"$\hat{\gamma}$=" + f"{format(cov, '2.2f')}, " + \
@@ -241,12 +241,12 @@ var.timeseries_plot(xt, 1000, ylabel, title, plot_name)
 
 # %%
 
-theta = theta_parameter_estimation_form(xt)
+theta = theta_parameter_estimation(xt)
 split_theta(theta)
 
 # %%
 
-omega_parameter_estimation_form(xt, theta)
+omega_parameter_estimation(xt, theta)
 
 
 # %%
@@ -268,7 +268,7 @@ xt = var.var_simulate(x0, μ, φ, ω, n)
 
 M = var.stationary_mean(φ, μ)
 Σ = var.stationary_covariance_matrix(φ, ω)
-cov = stats.covaraince(xt[0], xt[1])
+cov = stats.covariance(xt[0], xt[1])
 plot_name = "var_2_estimation_6_x_y_timeseries"
 title = f"VAR(2) Simulation: γ={format(Σ[0,1], '2.2f')}, " + \
          r"$\hat{\gamma}$=" + f"{format(cov, '2.2f')}, " + \
@@ -281,9 +281,9 @@ var.timeseries_plot(xt, 1000, ylabel, title, plot_name)
 
 # %%
 
-theta = theta_parameter_estimation_form(xt)
+theta = theta_parameter_estimation(xt)
 split_theta(theta)
 
 # %%
 
-omega_parameter_estimation_form(xt, theta)
+omega_parameter_estimation(xt, theta)

@@ -43,7 +43,7 @@ def cumsigma(samples):
         var[i] = (float(i) * var[i - 1] + samples[i]**2)/float(i + 1)
     return numpy.sqrt(var-mean**2)
 
-def covaraince(x, y):
+def covariance(x, y):
     nsample = len(x)
     meanx = numpy.mean(x)
     meany = numpy.mean(y)
@@ -52,7 +52,7 @@ def covaraince(x, y):
         cov += x[i] * y[i]
     return cov/nsample - meanx * meany
 
-def cum_covaraince(x, y):
+def cum_covariance(x, y):
     cov = numpy.zeros(nsample)
     meanx = cummean(x)
     meany = cummean(y)
