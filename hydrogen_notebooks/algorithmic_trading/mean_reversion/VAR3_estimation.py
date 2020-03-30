@@ -213,7 +213,7 @@ var.cross_correlation_plot(title, xt[0], xt[2], γt, [-0.1, 1.1], plot_name)
 
 # %%
 
-title = f"VAR(3) Simulation x(t)z(t) Cross Correlation"
+title = f"VAR(3) Simulation z(t)x(t) Cross Correlation"
 plot_name = "var_3_simulation_2_zx_autocorrelation"
 γt = [Σt[i, 2, 0] for i in range(l)]
 
