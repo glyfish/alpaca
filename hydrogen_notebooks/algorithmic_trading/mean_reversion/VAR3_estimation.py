@@ -189,7 +189,7 @@ var.autocorrelation_plot(title, xt[2], γt, [-0.05, 1.05], plot_name)
 
 # %%
 
-title = f"VAR(2) Simulation x(t)y(t) Cross Correlation"
+title = f"VAR(3) Simulation x(t)y(t) Cross Correlation"
 plot_name = "var_3_simulation_2_xy_autocorrelation"
 γt = [Σt[i, 0, 1] for i in range(l)]
 
@@ -197,7 +197,7 @@ var.cross_correlation_plot(title, xt[0], xt[1], γt, [-0.05, 1.0], plot_name)
 
 # %%
 
-title = f"VAR(2) Simulation y(t)x(t) Cross Correlation"
+title = f"VAR(3) Simulation y(t)x(t) Cross Correlation"
 plot_name = "var_3_simulation_2_yx_autocorrelation"
 γt = [Σt[i, 1, 0] for i in range(l)]
 
@@ -205,7 +205,7 @@ var.cross_correlation_plot(title, xt[1], xt[0], γt, [-0.05, 1.0], plot_name)
 
 # %%
 
-title = f"VAR(2) Simulation x(t)z(t) Cross Correlation"
+title = f"VAR(3) Simulation x(t)z(t) Cross Correlation"
 plot_name = "var_3_simulation_2_xz_autocorrelation"
 γt = [Σt[i, 0, 2] for i in range(l)]
 
@@ -213,7 +213,7 @@ var.cross_correlation_plot(title, xt[0], xt[2], γt, [-0.1, 1.1], plot_name)
 
 # %%
 
-title = f"VAR(2) Simulation x(t)z(t) Cross Correlation"
+title = f"VAR(3) Simulation x(t)z(t) Cross Correlation"
 plot_name = "var_3_simulation_2_zx_autocorrelation"
 γt = [Σt[i, 2, 0] for i in range(l)]
 
@@ -221,7 +221,7 @@ var.cross_correlation_plot(title, xt[2], xt[0], γt, [-0.1, 0.8], plot_name)
 
 # %%
 
-title = f"VAR(2) Simulation y(t)z(t) Cross Correlation"
+title = f"VAR(3) Simulation y(t)z(t) Cross Correlation"
 plot_name = "var_3_simulation_2_yz_autocorrelation"
 γt = [Σt[i, 1, 2] for i in range(l)]
 
@@ -229,7 +229,7 @@ var.cross_correlation_plot(title, xt[1], xt[2], γt, [-0.05, 0.8], plot_name)
 
 # %%
 
-title = f"VAR(2) Simulation z(t)y(t) Cross Correlation"
+title = f"VAR(3) Simulation z(t)y(t) Cross Correlation"
 plot_name = "var_3_simulation_2_zy_autocorrelation"
 γt = [Σt[i, 2, 1] for i in range(l)]
 
