@@ -10,11 +10,14 @@ import numpy
 import pandas
 from matplotlib import pyplot
 from statsmodels.tsa.api import VAR as pyvar
+from lib import regression as reg
 from lib import stats
 from lib import config
 from lib import var
 
 pyplot.style.use(config.glyfish_style)
+
+# %%
 
 # %%
 
@@ -57,3 +60,8 @@ var.omega_parameter_estimation(xt, theta)
 # %%
 
 df = pandas.DataFrame({"x":xt[0], "y":xt[1]})
+df.shape
+
+n, l = df.shape
+fig, axes = pyplot.subplots(l, sharex=True, figsize=(12, 9))
+axes.flatten()
