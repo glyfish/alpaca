@@ -19,8 +19,6 @@ pyplot.style.use(config.glyfish_style)
 
 # %%
 
-# %%
-
 μ = [0.0, 0.0]
 ω = numpy.matrix([[1.0, -0.5], [-0.5, 1.0]])
 φ = numpy.array([

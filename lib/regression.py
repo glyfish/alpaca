@@ -276,3 +276,31 @@ def cumulative_var_plot(samples, σ, title, plot, ylim=None, legend_pos = None):
     else:
         axis.legend(bbox_to_anchor=legend_pos)
     config.save_post_asset(figure, "regression", plot)
+
+def timeseries_plot(samples, φ, δ, tmax, title, plot_name):
+    p = numpy.array2string(φ, precision=2, separator=',')
+    d = numpy.array2string(δ, precision=2, separator=',')
+    figure, axis = pyplot.subplots(figsize=(12, 8))
+    axis.set_title(title)
+    axis.set_xlabel(r"$t$")
+    time = numpy.linspace(0, tmax-1, tmax)
+    axis.set_ylabel(r"$x_t$")
+    axis.set_xlim([0.0, tmax])
+    stats=f"Simulation Stats\n\nμ={format(numpy.mean(samples), '2.2f')}\nσ={format(numpy.std(samples), '2.2f')}"
+    bbox = dict(boxstyle='square,pad=1', facecolor="#FEFCEC", edgecolor="#FEFCEC", alpha=0.75)
+    axis.text(0.1, 0.8, stats, fontsize=15, bbox=bbox, transform=axis.transAxes)
+    params = f"Estimated Parameters\n\n" + r"$\hat{\phi}=$"+f"{p}\n"+r"$\hat{\delta}=$"+d
+    axis.text(0.7, 0.75, params, fontsize=15, bbox=bbox, transform=axis.transAxes)
+    axis.plot(time, samples[:tmax], lw=1.0)
+    config.save_post_asset(figure, "regression", plot_name)
+
+def autocorrelation_plot(samples, max_lag, title, ylim, plot):
+    figure, axis = pyplot.subplots(figsize=(10, 7))
+    axis.set_title(title)
+    axis.set_ylabel(r"$\gamma_{\tau}$")
+    axis.set_xlabel("Time Lag (τ)")
+    axis.set_xlim([-1.0, max_lag])
+    axis.set_ylim(ylim)
+    ac = autocorrelate(samples)
+    axis.plot(range(max_lag), numpy.real(ac[:max_lag]))
+    config.save_post_asset(figure, "regression", plot)
