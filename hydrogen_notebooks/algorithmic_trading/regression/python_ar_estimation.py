@@ -31,6 +31,30 @@ def arma_estimate_parameter(samples, order):
 
 # %%
 
+μ = [0.0, 0.0]
+ω = numpy.matrix([[1.0, 0.0], [0.0, 1.0]])
+φ = numpy.array([
+        numpy.matrix([[0.3, 0.0],
+                     [0.0, 0.0]]),
+        numpy.matrix([[0.4, 0.0],
+                     [0.0, 0.0]])
+])
+var.eigen_values(φ)
+
+l = 60
+Σt = var.stationary_autocovariance_matrix(φ, ω, l)
+γt = [Σt[i, 0, 0] for i in range(l)] / Σt[0, 0, 0]
+
+# %%
+
+var.stationary_mean(φ, μ)
+
+# %%
+
+var.stationary_covariance_matrix(φ, ω)
+
+# %%
+
 n = 10000
 φ = numpy.array([0.3, 0.4])
 δ = numpy.array([])
@@ -51,7 +75,7 @@ reg.timeseries_plot(xt, params, δ, 1000, title, plot_name)
 
 plot_name = "arma_2_0_python_simulation_autocorrelation"
 title = f"ARMA(2,0) Autocorrelation Coefficient: φ={p}, δ={d}"
-reg.autocorrelation_plot(xt, 60, title, [-0.05, 1.0], plot_name)
+var.autocorrelation_plot(title, xt, γt, [-0.05, 1.05], plot_name)
 
 # %%
 
