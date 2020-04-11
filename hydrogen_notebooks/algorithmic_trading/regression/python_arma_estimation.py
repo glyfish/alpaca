@@ -99,7 +99,7 @@ reg.timeseries_plot(xt, params[:2], params[2:], 1000, title, plot_name)
 
 plot_name = "arma_2_2_1_python_simulation_autocorrelation"
 title = f"ARMA(2,2) Autocorrelation Coefficient: φ={p}, δ={d}"
-reg.autocorrelation_plot(xt, 60, title, [-0.05, 1.0], plot_name)
+reg.autocorrelation_plot(xt, 60, title, [-0.1, 1.0], plot_name)
 
 # %%
 
