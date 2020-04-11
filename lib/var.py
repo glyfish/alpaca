@@ -51,6 +51,31 @@ def cross_correlation_plot(title, x, y, γt, ylim, plot):
     axis.legend(fontsize=16)
     config.save_post_asset(figure, "mean_reversion", plot)
 
+def plot_data_frame(df, tmax, plot_name):
+    _, nplot = df.shape
+    if nplot > 4:
+        nrows = int(nplot / 2)
+        ncols = 2
+    else:
+        nrows = nplot
+        ncols = 1
+    figure, axis = pyplot.subplots(nrows=nrows, ncols=ncols, figsize=(10, 8))
+    for i, axis in enumerate(axis.flatten()):
+        data = df[df.columns[i]]
+        axis.plot(data[:tmax], lw=1)
+        axis.set_title(df.columns[i], fontsize=12)
+        axis.tick_params(axis="x", labelsize=10)
+        axis.tick_params(axis="y", labelsize=10)
+    pyplot.tight_layout(pad=1.0)
+    config.save_post_asset(figure, "mean_reversion", plot_name)
+
+def time_series_to_data_frame(columns, series):
+    n = len(columns)
+    d = {}
+    for i in range(n):
+        d[columns[i]] = series[i]
+    return pandas.DataFrame(d)
+
 def var_simulate(x0, μ, φ, Ω, n):
     m, l = x0.shape
     xt = numpy.zeros((m, n))

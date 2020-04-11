@@ -96,4 +96,8 @@ results.coefs
 
 # %%
 
+results.resid_corr
+
+# %%
+
 results.summary()
