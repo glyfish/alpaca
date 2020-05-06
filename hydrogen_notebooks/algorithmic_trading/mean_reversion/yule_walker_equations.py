@@ -19,12 +19,22 @@ pyplot.style.use(config.glyfish_style)
 
 # %%
 
-def yule_walker_column_vector(acf, p):
-    return acf
+def yule_walker_column_vector(acf):
+    return numpy.matrix(acf[1:]).T
+
+def yule_walker_matrix(acf):
+    n = len(acf) - 1
+    result = numpy.matrix([acf[:n]])
+    row = acf[:n]
+    for i in range(1, n):
+        row = numpy.roll(row, 1)
+        row[0] = acf[i]
+        result = numpy.concatenate((result, numpy.array([row])), axis=0)
+    return result
 
 # %%
 
-n = 5000
+n = 10000
 
 φ1 = numpy.array([0.2])
 ar1 = arima.ar_generate_sample(φ1, n)
@@ -44,3 +54,21 @@ params = [r"$\phi=$"+f"{numpy.array2string(φ1, precision=2, separator=',')}",
 title = "AR(p) Comparison"
 plot_name = "yule_walker_equations_ar_comparison"
 arima.timeseries_comparison_plot(samples, params, 500, title, plot_name)
+
+# %%
+
+numpy.real(arima.autocorrelation(ar1))[:2]
+
+# %%
+
+acf = numpy.real(arima.autocorrelation(ar2))[:3]
+r = yule_walker_column_vector(acf)
+R = yule_walker_matrix(acf)
+numpy.linalg.inv(R)*r
+
+# %%
+
+acf = numpy.real(arima.autocorrelation(ar3))[:4]
+r = yule_walker_column_vector(acf)
+R = yule_walker_matrix(acf)
+numpy.linalg.inv(R)*r

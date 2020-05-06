@@ -22,7 +22,7 @@ def arma_estimate_parameters(samples, order):
     model = sm.tsa.ARMA(samples, order).fit(trend='nc', disp=0)
     return model.params
 
-def autocorrelate(x):
+def autocorrelation(x):
     n = len(x)
     x_shifted = x - x.mean()
     x_padded = numpy.concatenate((x_shifted, numpy.zeros(n-1)))
