@@ -44,6 +44,7 @@ def timeseries_comparison_plot(samples, params, tmax, title, plot_name):
         bbox = dict(boxstyle='square,pad=1', facecolor="#FEFCEC", edgecolor="#FEFCEC", alpha=0.75)
         axis[i].text(0.05, 0.75, stats, fontsize=15, bbox=bbox, transform=axis[i].transAxes)
         axis[i].text(0.7, 0.75, params[i], fontsize=15, bbox=bbox, transform=axis[i].transAxes)
+        axis[i].set_ylabel(r"$x_t$")
         axis[i].set_ylim([ymin, ymax])
         axis[i].set_xlim([0.0, tmax])
         axis[i].plot(time, samples[i,:tmax], lw=1.0)

@@ -8,7 +8,7 @@ import sys
 import numpy
 import pandas
 from matplotlib import pyplot
-from statsmodels.tsa.api import VAR as pyvar
+import statsmodels.api as sm
 from lib import regression as reg
 from lib import stats
 from lib import config
@@ -72,3 +72,15 @@ acf = numpy.real(arima.autocorrelation(ar3))[:4]
 r = yule_walker_column_vector(acf)
 R = yule_walker_matrix(acf)
 numpy.linalg.inv(R)*r
+
+# %%
+
+sm.regression.yule_walker(ar1, order=1, method='mle')
+
+# %%
+
+sm.regression.yule_walker(ar2, order=2, method='mle')
+
+# %%
+
+sm.regression.yule_walker(ar3, order=3, method='mle')
