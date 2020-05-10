@@ -22,6 +22,10 @@ def arma_estimate_parameters(samples, order):
     model = sm.tsa.ARMA(samples, order).fit(trend='nc', disp=0)
     return model.params
 
+def partial_autocorrelation(x, max_lag):
+    pacf, _ = sm.regression.yule_walker(x, order=max_lag, method='mle')
+    return pacf
+
 def autocorrelation(x):
     n = len(x)
     x_shifted = x - x.mean()
@@ -49,3 +53,37 @@ def timeseries_comparison_plot(samples, params, tmax, title, plot_name):
         axis[i].set_xlim([0.0, tmax])
         axis[i].plot(time, samples[i,:tmax], lw=1.0)
     config.save_post_asset(figure, "mean_reversion", plot_name)
+
+def acf_pcf_plot(title, samples, ylim, max_lag, plot):
+    figure, axis = pyplot.subplots(figsize=(10, 7))
+    acf = numpy.real(autocorrelation(samples))[:max_lag]
+    pacf = partial_autocorrelation(samples, max_lag)
+    axis.set_title(title)
+    axis.set_xlabel("Time Lag (τ)")
+    axis.set_xlim([-0.1, max_lag])
+    axis.set_ylim(ylim)
+    axis.plot(range(max_lag), acf, label="ACF")
+    axis.plot(range(1, max_lag+1), pacf, label="PACF")
+    axis.legend(fontsize=16)
+    config.save_post_asset(figure, "mean_reversion", plot)
+
+# ADF Test
+
+def df_test(series):
+    adfuller(series, 'nc')
+
+def adf_test(series):
+    adfuller(series, 'c')
+
+def adf_test_with_trend(series):
+    adfuller(series, 'ct')
+
+def adfuller(series, test_type):
+    adf_result = stattools.adfuller(series, regression=test_type)
+    print('ADF Statistic: %f' % adf_result[0])
+    print('p-value: %f' % adf_result[1])
+    isStationary = adf_result[0] < adf_result[4]["5%"]
+    print(f"Is Stationary at 5%: {isStationary}")
+    print("Critical Values")
+    for key, value in adf_result[4].items():
+	       print('\t%s: %.3f' % (key, value))
