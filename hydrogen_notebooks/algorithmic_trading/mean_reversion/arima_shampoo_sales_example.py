@@ -27,9 +27,9 @@ def plot(df, title, plot_name):
     figure.autofmt_xdate()
     data = df[df.columns[0]]
     axis.plot(data)
-    axis.set_title(df.columns[0])
-    axis.set_xlabel(df.index.name)
-    axis.set_ylabel(df.columns[0])
+    axis.set_title(title)
+    axis.set_xlabel(df.index.name, labelpad=10)
+    axis.set_ylabel(df.columns[0], labelpad=10)
     pyplot.tight_layout(pad=1.0)
     config.save_post_asset(figure, "mean_reversion", plot_name)
 
@@ -39,10 +39,38 @@ def date_parser(date):
 # %%
 
 filepath = os.path.join(wd, "data", "examples", "shampoo-sales.csv")
-df = pandas.read_csv(filepath, parse_dates=['Month'], index_col='Month', date_parser=date_parser)
+sales = pandas.read_csv(filepath, parse_dates=['Month'], index_col='Month', date_parser=date_parser)
+sales.index = sales.index.to_period("M")
 
 # %%
 
 title = "Shampoo Sales"
 plot_name = "arima_example_shampoo_sales"
-plot(df, title, plot_name)
+plot(sales, title, plot_name)
+
+# %%
+
+pandas.plotting.autocorrelation_plot(sales)
+
+# %%
+
+samples = sales['Sales'].to_numpy()
+title = f"Shampoo Sales ACF"
+plot_name = "arima_example_shampoo_sales_acf"
+max_lag = 36
+arima.acf_plot(title, samples, max_lag, plot_name)
+
+# %%
+
+sales_diff = sales.diff()[1:]
+sales_diff.columns = ["Sales Difference"]
+
+title = "Shampoo Sales First Difference"
+plot_name = "arima_example_shampoo_sales_first_difference"
+plot(sales_diff, title, plot_name)
+
+# %%
+
+model = pyarima(sales, order=(5, 1, 0))
+model_fit = model.fit()
+print(model_fit.summary())

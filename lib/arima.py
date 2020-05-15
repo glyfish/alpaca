@@ -3,6 +3,12 @@ import statsmodels.api as sm
 from matplotlib import pyplot
 from lib import config
 
+def arima_generate_sample(φ, δ, d, n):
+    samples = arma_generate_sample(φ, δ, n)
+    for _ in range(d):
+        samples = numpy.cumsum(samples)
+    return samples
+
 def arma_generate_sample(φ, δ, n):
     φ = numpy.r_[1, -φ]
     δ = numpy.r_[1, δ]
@@ -65,6 +71,28 @@ def acf_pcf_plot(title, samples, ylim, max_lag, plot):
     axis.plot(range(max_lag), acf, label="ACF")
     axis.plot(range(1, max_lag+1), pacf, label="PACF")
     axis.legend(fontsize=16)
+    config.save_post_asset(figure, "mean_reversion", plot)
+
+def acf_plot(title, samples, max_lag, plot):
+    figure, axis = pyplot.subplots(figsize=(10, 7))
+    acf = numpy.real(autocorrelation(samples))[:max_lag]
+    axis.set_title(title)
+    axis.set_xlabel("Time Lag (τ)")
+    axis.set_xlim([-0.1, max_lag])
+    axis.set_ylim([-1.1, 1.1])
+    axis.plot(range(max_lag), acf)
+    axis.plot([0.0, max_lag], [0.0, 0.0], lw=4.0, color='black')
+    config.save_post_asset(figure, "mean_reversion", plot)
+
+def pcf_plot(title, samples, max_lag, plot):
+    figure, axis = pyplot.subplots(figsize=(10, 7))
+    pacf = partial_autocorrelation(samples, max_lag)
+    axis.set_title(title)
+    axis.set_xlabel("Time Lag (τ)")
+    axis.set_xlim([-0.1, max_lag])
+    axis.set_ylim([-1.1, 1.1])
+    axis.plot(range(1, max_lag+1), pacf)
+    axis.plot([0.0, max_lag], [0.0, 0.0], lw=4.0, color='black')
     config.save_post_asset(figure, "mean_reversion", plot)
 
 # ADF Test
