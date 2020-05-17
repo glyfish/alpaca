@@ -40,7 +40,6 @@ def date_parser(date):
 
 filepath = os.path.join(wd, "data", "examples", "shampoo-sales.csv")
 sales = pandas.read_csv(filepath, parse_dates=['Month'], index_col='Month', date_parser=date_parser)
-sales.index = sales.index.to_period("M")
 
 # %%
 
@@ -71,6 +70,8 @@ plot(sales_diff, title, plot_name)
 
 # %%
 
-model = pyarima(sales, order=(5, 1, 0))
-model_fit = model.fit()
+fit_sales = sales
+fit_sales.index = fit_sales.index.to_period("M")
+model = pyarima(fit_sales, order=(5, 1, 0))
+model_fit = model.fit(disp=False)
 print(model_fit.summary())

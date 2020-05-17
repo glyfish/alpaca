@@ -9,6 +9,13 @@ def arima_generate_sample(φ, δ, d, n):
         samples = numpy.cumsum(samples)
     return samples
 
+def sample_difference(samples):
+    n = len(samples)
+    diff = numpy.zeros(n-1)
+    for i in range(n-1):
+        diff[i] = samples[i+1] - samples[i]
+    return diff
+
 def arma_generate_sample(φ, δ, n):
     φ = numpy.r_[1, -φ]
     δ = numpy.r_[1, δ]
