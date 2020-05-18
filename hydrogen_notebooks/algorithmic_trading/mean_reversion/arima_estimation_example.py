@@ -69,7 +69,7 @@ d = 1
 n = 10000
 
 arima1 = arima.arima_generate_sample(φ1, δ1, d, n)
-darima1 = arima.sample_difference(ar1)
+darima1 = arima.sample_difference(arima1)
 
 # %%
 
@@ -89,4 +89,95 @@ print(model_fit.summary())
 
 title = "ARIMA(1,1,0) Residual Distribution Comparison with Normal(0, 1)"
 plot_name = "aima_estimation_1_1_0_residual_distribution"
+pdf_samples(title, normal_pdf(0.0, 1.0), model_fit.resid, plot_name, xrange=None, ylimit=None)
+
+# %%
+
+φ2 = numpy.array([0.8])
+δ2 = numpy.array([])
+d = 2
+n = 10000
+
+arima1 = arima.arima_generate_sample(φ2, δ2, d, n)
+darima1 = arima.sample_difference(arima1)
+darima2 = arima.sample_difference(darima1)
+
+# %%
+
+samples = numpy.array([arima1[:n-2], darima1[:n-2], darima2])
+title = "ARIMA(1,2,0) Comparison: " + r"$\phi=$"+f"{numpy.array2string(φ2, precision=2, separator=',')}, " + r"$\delta=$"+f"{numpy.array2string(δ2, precision=2, separator=',')}"
+plot_name = "aima_estimation_1_2_0"
+ylables = [r"$x_t$", r"$\Delta x_t$", r"$\Delta^2 x_t$"]
+timeseries_comparison_plot(samples, 500, title, ylables, plot_name)
+
+# %%
+
+model = pyarima(arima1, order=(1, 2, 0))
+model_fit = model.fit(disp=False)
+print(model_fit.summary())
+
+# %%
+
+title = "ARIMA(1,2,0) Residual Distribution Comparison with Normal(0, 1)"
+plot_name = "aima_estimation_1_2_0_residual_distribution"
+pdf_samples(title, normal_pdf(0.0, 1.0), model_fit.resid, plot_name, xrange=None, ylimit=None)
+
+# %%
+
+φ3 = numpy.array([0.4, -0.3])
+δ3 = numpy.array([])
+d = 1
+n = 10000
+
+arima1 = arima.arima_generate_sample(φ3, δ3, d, n)
+darima1 = arima.sample_difference(arima1)
+
+# %%
+
+samples = numpy.array([arima1[:n-1], darima1])
+title = "ARIMA(2,1,0) Comparison: " + r"$\phi=$"+f"{numpy.array2string(φ3, precision=2, separator=',')}, " + r"$\delta=$"+f"{numpy.array2string(δ3, precision=2, separator=',')}"
+plot_name = "aima_estimation_2_1_0"
+ylables = [r"$x_t$", r"$\Delta x_t$"]
+timeseries_comparison_plot(samples, 500, title, ylables, plot_name)
+
+# %%
+
+model = pyarima(arima1, order=(2, 1, 0))
+model_fit = model.fit(disp=False)
+print(model_fit.summary())
+
+# %%
+
+title = "ARIMA(2,1,0) Residual Distribution Comparison with Normal(0, 1)"
+plot_name = "aima_estimation_2_1_0_residual_distribution"
+pdf_samples(title, normal_pdf(0.0, 1.0), model_fit.resid, plot_name, xrange=None, ylimit=None)
+
+# %%
+
+φ4 = numpy.array([])
+δ4 = numpy.array([0.4, -0.3])
+d = 1
+n = 10000
+
+arima1 = arima.arima_generate_sample(φ4, δ4, d, n)
+darima1 = arima.sample_difference(arima1)
+
+# %%
+
+samples = numpy.array([arima1[:n-1], darima1])
+title = "ARIMA(0,1,2) Comparison: " + r"$\phi=$"+f"{numpy.array2string(φ4, precision=2, separator=',')}, " + r"$\delta=$"+f"{numpy.array2string(δ4, precision=2, separator=',')}"
+plot_name = "aima_estimation_0_1_2"
+ylables = [r"$x_t$", r"$\Delta x_t$"]
+timeseries_comparison_plot(samples, 500, title, ylables, plot_name)
+
+# %%
+
+model = pyarima(arima1, order=(0, 1, 2))
+model_fit = model.fit(disp=False)
+print(model_fit.summary())
+
+# %%
+
+title = "ARIMA(0,1,2) Residual Distribution Comparison with Normal(0, 1)"
+plot_name = "aima_estimation_0_1_2_residual_distribution"
 pdf_samples(title, normal_pdf(0.0, 1.0), model_fit.resid, plot_name, xrange=None, ylimit=None)
