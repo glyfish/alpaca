@@ -36,6 +36,22 @@ def plot(df, title, plot_name):
 def date_parser(date):
     return pandas.datetime.strptime("201"+date, "%Y-%m")
 
+def timeseries_comparison_plot(samples, labels, title, plot_name):
+    nplot, nsample = samples.shape
+    ymin = numpy.amin(samples)
+    ymax = numpy.amax(samples)
+    figure, axis = pyplot.subplots(sharex=True, figsize=(12, 9))
+    axis.set_title(title)
+    axis.set_xlabel(r"$t$")
+    axis.set_ylabel(r"$x_t$")
+    axis.set_ylim([ymin, ymax])
+    axis.set_xlim([0.0, nsample])
+    time = numpy.linspace(0, nsample-1, nsample)
+    for i in range(nplot):
+        axis.plot(time, samples[i], label=labels[i])
+    axis.legend(fontsize=16)
+    config.save_post_asset(figure, "mean_reversion", plot_name)
+
 # %%
 
 filepath = os.path.join(wd, "data", "examples", "shampoo-sales.csv")
@@ -70,8 +86,41 @@ plot(sales_diff, title, plot_name)
 
 # %%
 
-fit_sales = sales
-fit_sales.index = fit_sales.index.to_period("M")
-model = pyarima(fit_sales, order=(5, 1, 0))
+l = 25
+train_sales, test_sales = sales[:l], sales[l:]
+train_sales.index = train_sales.index.to_period("M")
+model = pyarima(train_sales, order=(5, 1, 0))
 model_fit = model.fit(disp=False)
 print(model_fit.summary())
+
+# %%
+
+residuals = pandas.DataFrame(model_fit.resid)
+residuals.plot()
+
+# %%
+
+residuals.plot(kind="kde")
+
+# %%
+
+residuals.describe()
+
+# %%
+
+history = train_sales.values.flatten()
+test = test_sales.values.flatten()
+predictions = numpy.array([])
+for i in range(len(test)):
+    model = pyarima(history, order=(5, 1, 0))
+    model_fit = model.fit(disp=False)
+    forecast = model_fit.forecast()
+    predictions = numpy.append(predictions, forecast[0])
+    history = numpy.append(history, test[i])
+
+# %%
+
+title = "Shampoo Sales Rolling Prediction"
+plot_name = "arima_example_shampoo_sales_rolling_prediction"
+labels = ["Test", "Prediction"]
+timeseries_comparison_plot(numpy.array([test, predictions]), labels, title, plot_name)
