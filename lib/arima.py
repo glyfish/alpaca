@@ -1,5 +1,6 @@
 import numpy
 import statsmodels.api as sm
+import statsmodels
 from matplotlib import pyplot
 from lib import config
 
@@ -26,11 +27,11 @@ def ar_generate_sample(φ, n):
     return sm.tsa.arma_generate_sample(φ, δ, n)
 
 def arima_estimate_parameters(samples, order):
-    model = sm.tsa.arima_model.ARIMA(samples, order=order)
+    model = statsmodels.tsa.arima_model.ARIMA(samples, order=order)
     return model.fit(disp=False)
 
 def arma_estimate_parameters(samples, order):
-    model = sm.tsa.ARMA(samples, order).fit(trend='nc', disp=0)
+    model = statsmodels.tsa.arima_model.ARMA(samples, order).fit(trend='nc', disp=0)
     return model.params
 
 def yule_walker(x, max_lag):
