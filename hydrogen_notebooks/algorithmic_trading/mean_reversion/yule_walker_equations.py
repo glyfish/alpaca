@@ -82,16 +82,16 @@ numpy.linalg.inv(R)*r
 
 # %%
 
-sm.regression.yule_walker(ar1, order=1, method='mle')
+arima.yule_walker(ar1, 1)
 
 # %%
 
-sm.regression.yule_walker(ar2, order=2, method='mle')
+arima.yule_walker(ar2, 2)
 
 # %%
 
-sm.regression.yule_walker(ar3, order=3, method='mle')
+arima.yule_walker(ar3, 3)
 
 # %%
 
-sm.regression.yule_walker(ar3, order=5, method='mle')
+arima.yule_walker(ar3, 5)

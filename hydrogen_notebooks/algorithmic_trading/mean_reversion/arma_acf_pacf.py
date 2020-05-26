@@ -8,7 +8,6 @@ import sys
 import numpy
 import pandas
 from matplotlib import pyplot
-import statsmodels.api as sm
 from lib import regression as reg
 from lib import stats
 from lib import config
@@ -48,7 +47,7 @@ title = f"AR(1) ACF-PACF Comparison: " + r"$\phi=$"+f"{numpy.array2string(φ1, p
 plot_name = "acf_pacf_ar_1_pacf_acf_comparison"
 max_lag = 10
 ylim = [-0.1, 1.1]
-arima.acf_pcf_plot(title, ar1, ylim, max_lag, plot_name)
+arima.acf_yule_walker_pcf_plot(title, ar1, ylim, max_lag, plot_name)
 
 # %%
 
@@ -56,7 +55,7 @@ title = f"AR(2) ACF-PACF Comparison: " + r"$\phi=$"+f"{numpy.array2string(φ2, p
 plot_name = "acf_pacf_ar_2_pacf_acf_comparison"
 max_lag = 10
 ylim = [-0.1, 1.1]
-arima.acf_pcf_plot(title, ar2, ylim, max_lag, plot_name)
+arima.acf_yule_walker_pcf_plot(title, ar2, ylim, max_lag, plot_name)
 
 # %%
 
@@ -64,7 +63,7 @@ title = f"AR(3) ACF-PACF Comparison: " + r"$\phi=$"+f"{numpy.array2string(φ3, p
 plot_name = "acf_pacf_ar_3_pacf_acf_comparison"
 max_lag = 10
 ylim = [-0.1, 1.1]
-arima.acf_pcf_plot(title, ar3, ylim, max_lag, plot_name)
+arima.acf_yule_walker_pcf_plot(title, ar3, ylim, max_lag, plot_name)
 
 # %%
 
@@ -93,7 +92,7 @@ title = f"MA(1) ACF-PACF Comparison: " + r"$\theta=$"+f"{numpy.array2string(θ1,
 plot_name = "acf_pacf_ma_1_pacf_acf_comparison"
 max_lag = 10
 ylim = [-1.1, 1.1]
-arima.acf_pcf_plot(title, ma1, ylim, max_lag, plot_name)
+arima.acf_yule_walker_pcf_plot(title, ma1, ylim, max_lag, plot_name)
 
 # %%
 
@@ -101,7 +100,7 @@ title = f"MA(2) ACF-PACF Comparison: " + r"$\theta=$"+f"{numpy.array2string(θ2,
 plot_name = "acf_pacf_ma_2_pacf_acf_comparison"
 max_lag = 10
 ylim = [-1.1, 1.1]
-arima.acf_pcf_plot(title, ma2, ylim, max_lag, plot_name)
+arima.acf_yule_walker_pcf_plot(title, ma2, ylim, max_lag, plot_name)
 
 # %%
 
@@ -109,4 +108,4 @@ title = f"MA(3) ACF-PACF Comparison: " + r"$\theta=$"+f"{numpy.array2string(θ3,
 plot_name = "acf_pacf_ma_3_pacf_acf_comparison"
 max_lag = 10
 ylim = [-1.1, 1.1]
-arima.acf_pcf_plot(title, ma3, ylim, max_lag, plot_name)
+arima.acf_yule_walker_pcf_plot(title, ma3, ylim, max_lag, plot_name)

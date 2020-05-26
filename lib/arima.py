@@ -3,12 +3,6 @@ import statsmodels.api as sm
 from matplotlib import pyplot
 from lib import config
 
-def arima_generate_sample(φ, δ, d, n):
-    samples = arma_generate_sample(φ, δ, n)
-    for _ in range(d):
-        samples = numpy.cumsum(samples)
-    return samples
-
 def sample_difference(samples):
     n = len(samples)
     diff = numpy.zeros(n-1)
@@ -31,11 +25,15 @@ def ar_generate_sample(φ, n):
     δ = numpy.array([1.0])
     return sm.tsa.arma_generate_sample(φ, δ, n)
 
+def arima_estimate_parameters(samples, order):
+    model = sm.tsa.arima_model.ARIMA(samples, order=order)
+    return model.fit(disp=False)
+
 def arma_estimate_parameters(samples, order):
     model = sm.tsa.ARMA(samples, order).fit(trend='nc', disp=0)
     return model.params
 
-def partial_autocorrelation(x, max_lag):
+def yule_walker(x, max_lag):
     pacf, _ = sm.regression.yule_walker(x, order=max_lag, method='mle')
     return pacf
 
@@ -47,6 +45,12 @@ def autocorrelation(x):
     h_fft = numpy.conj(x_fft) * x_fft
     ac = numpy.fft.ifft(h_fft)
     return ac[0:n]/ac[0]
+
+def acf(samples, nlags):
+    return sm.tsa.stattools.acf(samples, nlags=nlags, fft=True)
+
+def pacf(samples, nlags):
+    return sm.tsa.stattools.pacf(samples, nlags=nlags, method="ywunbiased")
 
 def timeseries_comparison_plot(samples, params, tmax, title, plot_name):
     nplot, nsample = samples.shape
@@ -67,38 +71,51 @@ def timeseries_comparison_plot(samples, params, tmax, title, plot_name):
         axis[i].plot(time, samples[i,:tmax], lw=1.0)
     config.save_post_asset(figure, "mean_reversion", plot_name)
 
-def acf_pcf_plot(title, samples, ylim, max_lag, plot):
+def acf_yule_walker_pcf_plot(title, samples, ylim, max_lag, plot):
     figure, axis = pyplot.subplots(figsize=(10, 7))
-    acf = numpy.real(autocorrelation(samples))[:max_lag]
-    pacf = partial_autocorrelation(samples, max_lag)
+    acf_values = acf(samples, max_lag)
+    pacf_values = yule_walker(samples, max_lag)
     axis.set_title(title)
     axis.set_xlabel("Time Lag (τ)")
     axis.set_xlim([-0.1, max_lag])
     axis.set_ylim(ylim)
-    axis.plot(range(max_lag), acf, label="ACF")
-    axis.plot(range(1, max_lag+1), pacf, label="PACF")
+    axis.plot(range(max_lag+1), acf_values, label="ACF")
+    axis.plot(range(1, max_lag+1), pacf_values, label="PACF")
+    axis.legend(fontsize=16)
+    config.save_post_asset(figure, "mean_reversion", plot)
+
+def acf_pcf_plot(title, samples, ylim, max_lag, plot):
+    figure, axis = pyplot.subplots(figsize=(10, 7))
+    acf_values = acf(samples, max_lag)
+    pacf_values = pacf(samples, max_lag)
+    axis.set_title(title)
+    axis.set_xlabel("Time Lag (τ)")
+    axis.set_xlim([-0.1, max_lag])
+    axis.set_ylim(ylim)
+    axis.plot(range(max_lag+1), acf_values, label="ACF")
+    axis.plot(range(max_lag+1), pacf_values, label="PACF")
     axis.legend(fontsize=16)
     config.save_post_asset(figure, "mean_reversion", plot)
 
 def acf_plot(title, samples, max_lag, plot):
     figure, axis = pyplot.subplots(figsize=(10, 7))
-    acf = numpy.real(autocorrelation(samples))[:max_lag]
+    acf_values = acf(samples, max_lag)
     axis.set_title(title)
     axis.set_xlabel("Time Lag (τ)")
     axis.set_xlim([-0.1, max_lag])
     axis.set_ylim([-1.1, 1.1])
-    axis.plot(range(max_lag), acf)
+    axis.plot(range(max_lag+1), acf_values)
     axis.plot([0.0, max_lag], [0.0, 0.0], lw=4.0, color='black')
     config.save_post_asset(figure, "mean_reversion", plot)
 
 def pcf_plot(title, samples, max_lag, plot):
     figure, axis = pyplot.subplots(figsize=(10, 7))
-    pacf = partial_autocorrelation(samples, max_lag)
+    pacf_values = pacf(samples, max_lag)
     axis.set_title(title)
     axis.set_xlabel("Time Lag (τ)")
     axis.set_xlim([-0.1, max_lag])
     axis.set_ylim([-1.1, 1.1])
-    axis.plot(range(1, max_lag+1), pacf)
+    axis.plot(range(max_lag+1), pacf_values)
     axis.plot([0.0, max_lag], [0.0, 0.0], lw=4.0, color='black')
     config.save_post_asset(figure, "mean_reversion", plot)
 
