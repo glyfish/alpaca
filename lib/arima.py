@@ -31,8 +31,7 @@ def arima_estimate_parameters(samples, order):
     return model.fit(disp=False)
 
 def arma_estimate_parameters(samples, order):
-    model = statsmodels.tsa.arima_model.ARMA(samples, order).fit(trend='nc', disp=0)
-    return model.params
+    return statsmodels.tsa.arima_model.ARMA(samples, order).fit(trend='nc', disp=0)
 
 def yule_walker(x, max_lag):
     pacf, _ = sm.regression.yule_walker(x, order=max_lag, method='mle')
@@ -123,16 +122,23 @@ def pcf_plot(title, samples, max_lag, plot):
 # ADF Test
 
 def df_test(series):
-    adfuller(series, 'nc')
+    adfuller_report(series, 'nc')
 
-def adf_test(series):
-    adfuller(series, 'c')
+def adf_report(series):
+    adfuller_report(series, 'c')
 
-def adf_test_with_trend(series):
-    adfuller(series, 'ct')
+def adf_report_with_trend(series):
+    adfuller_report(series, 'ct')
 
-def adfuller(series, test_type):
-    adf_result = stattools.adfuller(series, regression=test_type)
+def adf_test(samples):
+    return adfuller_test(series, 'c')
+
+def adfuller_test(series, test_type):
+    adf_result = sm.tsa.stattools.adfuller(series, regression=test_type)
+    return adf_result[0] < adf_result[4]["5%"]
+
+def adfuller_report(series, test_type):
+    adf_result = sm.tsa.stattools.adfuller(series, regression=test_type)
     print('ADF Statistic: %f' % adf_result[0])
     print('p-value: %f' % adf_result[1])
     isStationary = adf_result[0] < adf_result[4]["5%"]

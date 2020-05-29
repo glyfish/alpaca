@@ -47,8 +47,8 @@ def pacf_regression_comparison_plot(title, samples, ylim, max_lag, plot):
 def pacf_regression_method(samples, max_lag):
     pacf = numpy.ones(max_lag+1)
     for i in range(1, max_lag+1):
-        params = arima.arma_estimate_parameters(samples, (i, 0))
-        pacf[i] = params[i-1]
+        model = arima.arma_estimate_parameters(samples, (i, 0))
+        pacf[i] = model.params[i-1]
     return pacf
 
 # %%
@@ -114,7 +114,7 @@ title = f"AR(3) PACF Comparison: " + r"$\phi=$"+f"{numpy.array2string(φ3, preci
 plot_name = "pacf_method_comparison_ar_3_yule_walker_pacf"
 max_lag = 10
 ylim = [-0.1, 1.1]
-pcf_comparison_plot(title, ar3, ylim, max_lag, plot_name)
+pacf_comparison_plot(title, ar3, ylim, max_lag, plot_name)
 
 # %%
 
