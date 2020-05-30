@@ -25,9 +25,11 @@ def arima_generate_sample(samples, d):
     if d == 1:
         return numpy.cumsum(samples)
     else:
+        result = numpy.zeros(n)
+        result[0], result[1] = samples[0], samples[1]
         for i in range(2, n):
-            samples[i] = samples[i] + 2.0*samples[i-1] - samples[i-2]
-        return samples
+            result[i] = samples[i] + 2.0*result[i-1] - result[i-2]
+        return result
 
 def normal_pdf(μ, σ):
     def f(x):
@@ -70,6 +72,7 @@ def timeseries_comparison_plot(samples, tmax, title, ylables, plot_name):
     config.save_post_asset(figure, "mean_reversion", plot_name)
 
 # %%
+# ARIMA(1,1,0) example
 
 φ1 = numpy.array([0.8])
 δ1 = numpy.array([])
@@ -82,7 +85,7 @@ arima.adf_report(arma1)
 # %%
 
 arima1 = arima_generate_sample(arma1, d)
-darima1 = arima.sample_difference(arima1)
+darima11 = arima.sample_difference(arima1)
 
 # %%
 
@@ -90,8 +93,48 @@ arima.adf_report(darima1)
 
 # %%
 
-samples = numpy.array([arma1[:n-1], darima1])
-title = r"ARIMA(1,1,0) $\Delta x_t$ ARMA(1,0) Comparison: " + r"$\phi=$"+f"{numpy.array2string(φ1, precision=2, separator=',')}, " + r"$\delta=$"+f"{numpy.array2string(δ1, precision=2, separator=',')}"
+samples = numpy.array([arma1[1:], darima11])
+title = r"ARIMA(1,1,0) $\Delta x_t$-ARMA(1,0) Comparison: " + r"$\phi=$"+f"{numpy.array2string(φ1, precision=2, separator=',')}, " + r"$\delta=$"+f"{numpy.array2string(δ1, precision=2, separator=',')}"
 plot_name = "aima_comparison_1_1_0"
 ylables = [r"$x_t$", r"$\Delta x_t$"]
+timeseries_comparison_plot(samples, 500, title, ylables, plot_name)
+
+# %%
+# ARIMA(1,2,0) example
+
+φ1 = numpy.array([0.8])
+δ1 = numpy.array([])
+d = 2
+n = 10000
+
+arma2 = arima.arma_generate_sample(φ1, δ1, n)
+
+# %%
+
+arima.adf_report(arma2)
+
+# %%
+
+arima2 = arima_generate_sample(arma2, d)
+darima21 = arima.sample_difference(arima2)
+darima22 = arima.sample_difference(darima21)
+
+# %%
+
+arima.adf_report(arima2)
+
+# %%
+
+arima.adf_report(darima21)
+
+# %%
+
+arima.adf_report(darima22)
+
+# %%
+
+samples = numpy.array([arma2[2:], darima22])
+title = r"ARIMA(1,1,0) $\Delta x_t^2$-ARMA(1,0) Comparison: " + r"$\phi=$"+f"{numpy.array2string(φ1, precision=2, separator=',')}, " + r"$\delta=$"+f"{numpy.array2string(δ1, precision=2, separator=',')}"
+plot_name = "aima_comparison_1_1_0"
+ylables = [r"$x_t$", r"$\Delta x_t^2$"]
 timeseries_comparison_plot(samples, 500, title, ylables, plot_name)

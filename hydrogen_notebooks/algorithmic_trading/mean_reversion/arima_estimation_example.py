@@ -95,11 +95,17 @@ print(model_fit.summary())
 
 # %%
 
-title = f"ARIMA(1,1,0) ACF-PACF Comparison: " + r"$\phi=$"+f"{numpy.array2string(φ1, precision=2, separator=',')}, " + r"$\delta=$"+f"{numpy.array2string(δ1, precision=2, separator=',')}"
-plot_name = "aima_estimation_1_1_0_pacf_acf_comparison"
-max_lag = 15
-ylim = [-1.1, 1.1]
-arima.acf_pcf_plot(title, arima1, ylim, max_lag, plot_name)
+arima.adf_report(arima1)
+
+# %%
+
+arima.adf_report(darima1)
+
+
+# %%
+
+model_fit = arima.arma_estimate_parameters(darima1, (1, 0))
+print(model_fit.summary())
 
 # %%
 
@@ -108,16 +114,6 @@ plot_name = "aima_estimation_1_1_0_pacf_acf_Δx_comparison"
 max_lag = 15
 ylim = [-0.1, 1.1]
 arima.acf_pcf_plot(title, darima1, ylim, max_lag, plot_name)
-
-# %%
-
-model_fit = arima.arma_estimate_parameters(arima1, (1, 0))
-print(model_fit.summary())
-
-# %%
-
-model_fit = arima.arma_estimate_parameters(darima1, (1, 0))
-print(model_fit.summary())
 
 # %%
 
@@ -151,19 +147,26 @@ print(model_fit.summary())
 
 # %%
 
-title = f"ARIMA(1,2,0) ACF-PACF Comparison: " + r"$\phi=$"+f"{numpy.array2string(φ2, precision=2, separator=',')}, " + r"$\delta=$"+f"{numpy.array2string(δ2, precision=2, separator=',')}"
-plot_name = "aima_estimation_1_2_0_pacf_acf_comparison"
-max_lag = 15
-ylim = [-0.5, 1.1]
-arima.acf_pcf_plot(title, arima1, ylim, max_lag, plot_name)
+title = "ARIMA(1,2,0) Residual Distribution Comparison with Normal(0, 1)"
+plot_name = "aima_estimation_1_2_0_residual_distribution"
+pdf_samples(title, normal_pdf(0.0, 1.0), model_fit.resid, plot_name, xrange=None, ylimit=None)
 
 # %%
 
-title = r"ARIMA(1,2,0) $\Delta x_t$ ACF-PACF Comparison: " + r"$\phi=$"+f"{numpy.array2string(φ1, precision=2, separator=',')}, " + r"$\delta=$"+f"{numpy.array2string(δ1, precision=2, separator=',')}"
-plot_name = "aima_estimation_1_2_0_pacf_acf_Δx_comparison"
-max_lag = 15
-ylim = [-1.1, 1.1]
-arima.acf_pcf_plot(title, darima1, ylim, max_lag, plot_name)
+arima.adf_report(arima1)
+
+# %%
+
+arima.adf_report(darima1)
+
+# %%
+
+arima.adf_report(darima2)
+
+# %%
+
+model_fit = arima.arma_estimate_parameters(darima2, (1, 0))
+print(model_fit.summary())
 
 # %%
 
@@ -172,12 +175,6 @@ plot_name = "aima_estimation_1_2_0_pacf_acf_Δx_2_comparison"
 max_lag = 15
 ylim = [-0.1, 1.1]
 arima.acf_pcf_plot(title, darima2, ylim, max_lag, plot_name)
-
-# %%
-
-title = "ARIMA(1,2,0) Residual Distribution Comparison with Normal(0, 1)"
-plot_name = "aima_estimation_1_2_0_residual_distribution"
-pdf_samples(title, normal_pdf(0.0, 1.0), model_fit.resid, plot_name, xrange=None, ylimit=None)
 
 # %%
 
@@ -210,11 +207,24 @@ pdf_samples(title, normal_pdf(0.0, 1.0), model_fit.resid, plot_name, xrange=None
 
 # %%
 
-title = f"ARIMA(2,1,0) ACF-PACF Comparison: " + r"$\phi=$"+f"{numpy.array2string(φ3, precision=2, separator=',')}, " + r"$\delta=$"+f"{numpy.array2string(δ3, precision=2, separator=',')}"
+arima.adf_report(arima1)
+
+# %%
+
+arima.adf_report(darima1)
+
+# %%
+
+model_fit = arima.arma_estimate_parameters(darima1, (2, 0))
+print(model_fit.summary())
+
+# %%
+
+title = r"ARIMA(2,1,0) $\Delta x_t$ ACF-PACF Comparison: " + r"$\phi=$"+f"{numpy.array2string(φ3, precision=2, separator=',')}, " + r"$\delta=$"+f"{numpy.array2string(δ3, precision=2, separator=',')}"
 plot_name = "aima_estimation_2_1_0_pacf_acf_comparison"
 max_lag = 15
 ylim = [-0.5, 1.5]
-arima.acf_pcf_plot(title, arima1, ylim, max_lag, plot_name)
+arima.acf_pcf_plot(title, darima1, ylim, max_lag, plot_name)
 
 # %%
 
@@ -236,17 +246,6 @@ timeseries_comparison_plot(samples, 500, title, ylables, plot_name)
 
 # %%
 
-model_fit = arima.arima_estimate_parameters(arima1, (2, 1, 0))
-print(model_fit.summary())
-
-# %%
-
-title = "ARIMA(0,1,2) Residual Distribution Comparison with Normal(0, 1)"
-plot_name = "aima_estimation_0_1_2_arma_2_1_0_residual_distribution"
-pdf_samples(title, normal_pdf(0.0, 1.0), model_fit.resid, plot_name, xrange=None, ylimit=None)
-
-# %%
-
 model_fit = arima.arima_estimate_parameters(arima1, (0, 1, 2))
 print(model_fit.summary())
 
@@ -258,8 +257,21 @@ pdf_samples(title, normal_pdf(0.0, 1.0), model_fit.resid, plot_name, xrange=None
 
 # %%
 
-title = f"ARIMA(0,1,2) ACF-PACF Comparison: " + r"$\phi=$"+f"{numpy.array2string(φ4, precision=2, separator=',')}, " + r"$\delta=$"+f"{numpy.array2string(δ4, precision=2, separator=',')}"
+arima.adf_report(arima1)
+
+# %%
+
+arima.adf_report(darima1)
+
+# %%
+
+model_fit = arima.arma_estimate_parameters(darima1, (0, 2))
+print(model_fit.summary())
+
+# %%
+
+title = r"ARIMA(0,1,2) $\Delta x_t$ ACF-PACF Comparison: " + r"$\phi=$"+f"{numpy.array2string(φ4, precision=2, separator=',')}, " + r"$\delta=$"+f"{numpy.array2string(δ4, precision=2, separator=',')}"
 plot_name = "aima_estimation_0_1_2_pacf_acf_comparison"
 max_lag = 15
 ylim = [-0.75, 1.5]
-arima.acf_pcf_plot(title, arima1, ylim, max_lag, plot_name)
+arima.acf_pcf_plot(title, darima1, ylim, max_lag, plot_name)
