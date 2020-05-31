@@ -11,6 +11,16 @@ def sample_difference(samples):
         diff[i] = samples[i+1] - samples[i]
     return diff
 
+def arima_generate_sample(φ, δ, d, n):
+    assert d <= 2, "d must equal 1 or 2"
+    samples = arima.arma_generate_sample(φ, δ, n)
+    if d == 1:
+        return numpy.cumsum(samples)
+    else:
+        for i in range(2, n):
+            samples[i] = samples[i] + 2.0*samples[i-1] - samples[i-2]
+        return samples
+
 def arma_generate_sample(φ, δ, n):
     φ = numpy.r_[1, -φ]
     δ = numpy.r_[1, δ]
