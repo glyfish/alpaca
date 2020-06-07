@@ -53,6 +53,7 @@ def covariance(x, y):
     return cov/nsample - meanx * meany
 
 def cum_covariance(x, y):
+    nsample = min(len(x), len(y))
     cov = numpy.zeros(nsample)
     meanx = cummean(x)
     meany = cummean(y)

@@ -13,7 +13,7 @@ def sample_difference(samples):
 
 def arima_generate_sample(φ, δ, d, n):
     assert d <= 2, "d must equal 1 or 2"
-    samples = arima.arma_generate_sample(φ, δ, n)
+    samples = arma_generate_sample(φ, δ, n)
     if d == 1:
         return numpy.cumsum(samples)
     else:
