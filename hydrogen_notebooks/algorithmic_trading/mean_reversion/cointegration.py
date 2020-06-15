@@ -69,13 +69,14 @@ def ols_correlation_estimate(xt, yt):
 def ecm_sample_generate(arima_params, ecm_params, n):
     xt = arima.arima_generate_sample(arima_params["φ"], arima_params["δ"], arima_params["d"], n)
     yt = numpy.zeros(n)
+    ξt = numpy.random.normal(0.0, 1.0, n)
     δ = ecm_params["δ"]
     λ = ecm_params["λ"]
     α = ecm_params["α"]
     β = ecm_params["β"]
     for i in range(1, n):
         Δxt = xt[i] - xt[i-1]
-        Δyt = δ + Δxt - λ*(yt[i-1] - α - β*xt[i-1])
+        Δyt = δ + Δxt - λ*(yt[i-1] - α - β*xt[i-1]) + ξt[i]
         yt[i] = Δyt + yt[i-1]
     return xt, yt
 
@@ -117,7 +118,7 @@ comparison_plot(title, samples, labels, plot_name)
 arima.adf_report(εt)
 
 # %%
-
+# λ = 1
 arima_params = {"φ": numpy.array([0.8]), "δ": numpy.array([]), "d": 1}
 ecm_params = {"δ": 0.0, "λ": 1.0, "α": 0.0, "β": 0.5}
 n = 1000
@@ -166,6 +167,7 @@ model_fit = arima.arma_estimate_parameters(εt, (1, 0))
 print(model_fit.summary())
 
 # %%
+# λ = 0.5
 
 arima_params = {"φ": numpy.array([0.8]), "δ": numpy.array([]), "d": 1}
 ecm_params = {"δ": 0.0, "λ": 0.5, "α": 0.0, "β": 0.5}
@@ -215,6 +217,7 @@ model_fit = arima.arma_estimate_parameters(εt, (1, 0))
 print(model_fit.summary())
 
 # %%
+# λ = 0.1
 
 arima_params = {"φ": numpy.array([0.8]), "δ": numpy.array([]), "d": 1}
 ecm_params = {"δ": 0.0, "λ": 0.1, "α": 0.0, "β": 0.5}
@@ -264,9 +267,10 @@ model_fit = arima.arma_estimate_parameters(εt, (1, 0))
 print(model_fit.summary())
 
 # %%
+# λ = 1.5
 
 arima_params = {"φ": numpy.array([0.8]), "δ": numpy.array([]), "d": 1}
-ecm_params = {"δ": 0.0, "λ": 0.5, "α": 0.0, "β": 0.25}
+ecm_params = {"δ": 0.0, "λ": 1.5, "α": 0.0, "β": 0.5}
 n = 1000
 
 xt, yt = ecm_sample_generate(arima_params, ecm_params, n)
@@ -278,7 +282,7 @@ params, rsquard, err = ols_correlation_estimate(xt, yt)
 # %%
 
 title = f"ECM Simulation, " + r"$\phi=$" + f"{numpy.array2string(arima_params['φ'], precision=2, separator=',')}, " + r"$\lambda=$" + f"{format(ecm_params['λ'], '2.2f')}, " + r"$\beta=$" + f"{format(ecm_params['β'], '2.2f')}"
-plot_name = f"cointegration_ecm_simulation_corrleation_φ_0.8_β_0.25_λ_0.5"
+plot_name = f"cointegration_ecm_simulation_corrleation_φ_0.8_β_0.5_λ_1.5"
 corrletation_plot(xt, yt, params, err, rsquard, [0.85, 0.5], title, plot_name)
 
 # %%
@@ -288,7 +292,7 @@ corrletation_plot(xt, yt, params, err, rsquard, [0.85, 0.5], title, plot_name)
 # %%
 
 title = f"ECM Simulation, " + r"$\phi=$" + f"{numpy.array2string(arima_params['φ'], precision=2, separator=',')}, " + r"$\lambda=$" + f"{format(ecm_params['λ'], '2.2f')}, " + r"$\beta=$" + f"{format(ecm_params['β'], '2.2f')}"
-plot_name = f"cointegration_ecm_simulation_φ_0.8_β_0.25_λ_0.5"
+plot_name = f"cointegration_ecm_simulation_φ_0.8_β_0.5_λ_1.5"
 labels = [r"$x_t$", r"$y_t$", r"$\varepsilon_t = y_{t}-\hat{\alpha}-\hat{\beta}x_{t}$"]
 samples = numpy.array([xt, yt, εt])
 
@@ -297,7 +301,7 @@ comparison_plot(title, samples, labels, plot_name)
 # %%
 
 title = f"ECM Simulation, " + r"$\phi=$" + f"{numpy.array2string(arima_params['φ'], precision=2, separator=',')}, " + r"$\lambda=$" + f"{format(ecm_params['λ'], '2.2f')}, " + r"$\beta=$" + f"{format(ecm_params['β'], '2.2f')}"
-plot_name = f"cointegration_ecm_simulation_residual_φ_0.8_β_0.25_λ_0.5"
+plot_name = f"cointegration_ecm_simulation_residual_φ_0.8_β_0.5_λ_1.5"
 labels = [r"$\varepsilon_t = y_{t}-\hat{\alpha}-\hat{\beta}x_{t}$"]
 samples = numpy.array([εt])
 
@@ -313,6 +317,7 @@ model_fit = arima.arma_estimate_parameters(εt, (1, 0))
 print(model_fit.summary())
 
 # %%
+# λ = 1
 
 arima_params = {"φ": numpy.array([0.5]), "δ": numpy.array([]), "d": 1}
 ecm_params = {"δ": 0.0, "λ": 1.0, "α": 0.0, "β": 0.5}
@@ -362,6 +367,7 @@ model_fit = arima.arma_estimate_parameters(εt, (1, 0))
 print(model_fit.summary())
 
 # %%
+# λ = 0.5
 
 arima_params = {"φ": numpy.array([0.5]), "δ": numpy.array([]), "d": 1}
 ecm_params = {"δ": 0.0, "λ": 0.5, "α": 0.0, "β": 0.5}
@@ -411,9 +417,10 @@ model_fit = arima.arma_estimate_parameters(εt, (1, 0))
 print(model_fit.summary())
 
 # %%
+# λ = 0.1
 
 arima_params = {"φ": numpy.array([0.5]), "δ": numpy.array([]), "d": 1}
-ecm_params = {"δ": 0.0, "λ": 0.25, "α": 0.0, "β": 0.5}
+ecm_params = {"δ": 0.0, "λ": 0.1, "α": 0.0, "β": 0.5}
 n = 1000
 
 xt, yt = ecm_sample_generate(arima_params, ecm_params, n)
@@ -425,7 +432,7 @@ params, rsquard, err = ols_correlation_estimate(xt, yt)
 # %%
 
 title = f"ECM Simulation, " + r"$\phi=$" + f"{numpy.array2string(arima_params['φ'], precision=2, separator=',')}, " + r"$\lambda=$" + f"{format(ecm_params['λ'], '2.2f')}, " + r"$\beta=$" + f"{format(ecm_params['β'], '2.2f')}"
-plot_name = f"cointegration_ecm_simulation_corrleation_φ_0.5_β_0.5_λ_0.25"
+plot_name = f"cointegration_ecm_simulation_corrleation_φ_0.5_β_0.5_λ_0.1"
 corrletation_plot(xt, yt, params, err, rsquard, [0.85, 0.5], title, plot_name)
 
 # %%
@@ -435,7 +442,7 @@ corrletation_plot(xt, yt, params, err, rsquard, [0.85, 0.5], title, plot_name)
 # %%
 
 title = f"ECM Simulation, " + r"$\phi=$" + f"{numpy.array2string(arima_params['φ'], precision=2, separator=',')}, " + r"$\lambda=$" + f"{format(ecm_params['λ'], '2.2f')}, " + r"$\beta=$" + f"{format(ecm_params['β'], '2.2f')}"
-plot_name = f"cointegration_ecm_simulation_φ_0.5_β_0.5_λ_0.25"
+plot_name = f"cointegration_ecm_simulation_φ_0.5_β_0.5_λ_0.1"
 labels = [r"$x_t$", r"$y_t$", r"$\varepsilon_t = y_{t}-\hat{\alpha}-\hat{\beta}x_{t}$"]
 samples = numpy.array([xt, yt, εt])
 
@@ -444,7 +451,57 @@ comparison_plot(title, samples, labels, plot_name)
 # %%
 
 title = f"ECM Simulation, " + r"$\phi=$" + f"{numpy.array2string(arima_params['φ'], precision=2, separator=',')}, " + r"$\lambda=$" + f"{format(ecm_params['λ'], '2.2f')}, " + r"$\beta=$" + f"{format(ecm_params['β'], '2.2f')}"
-plot_name = f"cointegration_ecm_simulation_residual_φ_0.5_β_0.5_λ_0.25"
+plot_name = f"cointegration_ecm_simulation_residual_φ_0.5_β_0.5_λ_0.1"
+labels = [r"$\varepsilon_t = y_{t}-\hat{\alpha}-\hat{\beta}x_{t}$"]
+samples = numpy.array([εt])
+
+comparison_plot(title, samples, labels, plot_name)
+
+# %%
+
+arima.adf_report(εt)
+
+# %%
+
+model_fit = arima.arma_estimate_parameters(εt, (1, 0))
+print(model_fit.summary())
+
+# %%
+# λ = 1.5
+
+arima_params = {"φ": numpy.array([0.5]), "δ": numpy.array([]), "d": 1}
+ecm_params = {"δ": 0.0, "λ": 1.5, "α": 0.0, "β": 0.5}
+n = 1000
+
+xt, yt = ecm_sample_generate(arima_params, ecm_params, n)
+
+# %%
+
+params, rsquard, err = ols_correlation_estimate(xt, yt)
+
+# %%
+
+title = f"ECM Simulation, " + r"$\phi=$" + f"{numpy.array2string(arima_params['φ'], precision=2, separator=',')}, " + r"$\lambda=$" + f"{format(ecm_params['λ'], '2.2f')}, " + r"$\beta=$" + f"{format(ecm_params['β'], '2.2f')}"
+plot_name = f"cointegration_ecm_simulation_corrleation_φ_0.5_β_0.5_λ_1.5"
+corrletation_plot(xt, yt, params, err, rsquard, [0.85, 0.5], title, plot_name)
+
+# %%
+
+εt = yt - params[0] - params[1]*xt
+
+# %%
+
+title = f"ECM Simulation, " + r"$\phi=$" + f"{numpy.array2string(arima_params['φ'], precision=2, separator=',')}, " + r"$\lambda=$" + f"{format(ecm_params['λ'], '2.2f')}, " + r"$\beta=$" + f"{format(ecm_params['β'], '2.2f')}"
+plot_name = f"cointegration_ecm_simulation_φ_0.5_β_0.5_λ_λ_1.5"
+labels = [r"$x_t$", r"$y_t$", r"$\varepsilon_t = y_{t}-\hat{\alpha}-\hat{\beta}x_{t}$"]
+samples = numpy.array([xt, yt, εt])
+
+comparison_plot(title, samples, labels, plot_name)
+
+# %%
+
+title = f"ECM Simulation, " + r"$\phi=$" + f"{numpy.array2string(arima_params['φ'], precision=2, separator=',')}, " + r"$\lambda=$" + f"{format(ecm_params['λ'], '2.2f')}, " + r"$\beta=$" + f"{format(ecm_params['β'], '2.2f')}"
+plot_name = f"cointegration_ecm_simulation_residual_φ_0.5_β_0.5_λ_1.5"
 labels = [r"$\varepsilon_t = y_{t}-\hat{\alpha}-\hat{\beta}x_{t}$"]
 samples = numpy.array([εt])
 
