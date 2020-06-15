@@ -56,6 +56,13 @@ def autocorrelation(x):
     ac = numpy.fft.ifft(h_fft)
     return ac[0:n]/ac[0]
 
+def ols_correlation_estimate(xt, yt):
+    xt = sm.add_constant(xt)
+    model = sm.OLS(yt, xt)
+    results = model.fit()
+    print(results.summary())
+    return results.params, results.rsquared, results.bse
+
 def acf(samples, nlags):
     return sm.tsa.stattools.acf(samples, nlags=nlags, fft=True)
 
