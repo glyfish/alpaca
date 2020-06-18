@@ -125,6 +125,14 @@ arima.adf_report(εt)
 
 # %%
 
+title = f"ECM Simulation ACF-PACF, " + r"$\phi=$" + f"{numpy.array2string(arima_params['φ'], precision=2, separator=',')}, " + r"$\lambda=$" + f"{format(ecm_params['λ'], '2.2f')}, " + r"$\beta=$" + f"{format(ecm_params['β'], '2.2f')}, " + r"$\gamma=$" + f"{format(ecm_params['γ'], '2.2f')}"
+plot_name = f"cointegration_ecm_simulation_acf_pacf{image_postfix}"
+max_lag = 15
+ylim = [-0.1, 1.1]
+arima.acf_pcf_plot(title, εt, ylim, max_lag, plot_name)
+
+# %%
+
 model_fit = arima.arma_estimate_parameters(εt, (1, 0))
 print(model_fit.summary())
 
@@ -172,6 +180,14 @@ comparison_plot(title, samples, labels, plot_name)
 # %%
 
 arima.adf_report(εt)
+
+# %%
+
+title = f"ECM Simulation ACF-PACF, " + r"$\phi=$" + f"{numpy.array2string(arima_params['φ'], precision=2, separator=',')}, " + r"$\lambda=$" + f"{format(ecm_params['λ'], '2.2f')}, " + r"$\beta=$" + f"{format(ecm_params['β'], '2.2f')}, " + r"$\gamma=$" + f"{format(ecm_params['γ'], '2.2f')}"
+plot_name = f"cointegration_ecm_simulation_acf_pacf{image_postfix}"
+max_lag = 15
+ylim = [-0.1, 1.1]
+arima.acf_pcf_plot(title, εt, ylim, max_lag, plot_name)
 
 # %%
 
@@ -225,6 +241,14 @@ arima.adf_report(εt)
 
 # %%
 
+title = f"ECM Simulation ACF-PACF, " + r"$\phi=$" + f"{numpy.array2string(arima_params['φ'], precision=2, separator=',')}, " + r"$\lambda=$" + f"{format(ecm_params['λ'], '2.2f')}, " + r"$\beta=$" + f"{format(ecm_params['β'], '2.2f')}, " + r"$\gamma=$" + f"{format(ecm_params['γ'], '2.2f')}"
+plot_name = f"cointegration_ecm_simulation_acf_pacf{image_postfix}"
+max_lag = 15
+ylim = [-0.1, 1.1]
+arima.acf_pcf_plot(title, εt, ylim, max_lag, plot_name)
+
+# %%
+
 model_fit = arima.arma_estimate_parameters(εt, (1, 0))
 print(model_fit.summary())
 
@@ -275,6 +299,14 @@ arima.adf_report(εt)
 
 # %%
 
+title = f"ECM Simulation ACF-PACF, " + r"$\phi=$" + f"{numpy.array2string(arima_params['φ'], precision=2, separator=',')}, " + r"$\lambda=$" + f"{format(ecm_params['λ'], '2.2f')}, " + r"$\beta=$" + f"{format(ecm_params['β'], '2.2f')}, " + r"$\gamma=$" + f"{format(ecm_params['γ'], '2.2f')}"
+plot_name = f"cointegration_ecm_simulation_acf_pacf{image_postfix}"
+max_lag = 15
+ylim = [-0.1, 1.1]
+arima.acf_pcf_plot(title, εt, ylim, max_lag, plot_name)
+
+# %%
+
 model_fit = arima.arma_estimate_parameters(εt, (1, 0))
 print(model_fit.summary())
 # %%
@@ -321,6 +353,14 @@ comparison_plot(title, samples, labels, plot_name)
 # %%
 
 arima.adf_report(εt)
+
+# %%
+
+title = f"ECM Simulation ACF-PACF, " + r"$\phi=$" + f"{numpy.array2string(arima_params['φ'], precision=2, separator=',')}, " + r"$\lambda=$" + f"{format(ecm_params['λ'], '2.2f')}, " + r"$\beta=$" + f"{format(ecm_params['β'], '2.2f')}, " + r"$\gamma=$" + f"{format(ecm_params['γ'], '2.2f')}"
+plot_name = f"cointegration_ecm_simulation_acf_pacf{image_postfix}"
+max_lag = 15
+ylim = [-0.1, 1.1]
+arima.acf_pcf_plot(title, εt, ylim, max_lag, plot_name)
 
 # %%
 
