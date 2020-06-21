@@ -36,6 +36,21 @@ def ar_generate_sample(φ, n):
     δ = numpy.array([1.0])
     return sm.tsa.arma_generate_sample(φ, δ, n)
 
+def ecm_sample_generate(arima_params, ecm_params, n):
+    xt = arima_generate_sample(arima_params["φ"], arima_params["δ"], arima_params["d"], n)
+    yt = numpy.zeros(n)
+    ξt = numpy.random.normal(0.0, 1.0, n)
+    δ = ecm_params["δ"]
+    λ = ecm_params["λ"]
+    α = ecm_params["α"]
+    β = ecm_params["β"]
+    γ = ecm_params["γ"]
+    for i in range(1, n):
+        Δxt = xt[i] - xt[i-1]
+        Δyt = δ + γ*Δxt - λ*(yt[i-1] - α - β*xt[i-1]) + ξt[i]
+        yt[i] = Δyt + yt[i-1]
+    return xt, yt
+
 def arima_estimate_parameters(samples, order):
     model = statsmodels.tsa.arima_model.ARIMA(samples, order=order)
     return model.fit(disp=False)
@@ -56,7 +71,7 @@ def autocorrelation(x):
     ac = numpy.fft.ifft(h_fft)
     return ac[0:n]/ac[0]
 
-def ols_correlation_estimate(xt, yt):
+def ols_estimate(xt, yt):
     xt = sm.add_constant(xt)
     model = sm.OLS(yt, xt)
     results = model.fit()
