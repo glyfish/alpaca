@@ -4,6 +4,8 @@ import statsmodels
 from matplotlib import pyplot
 from lib import config
 
+# Sample generation
+
 def sample_difference(samples):
     n = len(samples)
     diff = numpy.zeros(n-1)
@@ -37,7 +39,10 @@ def ar_generate_sample(φ, n):
     return sm.tsa.arma_generate_sample(φ, δ, n)
 
 def ecm_sample_generate(arima_params, ecm_params, n):
-    xt = arima_generate_sample(arima_params["φ"], arima_params["δ"], arima_params["d"], n)
+    δ = arima_params["δ"]
+    φ = arima_params["φ"]
+    d = arima_params["d"]
+    xt = arima_generate_sample(φ, δ, d, n)
     yt = numpy.zeros(n)
     ξt = numpy.random.normal(0.0, 1.0, n)
     δ = ecm_params["δ"]
@@ -47,9 +52,11 @@ def ecm_sample_generate(arima_params, ecm_params, n):
     γ = ecm_params["γ"]
     for i in range(1, n):
         Δxt = xt[i] - xt[i-1]
-        Δyt = δ + γ*Δxt - λ*(yt[i-1] - α - β*xt[i-1]) + ξt[i]
+        Δyt = δ + γ*Δxt + λ*(yt[i-1] - α - β*xt[i-1]) + ξt[i]
         yt[i] = Δyt + yt[i-1]
     return xt, yt
+
+# Parameter estimation
 
 def arima_estimate_parameters(samples, order):
     model = statsmodels.tsa.arima_model.ARIMA(samples, order=order)
@@ -77,6 +84,15 @@ def ols_estimate(xt, yt):
     results = model.fit()
     print(results.summary())
     return results.params, results.rsquared, results.bse
+
+def ecm_estimate_parameters(xt, yt, α, β):
+    n = len(xt)
+    εt = yt - α - β*xt
+    Δxt = sample_difference(xt)
+    Δyt = sample_difference(yt)
+    return ols_estimate(numpy.transpose(numpy.array([Δxt, εt[:n-1]])), Δyt)
+
+# ACF-PACF
 
 def acf(samples, nlags):
     return sm.tsa.stattools.acf(samples, nlags=nlags, fft=True)
@@ -154,13 +170,13 @@ def pcf_plot(title, samples, max_lag, plot):
 # ADF Test
 
 def df_test(series):
-    adfuller_report(series, 'nc')
+    return adfuller_report(series, 'nc')
 
 def adf_report(series):
-    adfuller_report(series, 'c')
+    return adfuller_report(series, 'c')
 
 def adf_report_with_trend(series):
-    adfuller_report(series, 'ct')
+    return adfuller_report(series, 'ct')
 
 def adf_test(samples):
     return adfuller_test(series, 'c')
@@ -178,3 +194,4 @@ def adfuller_report(series, test_type):
     print("Critical Values")
     for key, value in adf_result[4].items():
 	       print('\t%s: %.3f' % (key, value))
+    return adf_result[0] < adf_result[4]["5%"]

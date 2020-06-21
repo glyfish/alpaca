@@ -59,7 +59,7 @@ def corrletation_plot(xt, yt, params, err, β_r_squared, legend_anchor, title, p
 # %%
 
 arima_params = {"φ": numpy.array([0.5]), "δ": numpy.array([]), "d": 1}
-ecm_params = {"δ": 0.0, "γ": 0.25, "λ": 0.75, "α": 0.0, "β": 0.5}
+ecm_params = {"δ": 0.0, "γ": 0.5, "λ": -0.5, "α": 0.0, "β": 0.5}
 n = 1000
 image_postfix = f"_φ_{format(arima_params['φ'][0], '1.1f')}_β_{format(ecm_params['β'], '1.1f')}_λ_{format(ecm_params['λ'], '1.1f')}_γ_{format(ecm_params['γ'], '1.1f')}"
 
@@ -94,7 +94,84 @@ comparison_plot(title, samples, labels, plot_name)
 
 # %%
 
-Δxt = arima.sample_difference(xt)
-Δyt = arima.sample_difference(yt)
+arima.ecm_estimate_parameters(xt, yt, params[0], params[1])
 
-arima.ols_estimate(numpy.transpose(numpy.array([Δxt, εt[1:]])), Δyt)
+# %%
+
+arima_params = {"φ": numpy.array([0.9]), "δ": numpy.array([]), "d": 1}
+ecm_params = {"δ": 0.0, "γ": 0.5, "λ": -0.5, "α": 0.0, "β": 0.5}
+n = 1000
+image_postfix = f"_φ_{format(arima_params['φ'][0], '1.1f')}_β_{format(ecm_params['β'], '1.1f')}_λ_{format(ecm_params['λ'], '1.1f')}_γ_{format(ecm_params['γ'], '1.1f')}"
+
+xt, yt = arima.ecm_sample_generate(arima_params, ecm_params, n)
+
+# %%
+
+params, rsquard, err = arima.ols_estimate(xt, yt)
+
+# %%
+
+title = f"ECM Simulation, " + r"$\phi=$" + f"{numpy.array2string(arima_params['φ'], precision=2, separator=',')}, " + r"$\lambda=$" + f"{format(ecm_params['λ'], '2.2f')}, " + r"$\beta=$" + f"{format(ecm_params['β'], '2.2f')}, " + r"$\gamma=$" + f"{format(ecm_params['γ'], '2.2f')}"
+plot_name = f"ecm_parameter_estimation_β{image_postfix}"
+corrletation_plot(xt, yt, params, err, rsquard, [0.85, 0.5], title, plot_name)
+
+# %%
+
+εt = yt - params[0] - params[1]*xt
+
+# %%
+
+arima.adf_report(εt)
+
+# %%
+
+title = f"ECM Simulation, " + r"$\phi=$" + f"{numpy.array2string(arima_params['φ'], precision=2, separator=',')}, " + r"$\lambda=$" + f"{format(ecm_params['λ'], '2.2f')}, " + r"$\beta=$" + f"{format(ecm_params['β'], '2.2f')}, " + r"$\gamma=$" + f"{format(ecm_params['γ'], '2.2f')}"
+plot_name = f"ecm_parameter_estimation_simualtion{image_postfix}"
+labels = [r"$x_t$", r"$y_t$", r"$\hat{\varepsilon_t} = y_{t}-\hat{\alpha}-\hat{\beta}x_{t}$"]
+samples = numpy.array([xt, yt, εt])
+
+comparison_plot(title, samples, labels, plot_name)
+
+# %%
+
+arima.ecm_estimate_parameters(xt, yt, params[0], params[1])
+
+# %%
+
+arima_params = {"φ": numpy.array([0.5]), "δ": numpy.array([]), "d": 1}
+ecm_params = {"δ": 0.0, "γ": 0.75, "λ": -0.25, "α": 0.0, "β": 0.25}
+n = 1000
+image_postfix = f"_φ_{format(arima_params['φ'][0], '1.1f')}_β_{format(ecm_params['β'], '1.1f')}_λ_{format(ecm_params['λ'], '1.1f')}_γ_{format(ecm_params['γ'], '1.1f')}"
+
+xt, yt = arima.ecm_sample_generate(arima_params, ecm_params, n)
+
+# %%
+
+params, rsquard, err = arima.ols_estimate(xt, yt)
+
+# %%
+
+title = f"ECM Simulation, " + r"$\phi=$" + f"{numpy.array2string(arima_params['φ'], precision=2, separator=',')}, " + r"$\lambda=$" + f"{format(ecm_params['λ'], '2.2f')}, " + r"$\beta=$" + f"{format(ecm_params['β'], '2.2f')}, " + r"$\gamma=$" + f"{format(ecm_params['γ'], '2.2f')}"
+plot_name = f"ecm_parameter_estimation_β{image_postfix}"
+corrletation_plot(xt, yt, params, err, rsquard, [0.85, 0.5], title, plot_name)
+
+# %%
+
+εt = yt - params[0] - params[1]*xt
+
+# %%
+
+arima.adf_report(εt)
+
+# %%
+
+title = f"ECM Simulation, " + r"$\phi=$" + f"{numpy.array2string(arima_params['φ'], precision=2, separator=',')}, " + r"$\lambda=$" + f"{format(ecm_params['λ'], '2.2f')}, " + r"$\beta=$" + f"{format(ecm_params['β'], '2.2f')}, " + r"$\gamma=$" + f"{format(ecm_params['γ'], '2.2f')}"
+plot_name = f"ecm_parameter_estimation_simualtion{image_postfix}"
+labels = [r"$x_t$", r"$y_t$", r"$\hat{\varepsilon_t} = y_{t}-\hat{\alpha}-\hat{\beta}x_{t}$"]
+samples = numpy.array([xt, yt, εt])
+
+comparison_plot(title, samples, labels, plot_name)
+
+# %%
+
+arima.ecm_estimate_parameters(xt, yt, params[0], params[1])
