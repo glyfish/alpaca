@@ -43,13 +43,23 @@ def ecm_sample_generate(arima_params, ecm_params, n):
     φ = arima_params["φ"]
     d = arima_params["d"]
     xt = arima_generate_sample(φ, δ, d, n)
-    yt = numpy.zeros(n)
-    ξt = numpy.random.normal(0.0, 1.0, n)
-    δ = ecm_params["δ"]
+    if "δ" in ecm_params:
+        δ = ecm_params["δ"]
+    else:
+        δ = 0.0
+    if "α" in ecm_params:
+        α = ecm_params["α"]
+    else:
+        α = 0.0
+    if "σ" in ecm_params:
+        σ = ecm_params["σ"]
+    else:
+        σ = 1.0
     λ = ecm_params["λ"]
-    α = ecm_params["α"]
     β = ecm_params["β"]
     γ = ecm_params["γ"]
+    yt = numpy.zeros(n)
+    ξt = numpy.random.normal(0.0, σ, n)
     for i in range(1, n):
         Δxt = xt[i] - xt[i-1]
         Δyt = δ + γ*Δxt + λ*(yt[i-1] - α - β*xt[i-1]) + ξt[i]
