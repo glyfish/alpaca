@@ -13,9 +13,9 @@ def sample_difference(samples):
         diff[i] = samples[i+1] - samples[i]
     return diff
 
-def arima_generate_sample(φ, δ, d, n):
+def arima_generate_sample(φ, δ, d, n, σ=1.0):
     assert d <= 2, "d must equal 1 or 2"
-    samples = arma_generate_sample(φ, δ, n)
+    samples = arma_generate_sample(φ, δ, n, σ)
     if d == 1:
         return numpy.cumsum(samples)
     else:
@@ -23,20 +23,20 @@ def arima_generate_sample(φ, δ, d, n):
             samples[i] = samples[i] + 2.0*samples[i-1] - samples[i-2]
         return samples
 
-def arma_generate_sample(φ, δ, n):
+def arma_generate_sample(φ, δ, n, σ=1.0):
     φ = numpy.r_[1, -φ]
     δ = numpy.r_[1, δ]
-    return sm.tsa.arma_generate_sample(φ, δ, n)
+    return sm.tsa.arma_generate_sample(φ, δ, n, σ)
 
-def ma_generate_sample(δ, n):
+def ma_generate_sample(δ, n, σ=1.0):
     φ = numpy.array(1.0)
     δ = numpy.r_[1, δ]
-    return sm.tsa.arma_generate_sample(φ, δ, n)
+    return sm.tsa.arma_generate_sample(φ, δ, n, σ)
 
-def ar_generate_sample(φ, n):
+def ar_generate_sample(φ, n, σ=1.0):
     φ = numpy.r_[1, -φ]
     δ = numpy.array([1.0])
-    return sm.tsa.arma_generate_sample(φ, δ, n)
+    return sm.tsa.arma_generate_sample(φ, δ, n, σ)
 
 def ecm_sample_generate(arima_params, ecm_params, n):
     δ = arima_params["δ"]
