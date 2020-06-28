@@ -80,7 +80,7 @@ def ecm_sample_generate(arima_params, ecm_params, n):
 
 # %%
 
-arima_params = {"φ": numpy.array([0.8]), "δ": numpy.array([]), "d": 1}
+arima_params = {"φ": numpy.array([0.9]), "δ": numpy.array([]), "d": 1}
 ecm_params = {"δ": 0.0, "γ": 0.5, "λ": -0.5, "α": 0.0, "β": 0.5, "σ": 1.0}
 n = 1000
 image_postfix = f"_φ_{format(arima_params['φ'][0], '1.1f')}_β_{format(ecm_params['β'], '1.1f')}_λ_{format(ecm_params['λ'], '1.1f')}_γ_{format(ecm_params['γ'], '1.1f')}_σ_{format(ecm_params['σ'], '1.1f')}"
