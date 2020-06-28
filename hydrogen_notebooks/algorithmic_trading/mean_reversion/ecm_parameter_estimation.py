@@ -14,6 +14,7 @@ from lib import config
 from lib import var
 from lib import arima
 import statsmodels.api as sm
+import scipy
 
 pyplot.style.use(config.glyfish_style)
 
@@ -55,6 +56,28 @@ def corrletation_plot(xt, yt, params, err, β_r_squared, legend_anchor, title, p
               bbox=bbox, fontsize=14.0, zorder=7)
     axis.legend(bbox_to_anchor=legend_anchor).set_zorder(7)
     config.save_post_asset(figure, "mean_reversion", plot_name)
+
+def pdf_samples(title, pdf, samples, plot, xrange=None, ylimit=None):
+    figure, axis = pyplot.subplots(figsize=(10, 7))
+    axis.set_xlabel(r"$x$")
+    axis.set_title(title)
+    axis.set_prop_cycle(config.distribution_sample_cycler)
+    _, bins, _ = axis.hist(samples, 50, rwidth=0.8, density=True, label=f"Samples", zorder=5)
+    if xrange is None:
+        delta = (bins[-1] - bins[0]) / 500.0
+        xrange = numpy.arange(bins[0], bins[-1], delta)
+    sample_distribution = [pdf(val) for val in xrange]
+    axis.set_xlim([xrange[0], xrange[-1]])
+    if ylimit is not None:
+        axis.set_ylim(ylimit)
+    axis.plot(xrange, sample_distribution, label=f"Target PDF", zorder=6)
+    axis.legend(bbox_to_anchor=(0.75, 0.9))
+    config.save_post_asset(figure, "mean_reversion", plot)
+
+def normal_pdf(μ, σ):
+    def f(x):
+        return scipy.stats.norm.pdf(x, μ, σ)
+    return f
 
 # %%
 
@@ -98,6 +121,15 @@ arima.ecm_estimate_parameters(xt, yt, params[0], params[1])
 
 # %%
 
+title = f"ECM Simulation Residual, " + r"$\phi=$" + f"{numpy.array2string(arima_params['φ'], precision=2, separator=',')}, " + r"$\lambda=$" + f"{format(ecm_params['λ'], '2.2f')}, " + r"$\beta=$" + f"{format(ecm_params['β'], '2.2f')}, " + r"$\gamma=$" + f"{format(ecm_params['γ'], '2.2f')}, " + r"$\sigma=$" + f"{format(ecm_params['σ'], '2.2f')}"
+plot_name = f"ecm_parameter_estimation_residual{image_postfix}"
+labels = [r"$\varepsilon_t = y_{t}-\hat{\alpha}-\hat{\beta}x_{t}$"]
+samples = numpy.array([εt])
+
+comparison_plot(title, samples, labels, plot_name)
+
+# %%
+
 title = f"ECM Simulation, " + r"$\phi=$" + f"{numpy.array2string(arima_params['φ'], precision=2, separator=',')}, " + r"$\lambda=$" + f"{format(ecm_params['λ'], '2.2f')}, " + r"$\beta=$" + f"{format(ecm_params['β'], '2.2f')}, " + r"$\gamma=$" + f"{format(ecm_params['γ'], '2.2f')}, " + r"$\sigma=$" + f"{format(ecm_params['σ'], '2.2f')}"
 plot_name = f"ecm_parameter_estimation_acf_pacf{image_postfix}"
 max_lag = 15
@@ -108,6 +140,27 @@ arima.acf_pcf_plot(title, εt, ylim, max_lag, plot_name)
 
 model_fit = arima.arma_estimate_parameters(εt, (1, 0))
 print(model_fit.summary())
+
+# %%
+
+ηt = model_fit.resid
+
+# %%
+
+ηt_mean = numpy.mean(ηt)
+ηt_sigma = numpy.sqrt(numpy.var(ηt))
+title = f"ECM Simulation "+ r"$\varepsilon_{t}$ Residual: $\hat{\phi}=$" + f"{numpy.array2string(model_fit.params[0], precision=2, separator=',')}, " + r"$\mu_{\eta_t}=$" + f"{format(ηt_mean, '1.1f')}, "  + r"$\sigma_{\eta_t}=$" + f"{format(ηt_sigma, '1.1f')}"
+plot_name = f"ecm_parameter_estimation_ar_residual{image_postfix}"
+labels = [r"$\eta_t = \hat{\varepsilon_t}-\hat{\phi}\hat{\varepsilon}_{t-1}$"]
+samples = numpy.array([ηt])
+
+comparison_plot(title, samples, labels, plot_name)
+
+# %%
+
+title = r"$\varepsilon_{t}$ Residual Distribution Comparison with Normal(0, 1)"
+plot_name = "aima_estimation_1_1_0_residual_distribution"
+pdf_samples(title, normal_pdf(0.0, 1.0), model_fit.resid, plot_name, xrange=None, ylimit=None)
 
 # %%
 
@@ -214,3 +267,24 @@ arima.acf_pcf_plot(title, εt, ylim, max_lag, plot_name)
 
 model_fit = arima.arma_estimate_parameters(εt, (1, 0))
 print(model_fit.summary())
+
+# %%
+
+ηt = model_fit.resid
+
+# %%
+
+ηt_mean = numpy.mean(ηt)
+ηt_sigma = numpy.sqrt(numpy.var(ηt))
+title = f"ECM Simulation "+ r"$\varepsilon_{t}$ Residual: $\hat{\phi}=$" + f"{numpy.array2string(model_fit.params[0], precision=2, separator=',')}, " + r"$\mu_{\eta_t}=$" + f"{format(ηt_mean, '1.1f')}, "  + r"$\sigma_{\eta_t}=$" + f"{format(ηt_sigma, '1.1f')}"
+plot_name = f"ecm_parameter_estimation_ar_residual{image_postfix}"
+labels = [r"$\eta_t = \hat{\varepsilon_t}-\hat{\phi}\hat{\varepsilon}_{t-1}$"]
+samples = numpy.array([ηt])
+
+comparison_plot(title, samples, labels, plot_name)
+
+# %%
+
+title = r"$\varepsilon_{t}$ Residual Distribution Comparison with Normal(0, 1)"
+plot_name = "aima_estimation_1_1_0_residual_distribution"
+pdf_samples(title, normal_pdf(0.0, 1.0), model_fit.resid, plot_name, xrange=None, ylimit=None)
