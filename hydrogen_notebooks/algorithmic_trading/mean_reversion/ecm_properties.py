@@ -105,6 +105,12 @@ def corrletation_plot(xt, yt, params, err, β_r_squared, legend_anchor, title, p
     axis.legend(bbox_to_anchor=legend_anchor).set_zorder(7)
     config.save_post_asset(figure, "mean_reversion", plot_name)
 
+def var_xt(φ, n):
+    sum = 0.0
+    for k in range(1, n):
+        sum += 2.0*(n-k)*φ**k
+    return (n+sum) / (1-φ**2)
+
 # %%
 
 arima_params = {"φ": numpy.array([0.5]), "δ": numpy.array([]), "d": 1}
@@ -117,7 +123,9 @@ samples = generate_ensemble(arima_params, ecm_params, n, m)
 
 # %%
 
-title = f"ECM Ensemple, " + r"$\phi=$" + f"{numpy.array2string(arima_params['φ'], precision=2, separator=',')}, " + r"$\lambda=$" + f"{format(ecm_params['λ'], '2.2f')}, " + r"$\beta=$" + f"{format(ecm_params['β'], '2.2f')}, " + r"$\gamma=$" + f"{format(ecm_params['γ'], '2.2f')}, " + r"$\sigma=$" + f"{format(ecm_params['σ'], '2.2f')}, size={m}"
+σ = numpy.sqrt(var_xt(arima_params['φ'][0], n))
+
+title = f"ECM Ensemple, " + r"$\phi=$" + f"{numpy.array2string(arima_params['φ'], precision=2, separator=',')}, " + r"$\lambda=$" + f"{format(ecm_params['λ'], '2.2f')}, " + r"$\beta=$" + f"{format(ecm_params['β'], '2.2f')}, " + r"$\gamma=$" + f"{format(ecm_params['γ'], '2.2f')}, " + r"$\sigma=$" + f"{format(ecm_params['σ'], '2.2f')}, " + r"$\hat{\sigma}=$" + f"{format(σ, '2.2f')}, size={m}"
 plot_name = f"ecm_properies_ensemble_x_t{image_postfix}"
 ylab = r"$x_t$"
 ensemble_plot(samples[0::2], [10.0, 100.0], title, ylab, plot_name)
