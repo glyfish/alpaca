@@ -88,11 +88,12 @@ def autocorrelation(x):
     ac = numpy.fft.ifft(h_fft)
     return ac[0:n]/ac[0]
 
-def ols_estimate(xt, yt):
+def ols_estimate(xt, yt, show_summary=True):
     xt = sm.add_constant(xt)
     model = sm.OLS(yt, xt)
     results = model.fit()
-    print(results.summary())
+    if show_summary:
+        print(results.summary())
     return results.params, results.rsquared, results.bse
 
 def ecm_estimate_parameters(xt, yt, α, β):

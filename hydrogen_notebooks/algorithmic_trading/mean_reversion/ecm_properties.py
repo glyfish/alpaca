@@ -124,15 +124,25 @@ samples = generate_ensemble(arima_params, ecm_params, n, m)
 # %%
 
 σ = numpy.sqrt(var_xt(arima_params['φ'][0], n))
+xt = samples[0::2]
 
-title = f"ECM Ensemple, " + r"$\phi=$" + f"{numpy.array2string(arima_params['φ'], precision=2, separator=',')}, " + r"$\lambda=$" + f"{format(ecm_params['λ'], '2.2f')}, " + r"$\beta=$" + f"{format(ecm_params['β'], '2.2f')}, " + r"$\gamma=$" + f"{format(ecm_params['γ'], '2.2f')}, " + r"$\sigma=$" + f"{format(ecm_params['σ'], '2.2f')}, " + r"$\hat{\sigma}=$" + f"{format(σ, '2.2f')}, size={m}"
+title = f"ECM Ensemble, " + r"$\phi=$" + f"{numpy.array2string(arima_params['φ'], precision=2, separator=',')}, " + r"$\lambda=$" + f"{format(ecm_params['λ'], '2.2f')}, " + r"$\beta=$" + f"{format(ecm_params['β'], '2.2f')}, " + r"$\gamma=$" + f"{format(ecm_params['γ'], '2.2f')}, " + r"$\sigma=$" + f"{format(ecm_params['σ'], '2.2f')}, " + r"$\hat{\sigma}=$" + f"{format(σ, '2.2f')}, size={m}"
 plot_name = f"ecm_properies_ensemble_x_t{image_postfix}"
 ylab = r"$x_t$"
-ensemble_plot(samples[0::2], [10.0, 100.0], title, ylab, plot_name)
+ensemble_plot(xt, [10.0, 100.0], title, ylab, plot_name)
 
 # %%
 
-title = f"ECM Ensemple, " + r"$\phi=$" + f"{numpy.array2string(arima_params['φ'], precision=2, separator=',')}, " + r"$\lambda=$" + f"{format(ecm_params['λ'], '2.2f')}, " + r"$\beta=$" + f"{format(ecm_params['β'], '2.2f')}, " + r"$\gamma=$" + f"{format(ecm_params['γ'], '2.2f')}, " + r"$\sigma=$" + f"{format(ecm_params['σ'], '2.2f')}, size={m}"
+title = f"ECM Ensemble, " + r"$\phi=$" + f"{numpy.array2string(arima_params['φ'], precision=2, separator=',')}, " + r"$\lambda=$" + f"{format(ecm_params['λ'], '2.2f')}, " + r"$\beta=$" + f"{format(ecm_params['β'], '2.2f')}, " + r"$\gamma=$" + f"{format(ecm_params['γ'], '2.2f')}, " + r"$\sigma=$" + f"{format(ecm_params['σ'], '2.2f')}, size={m}"
 plot_name = f"ecm_properies_ensemble_x_t{image_postfix}"
 ylab = r"$y_t$"
-ensemble_plot(samples[1::2], [10.0, 75.0], title, ylab, plot_name)
+yt = samples[1::2]
+ensemble_plot(yt, [10.0, 75.0], title, ylab, plot_name)
+
+# %%
+
+β_estimate = numpy.zeros(n)
+for i in range(n):
+    params, rsquard, err = arima.ols_estimate(xt[0], yt[0], False)
+
+εt = yt - ecm_params['β']*xt
