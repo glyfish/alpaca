@@ -116,7 +116,7 @@ def var_xt(φ, n):
 arima_params = {"φ": numpy.array([0.5]), "δ": numpy.array([]), "d": 1}
 ecm_params = {"δ": 0.0, "γ": 0.5, "λ": -0.5, "α": 0.0, "β": 0.5, "σ": 1.0}
 n = 1000
-m = 1000
+m = 500
 image_postfix = f"_φ_{format(arima_params['φ'][0], '1.1f')}_β_{format(ecm_params['β'], '1.1f')}_λ_{format(ecm_params['λ'], '1.1f')}_γ_{format(ecm_params['γ'], '1.1f')}_σ_{format(ecm_params['σ'], '1.1f')}"
 
 samples = generate_ensemble(arima_params, ecm_params, n, m)
@@ -141,8 +141,19 @@ ensemble_plot(yt, [10.0, 75.0], title, ylab, plot_name)
 
 # %%
 
-β_estimate = numpy.zeros(n)
-for i in range(n):
-    params, rsquard, err = arima.ols_estimate(xt[0], yt[0], False)
+β_estimate = numpy.zeros(m)
+for i in range(m):
+    params, rsquard, err = arima.ols_estimate(xt[i], yt[i], False)
+    β_estimate[i] = params[1]
 
-εt = yt - ecm_params['β']*xt
+β_avg = numpy.mean(β_estimate)
+β_std = numpy.std(β_estimate)
+
+# %%
+
+εt = yt - β_avg*xt
+
+# %%
+
+εt.shape
+stats.correletion_coefficient(εt[m-1:][0], xt[m-1:][0])

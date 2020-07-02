@@ -54,7 +54,7 @@ def covariance(x, y):
 
 def correletion_coefficient(x, y):
     cov = covariance(x, y)
-    return cov/numpy.sqrt((numpy.var(x)*umpy.var(y)))
+    return cov/numpy.sqrt((numpy.var(x)*numpy.var(y)))
 
 def cum_covariance(x, y):
     nsample = min(len(x), len(y))
