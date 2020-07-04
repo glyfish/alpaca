@@ -31,7 +31,7 @@ def ensemble_plot(samples, text_pos, title, ylab, plot_name):
     time = numpy.linspace(0, npts-1, npts)
     axis.set_xlabel("Time")
     axis.set_ylabel(ylab)
-    axis.set_title(title)
+    axis.set_title(title, pad=10)
     stats=f"Simulation Stats\n\nμ={format(numpy.mean(samples[:,-1]), '2.2f')}\nσ={format(numpy.std(samples[:,-1]), '2.2f')}"
     bbox = dict(boxstyle='square,pad=1', facecolor="#FEFCEC", edgecolor="#FEFCEC", alpha=0.75)
     axis.text(text_pos[0], text_pos[1], stats, fontsize=15, bbox=bbox)
@@ -45,36 +45,24 @@ def ensemble_average_plot(mean, title, ylab, plot_name):
     time = numpy.linspace(0, npts-1, npts)
     axis.set_xlabel("Time")
     axis.set_ylabel(ylab)
-    axis.set_title(title)
+    axis.set_title(title, pad=10)
     axis.plot(time, mean)
     config.save_post_asset(figure, "mean_reversion", plot_name)
 
-def ensemble_std_plot(φ, ensemble_std, ensemble_time, stationary_std, stationary_time, title, ylab, plot_name):
+def ensemble_comparison_plot(ensemble_prop, ensemble_time, stationary_prop, stationary_time, title, ylab, plot_name):
     figure, axis = pyplot.subplots(figsize=(12, 8))
     axis.set_xlabel("Time")
     axis.set_ylabel(ylab)
-    axis.set_title(title)
-    axis.plot(ensemble_time, ensemble_std, label="Ensemble Average σ")
-    axis.plot(stationary_time, stationary_std, label="Stationary σ", marker='o', linestyle="None", markeredgewidth=1.0, markersize=15.0)
+    axis.set_title(title, pad=10)
+    axis.plot(ensemble_time, ensemble_prop, label="Ensemble Average")
+    axis.plot(stationary_time, stationary_prop, label="Stationary", marker='o', linestyle="None", markeredgewidth=1.0, markersize=15.0)
     axis.legend()
-    config.save_post_asset(figure, "mean_reversion", plot_name)
-
-def ensemble_autocorrelation_plot(H, ac, time, lengend_location, title, plot_name):
-    figure, axis = pyplot.subplots(figsize=(12, 8))
-    step = int(len(time) / 10)
-    axis.set_ylim([-1.0, 1.0])
-    axis.set_xlabel("Time")
-    axis.set_title(title)
-    label = r"$\frac{1}{2}[(t-1)^{2H} + (t+1)^{2H} - 2t^{2H})]$"
-    axis.plot(time, ac, label="Ensemble Average")
-    axis.plot(time[1::step], bm.fbn_autocorrelation(H, time[1::step]), label=label, marker='o', linestyle="None", markeredgewidth=1.0, markersize=15.0)
-    axis.legend(bbox_to_anchor=lengend_location)
     config.save_post_asset(figure, "mean_reversion", plot_name)
 
 def comparison_plot(title, samples, labels, plot):
     nplot, nsamples = samples.shape
     figure, axis = pyplot.subplots(figsize=(10, 7))
-    axis.set_title(title)
+    axis.set_title(title, pad=10)
     axis.set_xlabel(r"$t$")
     axis.set_xlim([0, nsamples-1])
     for i in range(nplot):
@@ -114,7 +102,7 @@ title = f"ECM Ensemble, " + r"$\phi=$" + f"{numpy.array2string(arima_params['φ'
 plot_name = f"ecm_properties_ensemble_x_t{image_postfix}"
 ylab = r"$y_t$"
 yt = samples[1::2]
-ensemble_plot(yt, [10.0, 75.0], title, ylab, plot_name)
+ensemble_plot(yt, [10.0, 60.0], title, ylab, plot_name)
 
 # %%
 
@@ -147,7 +135,7 @@ ensemble_average_plot(mean, title, label, plot_name)
 
 ensemble_time = numpy.linspace(0, n-1, n)
 step = int(len(ensemble_time) / 10)
-stationary_time = time[::step]
+stationary_time = ensemble_time[::step]
 ensemble_std = stats.ensemble_std(xt)
 stationary_std = numpy.sqrt([var_xt(arima_params['φ'][0], int(t)) for t in stationary_time])
 
@@ -156,13 +144,10 @@ stationary_std = numpy.sqrt([var_xt(arima_params['φ'][0], int(t)) for t in stat
 title = f"ECM Ensemble σ, " + r"$\phi=$" + f"{numpy.array2string(arima_params['φ'], precision=2, separator=',')}, " + r"$\lambda=$" + f"{format(ecm_params['λ'], '2.2f')}, " + r"$\beta=$" + f"{format(ecm_params['β'], '2.2f')}, " + r"$\gamma=$" + f"{format(ecm_params['γ'], '2.2f')}, " + r"$\sigma=$" + f"{format(ecm_params['σ'], '2.2f')}, size={m}"
 plot_name = f"ecm_properties_ensemble_x_t_σ{image_postfix}"
 label = r"$\sigma_{x_t}$"
-ensemble_std_plot(arima_params['φ'][0], ensemble_std, ensemble_time, stationary_std, stationary_time, title, label, plot_name)
+ensemble_comparison_plot(ensemble_std, ensemble_time, stationary_std, stationary_time, title, label, plot_name)
 
 # %%
 
-ensemble_time = numpy.linspace(0, n-1, n)
-step = int(len(ensemble_time) / 10)
-stationary_time = time[::step]
 ensemble_std = stats.ensemble_std(yt)
 stationary_std = numpy.sqrt([var_xt(arima_params['φ'][0], int(t))*ecm_params['β']**2 for t in stationary_time])
 
@@ -171,20 +156,16 @@ stationary_std = numpy.sqrt([var_xt(arima_params['φ'][0], int(t))*ecm_params['�
 title = f"ECM Ensemble σ, " + r"$\phi=$" + f"{numpy.array2string(arima_params['φ'], precision=2, separator=',')}, " + r"$\lambda=$" + f"{format(ecm_params['λ'], '2.2f')}, " + r"$\beta=$" + f"{format(ecm_params['β'], '2.2f')}, " + r"$\gamma=$" + f"{format(ecm_params['γ'], '2.2f')}, " + r"$\sigma=$" + f"{format(ecm_params['σ'], '2.2f')}, size={m}"
 plot_name = f"ecm_properties_ensemble_y_t_σ{image_postfix}"
 label = r"$\sigma_{y_t}$"
-ensemble_std_plot(arima_params['φ'][0], ensemble_std, ensemble_time, stationary_std, stationary_time, title, label, plot_name)
+ensemble_comparison_plot(ensemble_std, ensemble_time, stationary_std, stationary_time, title, label, plot_name)
 
 # %%
 
-cov = stats.ensemble_covariance(xt, yt)
+ensemble_cov = stats.ensemble_covariance(xt, yt)
+stationary_cov = [var_xt(arima_params['φ'][0], int(t))*ecm_params['β'] for t in stationary_time]
+
+# %%
+
 title = f"ECM Ensemble Covariance, " + r"$\phi=$" + f"{numpy.array2string(arima_params['φ'], precision=2, separator=',')}, " + r"$\lambda=$" + f"{format(ecm_params['λ'], '2.2f')}, " + r"$\beta=$" + f"{format(ecm_params['β'], '2.2f')}, " + r"$\gamma=$" + f"{format(ecm_params['γ'], '2.2f')}, " + r"$\sigma=$" + f"{format(ecm_params['σ'], '2.2f')}, size={m}"
 plot_name = f"ecm_properties_ensemble_cov_xt_yt{image_postfix}"
 label = r"$Cov(x_t, y_t)$"
-ensemble_average_plot(cov, title, label, plot_name)
-
-# %%
-
-cov = stats.ensemble_covariance(xt, εt)
-title = f"ECM Ensemble Covariance, " + r"$\phi=$" + f"{numpy.array2string(arima_params['φ'], precision=2, separator=',')}, " + r"$\lambda=$" + f"{format(ecm_params['λ'], '2.2f')}, " + r"$\beta=$" + f"{format(ecm_params['β'], '2.2f')}, " + r"$\gamma=$" + f"{format(ecm_params['γ'], '2.2f')}, " + r"$\sigma=$" + f"{format(ecm_params['σ'], '2.2f')}, size={m}"
-plot_name = f"ecm_properties_ensemble_cov_xt_εt{image_postfix}"
-label = r"$Cov(x_t, \varepsilon_t)$"
-ensemble_average_plot(cov, title, label, plot_name)
+ensemble_comparison_plot(ensemble_cov, ensemble_time, stationary_cov, stationary_time, title, label, plot_name)
