@@ -26,6 +26,24 @@ def ensemble_autocorrelation(samples):
             ac_avg[i] += ac[i]
     return ac_avg / float(nsim)
 
+def ensemble_covariance(x, y):
+    nsim, npts = x.shape
+    cov = numpy.zeros(npts)
+    mean_x = ensemble_mean(x)
+    mean_y = ensemble_mean(y)
+    for i in range(npts):
+        for j in range(nsim):
+            cov[i] += (x[j,i] - mean_x[i])*(y[j,i] - mean_y[i])
+    return cov / float(nsim)
+
+def ensemble_correlation_coefficient(x, y):
+    cov = ensemble_covariance(x, y)
+    std_x = ensemble_std(x)
+    std_y = ensemble_std(y)
+    for i in range(1,len(cov)):
+        cov[i] = cov[i] / (std_x[i]*std_y[i])
+    return cov
+
 def cummean(samples):
     nsample = len(samples)
     mean = numpy.zeros(nsample)
