@@ -49,13 +49,13 @@ def ensemble_average_plot(mean, title, ylab, plot_name):
     axis.plot(time, mean)
     config.save_post_asset(figure, "mean_reversion", plot_name)
 
-def ensemble_comparison_plot(ensemble_prop, ensemble_time, stationary_prop, stationary_time, title, ylab, plot_name):
+def ensemble_comparison_plot(ensemble_prop, ensemble_time, analytic_prop, analytic_time, title, ylab, plot_name):
     figure, axis = pyplot.subplots(figsize=(12, 8))
     axis.set_xlabel("Time")
     axis.set_ylabel(ylab)
     axis.set_title(title, pad=10)
     axis.plot(ensemble_time, ensemble_prop, label="Ensemble Average")
-    axis.plot(stationary_time, stationary_prop, label="Stationary", marker='o', linestyle="None", markeredgewidth=1.0, markersize=15.0)
+    axis.plot(analytic_time, analytic_prop, label="Analytic", marker='o', linestyle="None", markeredgewidth=1.0, markersize=15.0)
     axis.legend()
     config.save_post_asset(figure, "mean_reversion", plot_name)
 
@@ -99,7 +99,7 @@ ensemble_plot(xt, [10.0, 100.0], title, ylab, plot_name)
 # %%
 
 title = f"ECM Ensemble, " + r"$\phi=$" + f"{numpy.array2string(arima_params['φ'], precision=2, separator=',')}, " + r"$\lambda=$" + f"{format(ecm_params['λ'], '2.2f')}, " + r"$\beta=$" + f"{format(ecm_params['β'], '2.2f')}, " + r"$\gamma=$" + f"{format(ecm_params['γ'], '2.2f')}, " + r"$\sigma=$" + f"{format(ecm_params['σ'], '2.2f')}, size={m}"
-plot_name = f"ecm_properties_ensemble_x_t{image_postfix}"
+plot_name = f"ecm_properties_ensemble_y_t{image_postfix}"
 ylab = r"$y_t$"
 yt = samples[1::2]
 ensemble_plot(yt, [10.0, 60.0], title, ylab, plot_name)
@@ -120,7 +120,7 @@ for i in range(m):
 
 title = f"ECM Ensemble, " + r"$\phi=$" + f"{numpy.array2string(arima_params['φ'], precision=2, separator=',')}, " + r"$\lambda=$" + f"{format(ecm_params['λ'], '2.2f')}, " + r"$\beta=$" + f"{format(ecm_params['β'], '2.2f')}, " + r"$\gamma=$" + f"{format(ecm_params['γ'], '2.2f')}, " + r"$\sigma=$" + f"{format(ecm_params['σ'], '2.2f')}, size={m}"
 plot_name = f"ecm_properties_ensemble_ε_t{image_postfix}"
-ylab = r"$\varepsilon_t$"
+ylab = r"$\eta_t$"
 ensemble_plot(εt, [10.0, 3.0], title, ylab, plot_name)
 
 # %%
@@ -135,37 +135,37 @@ ensemble_average_plot(mean, title, label, plot_name)
 
 ensemble_time = numpy.linspace(0, n-1, n)
 step = int(len(ensemble_time) / 10)
-stationary_time = ensemble_time[::step]
+analytic_time = ensemble_time[::step]
 ensemble_std = stats.ensemble_std(xt)
-stationary_std = numpy.sqrt([var_xt(arima_params['φ'][0], int(t)) for t in stationary_time])
+analytic_std = numpy.sqrt([var_xt(arima_params['φ'][0], int(t)) for t in analytic_time])
 
 # %%
 
 title = f"ECM Ensemble σ, " + r"$\phi=$" + f"{numpy.array2string(arima_params['φ'], precision=2, separator=',')}, " + r"$\lambda=$" + f"{format(ecm_params['λ'], '2.2f')}, " + r"$\beta=$" + f"{format(ecm_params['β'], '2.2f')}, " + r"$\gamma=$" + f"{format(ecm_params['γ'], '2.2f')}, " + r"$\sigma=$" + f"{format(ecm_params['σ'], '2.2f')}, size={m}"
 plot_name = f"ecm_properties_ensemble_x_t_σ{image_postfix}"
 label = r"$\sigma_{x_t}$"
-ensemble_comparison_plot(ensemble_std, ensemble_time, stationary_std, stationary_time, title, label, plot_name)
+ensemble_comparison_plot(ensemble_std, ensemble_time, analytic_std, analytic_time, title, label, plot_name)
 
 # %%
 
 ensemble_std = stats.ensemble_std(yt)
-stationary_std = numpy.sqrt([var_xt(arima_params['φ'][0], int(t))*ecm_params['β']**2 for t in stationary_time])
+analytic_std = numpy.sqrt([var_xt(arima_params['φ'][0], int(t))*ecm_params['β']**2 for t in analytic_time])
 
 # %%
 
 title = f"ECM Ensemble σ, " + r"$\phi=$" + f"{numpy.array2string(arima_params['φ'], precision=2, separator=',')}, " + r"$\lambda=$" + f"{format(ecm_params['λ'], '2.2f')}, " + r"$\beta=$" + f"{format(ecm_params['β'], '2.2f')}, " + r"$\gamma=$" + f"{format(ecm_params['γ'], '2.2f')}, " + r"$\sigma=$" + f"{format(ecm_params['σ'], '2.2f')}, size={m}"
 plot_name = f"ecm_properties_ensemble_y_t_σ{image_postfix}"
 label = r"$\sigma_{y_t}$"
-ensemble_comparison_plot(ensemble_std, ensemble_time, stationary_std, stationary_time, title, label, plot_name)
+ensemble_comparison_plot(ensemble_std, ensemble_time, analytic_std, analytic_time, title, label, plot_name)
 
 # %%
 
 ensemble_cov = stats.ensemble_covariance(xt, yt)
-stationary_cov = [var_xt(arima_params['φ'][0], int(t))*ecm_params['β'] for t in stationary_time]
+analytic_cov = [var_xt(arima_params['φ'][0], int(t))*ecm_params['β'] for t in analytic_time]
 
 # %%
 
 title = f"ECM Ensemble Covariance, " + r"$\phi=$" + f"{numpy.array2string(arima_params['φ'], precision=2, separator=',')}, " + r"$\lambda=$" + f"{format(ecm_params['λ'], '2.2f')}, " + r"$\beta=$" + f"{format(ecm_params['β'], '2.2f')}, " + r"$\gamma=$" + f"{format(ecm_params['γ'], '2.2f')}, " + r"$\sigma=$" + f"{format(ecm_params['σ'], '2.2f')}, size={m}"
 plot_name = f"ecm_properties_ensemble_cov_xt_yt{image_postfix}"
 label = r"$Cov(x_t, y_t)$"
-ensemble_comparison_plot(ensemble_cov, ensemble_time, stationary_cov, stationary_time, title, label, plot_name)
+ensemble_comparison_plot(ensemble_cov, ensemble_time, analytic_cov, analytic_time, title, label, plot_name)
