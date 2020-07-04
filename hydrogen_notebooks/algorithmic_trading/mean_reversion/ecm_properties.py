@@ -120,7 +120,7 @@ for i in range(m):
 
 title = f"ECM Ensemble, " + r"$\phi=$" + f"{numpy.array2string(arima_params['φ'], precision=2, separator=',')}, " + r"$\lambda=$" + f"{format(ecm_params['λ'], '2.2f')}, " + r"$\beta=$" + f"{format(ecm_params['β'], '2.2f')}, " + r"$\gamma=$" + f"{format(ecm_params['γ'], '2.2f')}, " + r"$\sigma=$" + f"{format(ecm_params['σ'], '2.2f')}, size={m}"
 plot_name = f"ecm_properties_ensemble_ε_t{image_postfix}"
-ylab = r"$\eta_t$"
+ylab = r"$\varepsilon_t$"
 ensemble_plot(εt, [10.0, 3.0], title, ylab, plot_name)
 
 # %%
@@ -129,6 +129,14 @@ mean = stats.ensemble_mean(xt)
 title = f"ECM Ensemble μ, " + r"$\phi=$" + f"{numpy.array2string(arima_params['φ'], precision=2, separator=',')}, " + r"$\lambda=$" + f"{format(ecm_params['λ'], '2.2f')}, " + r"$\beta=$" + f"{format(ecm_params['β'], '2.2f')}, " + r"$\gamma=$" + f"{format(ecm_params['γ'], '2.2f')}, " + r"$\sigma=$" + f"{format(ecm_params['σ'], '2.2f')}, size={m}"
 plot_name = f"ecm_properties_ensemble_x_t_μ{image_postfix}"
 label = r"$\mu_{x_t}$"
+ensemble_average_plot(mean, title, label, plot_name)
+
+# %%
+
+mean = stats.ensemble_mean(yt)
+title = f"ECM Ensemble μ, " + r"$\phi=$" + f"{numpy.array2string(arima_params['φ'], precision=2, separator=',')}, " + r"$\lambda=$" + f"{format(ecm_params['λ'], '2.2f')}, " + r"$\beta=$" + f"{format(ecm_params['β'], '2.2f')}, " + r"$\gamma=$" + f"{format(ecm_params['γ'], '2.2f')}, " + r"$\sigma=$" + f"{format(ecm_params['σ'], '2.2f')}, size={m}"
+plot_name = f"ecm_properties_ensemble_y_t_μ{image_postfix}"
+label = r"$\mu_{y_t}$"
 ensemble_average_plot(mean, title, label, plot_name)
 
 # %%
