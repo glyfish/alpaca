@@ -30,7 +30,7 @@ def comparison_plot(title, samples, labels, plot):
     axis.legend(fontsize=16)
     config.save_post_asset(figure, "mean_reversion", plot)
 
-def corrletation_plot(xt, yt, params, err, β_r_squared, legend_anchor, title, plot_name, lim=None):
+def regression_plot(xt, yt, params, err, β_r_squared, legend_anchor, title, plot_name, lim=None):
     nsample = len(xt)
     figure, axis = pyplot.subplots(figsize=(12, 8))
     axis.set_ylabel(r"$y_{t}$")
@@ -73,7 +73,7 @@ params, rsquard, err = arima.ols_estimate(xt, yt)
 
 title = f"Spurious Correlation of Independent Brownian Motion Time series, n={n}"
 plot_name = f"cointegration_{n}_spurious_correlation"
-corrletation_plot(xt, yt, params, err, rsquard, [0.7, 0.4], title, plot_name)
+regression_plot(xt, yt, params, err, rsquard, [0.7, 0.4], title, plot_name)
 
 # %%
 
@@ -109,7 +109,7 @@ params, rsquard, err = arima.ols_estimate(xt, yt)
 
 title = f"Spurious Correlation of Independent Brownian Motion Time series, n={n}"
 plot_name = f"cointegration_{n}_spurious_correlation"
-corrletation_plot(xt, yt, params, err, rsquard, [0.7, 0.4], title, plot_name)
+regression_plot(xt, yt, params, err, rsquard, [0.7, 0.4], title, plot_name)
 
 # %%
 
@@ -145,7 +145,7 @@ params, rsquard, err = arima.ols_estimate(xt, yt)
 
 title = f"Spurious Correlation of Independent Brownian Motion Time series, n={n}"
 plot_name = f"cointegration_{n}_spurious_correlation"
-corrletation_plot(xt, yt, params, err, rsquard, [0.7, 0.4], title, plot_name)
+regression_plot(xt, yt, params, err, rsquard, [0.7, 0.4], title, plot_name)
 
 # %%
 

@@ -30,7 +30,7 @@ def comparison_plot(title, samples, labels, plot):
     axis.legend(fontsize=16)
     config.save_post_asset(figure, "mean_reversion", plot)
 
-def corrletation_plot(xt, yt, params, err, β_r_squared, legend_anchor, title, plot_name, lim=None):
+def regression_plot(xt, yt, params, err, β_r_squared, legend_anchor, title, plot_name, lim=None):
     nsample = len(xt)
     figure, axis = pyplot.subplots(figsize=(12, 8))
     axis.set_ylabel(r"$y_{t}$")
@@ -95,7 +95,7 @@ params, rsquard, err = ols_correlation_estimate(xt, yt)
 
 title = f"ECM Simulation, " + r"$\phi=$" + f"{numpy.array2string(arima_params['φ'], precision=2, separator=',')}, " + r"$\lambda=$" + f"{format(ecm_params['λ'], '2.2f')}, " + r"$\beta=$" + f"{format(ecm_params['β'], '2.2f')}, " + r"$\gamma=$" + f"{format(ecm_params['γ'], '2.2f')}, " + r"$\sigma=$" + f"{format(ecm_params['σ'], '2.2f')}"
 plot_name = f"cointegration_ecm_simulation_corrleation{image_postfix}"
-corrletation_plot(xt, yt, params, err, rsquard, [0.85, 0.5], title, plot_name)
+regression_plot(xt, yt, params, err, rsquard, [0.85, 0.5], title, plot_name)
 
 # %%
 
@@ -153,7 +153,7 @@ params, rsquard, err = ols_correlation_estimate(xt, yt)
 
 title = f"ECM Simulation, " + r"$\phi=$" + f"{numpy.array2string(arima_params['φ'], precision=2, separator=',')}, " + r"$\lambda=$" + f"{format(ecm_params['λ'], '2.2f')}, " + r"$\beta=$" + f"{format(ecm_params['β'], '2.2f')}, " + r"$\gamma=$" + f"{format(ecm_params['γ'], '2.2f')}, " + r"$\sigma=$" + f"{format(ecm_params['σ'], '2.2f')}"
 plot_name = f"cointegration_ecm_simulation_corrleation{image_postfix}"
-corrletation_plot(xt, yt, params, err, rsquard, [0.85, 0.5], title, plot_name)
+regression_plot(xt, yt, params, err, rsquard, [0.85, 0.5], title, plot_name)
 
 # %%
 
@@ -210,7 +210,7 @@ params, rsquard, err = ols_correlation_estimate(xt, yt)
 
 title = f"ECM Simulation, " + r"$\phi=$" + f"{numpy.array2string(arima_params['φ'], precision=2, separator=',')}, " + r"$\lambda=$" + f"{format(ecm_params['λ'], '2.2f')}, " + r"$\beta=$" + f"{format(ecm_params['β'], '2.2f')}, " + r"$\gamma=$" + f"{format(ecm_params['γ'], '2.2f')}, " + r"$\sigma=$" + f"{format(ecm_params['σ'], '2.2f')}"
 plot_name = f"cointegration_ecm_simulation_corrleation{image_postfix}"
-corrletation_plot(xt, yt, params, err, rsquard, [0.85, 0.5], title, plot_name)
+regression_plot(xt, yt, params, err, rsquard, [0.85, 0.5], title, plot_name)
 
 # %%
 
@@ -268,7 +268,7 @@ params, rsquard, err = ols_correlation_estimate(xt, yt)
 
 title = f"ECM Simulation, " + r"$\phi=$" + f"{numpy.array2string(arima_params['φ'], precision=2, separator=',')}, " + r"$\lambda=$" + f"{format(ecm_params['λ'], '2.2f')}, " + r"$\beta=$" + f"{format(ecm_params['β'], '2.2f')}, " + r"$\gamma=$" + f"{format(ecm_params['γ'], '2.2f')}, " + r"$\sigma=$" + f"{format(ecm_params['σ'], '2.2f')}"
 plot_name = f"cointegration_ecm_simulation_corrleation{image_postfix}"
-corrletation_plot(xt, yt, params, err, rsquard, [0.85, 0.5], title, plot_name)
+regression_plot(xt, yt, params, err, rsquard, [0.85, 0.5], title, plot_name)
 
 # %%
 
@@ -326,7 +326,7 @@ params, rsquard, err = ols_correlation_estimate(xt, yt)
 
 title = f"ECM Simulation, " + r"$\phi=$" + f"{numpy.array2string(arima_params['φ'], precision=2, separator=',')}, " + r"$\lambda=$" + f"{format(ecm_params['λ'], '2.2f')}, " + r"$\beta=$" + f"{format(ecm_params['β'], '2.2f')}, " + r"$\gamma=$" + f"{format(ecm_params['γ'], '2.2f')}, " + r"$\sigma=$" + f"{format(ecm_params['σ'], '2.2f')}"
 plot_name = f"cointegration_ecm_simulation_corrleation{image_postfix}"
-corrletation_plot(xt, yt, params, err, rsquard, [0.85, 0.5], title, plot_name)
+regression_plot(xt, yt, params, err, rsquard, [0.85, 0.5], title, plot_name)
 
 # %%
 
@@ -384,7 +384,7 @@ params, rsquard, err = ols_correlation_estimate(xt, yt)
 
 title = f"ECM Simulation, " + r"$\phi=$" + f"{numpy.array2string(arima_params['φ'], precision=2, separator=',')}, " + r"$\lambda=$" + f"{format(ecm_params['λ'], '2.2f')}, " + r"$\beta=$" + f"{format(ecm_params['β'], '2.2f')}, " + r"$\gamma=$" + f"{format(ecm_params['γ'], '2.2f')}, " + r"$\sigma=$" + f"{format(ecm_params['σ'], '2.2f')}"
 plot_name = f"cointegration_ecm_simulation_corrleation{image_postfix}"
-corrletation_plot(xt, yt, params, err, rsquard, [0.85, 0.5], title, plot_name)
+regression_plot(xt, yt, params, err, rsquard, [0.85, 0.5], title, plot_name)
 
 # %%
 
@@ -442,7 +442,7 @@ params, rsquard, err = ols_correlation_estimate(xt, yt)
 
 title = f"ECM Simulation, " + r"$\phi=$" + f"{numpy.array2string(arima_params['φ'], precision=2, separator=',')}, " + r"$\lambda=$" + f"{format(ecm_params['λ'], '2.2f')}, " + r"$\beta=$" + f"{format(ecm_params['β'], '2.2f')}, " + r"$\gamma=$" + f"{format(ecm_params['γ'], '2.2f')}, " + r"$\sigma=$" + f"{format(ecm_params['σ'], '2.2f')}"
 plot_name = f"cointegration_ecm_simulation_corrleation{image_postfix}"
-corrletation_plot(xt, yt, params, err, rsquard, [0.85, 0.5], title, plot_name)
+regression_plot(xt, yt, params, err, rsquard, [0.85, 0.5], title, plot_name)
 
 # %%
 
@@ -500,7 +500,7 @@ params, rsquard, err = ols_correlation_estimate(xt, yt)
 
 title = f"ECM Simulation, " + r"$\phi=$" + f"{numpy.array2string(arima_params['φ'], precision=2, separator=',')}, " + r"$\lambda=$" + f"{format(ecm_params['λ'], '2.2f')}, " + r"$\beta=$" + f"{format(ecm_params['β'], '2.2f')}, " + r"$\gamma=$" + f"{format(ecm_params['γ'], '2.2f')}, " + r"$\sigma=$" + f"{format(ecm_params['σ'], '2.2f')}"
 plot_name = f"cointegration_ecm_simulation_corrleation{image_postfix}"
-corrletation_plot(xt, yt, params, err, rsquard, [0.85, 0.5], title, plot_name)
+regression_plot(xt, yt, params, err, rsquard, [0.85, 0.5], title, plot_name)
 
 # %%
 
