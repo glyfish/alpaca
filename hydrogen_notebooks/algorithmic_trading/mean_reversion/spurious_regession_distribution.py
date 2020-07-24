@@ -19,6 +19,12 @@ pyplot.style.use(config.glyfish_style)
 
 # %%
 
+def normal(σ=1.0, μ=0.0):
+    def f(x):
+        ε = (x - μ)**2/(2.0*σ**2)
+        return numpy.exp(-ε)/numpy.sqrt(2.0*numpy.pi*σ**2)
+    return f
+
 def brownian_motion(n):
     φ = numpy.array([1.0])
     δ = numpy.array([])
@@ -26,20 +32,19 @@ def brownian_motion(n):
 
 # stochastic integral simulation
 # \sqrt{\int_0^1{B_y^2(s)ds}}
-def denominator_integral(n):
-    yt2 = brownian_motion(n)**2
-    return numpy.sum(yt2)/float(n**2)
+def denominator_integral(yt, n):
+    return numpy.sum(yt**2)/float(n**2)
 
 # \sqrt{\int_0^1{B_y(s)B_x(s)ds}}
-def numerator_integral(n):
-    yt = brownian_motion(n)
-    xt = brownian_motion(n)
+def numerator_integral(xt, yt, n):
     return numpy.sum(yt*xt)/float(n**2)
 
 def beta_distribution_sample(npt, nsample):
     beta = numpy.zeros(nsample)
     for i in range(nsample):
-        beta[i] = numerator_integral(npt) / denominator_integral(npt)
+        yt = brownian_motion(n)
+        xt = brownian_motion(n)
+        beta[i] = numerator_integral(xt, yt, npt) / denominator_integral(yt, npt)
     return beta
 
 def beta_estimate_sample(npt, nsample):
@@ -88,6 +93,26 @@ def regression_plot(xt, yt, params, err, β_r_squared, legend_anchor, title, plo
     axis.legend(bbox_to_anchor=legend_anchor).set_zorder(7)
     config.save_post_asset(figure, "mean_reversion", plot_name)
 
+def distribution_comparison_plot(pdf, samples, title, plot, label=None, xrange=None, ylimit=None, bins=50, title_offset=1.0):
+    figure, axis = pyplot.subplots(figsize=(10, 7))
+    axis.set_ylabel(r"$f_X(x)$")
+    axis.set_xlabel(r"x")
+    axis.set_title(title, y=title_offset)
+    axis.set_prop_cycle(config.distribution_sample_cycler)
+    _, bins, _ = axis.hist(samples, bins, rwidth=0.8, density=True, label=f"Samples", zorder=5)
+    if xrange is None:
+        delta = (bins[-1] - bins[0]) / 500.0
+        xrange = numpy.arange(bins[0], bins[-1], delta)
+    sample_distribution = [pdf(val) for val in xrange]
+    axis.set_xlim([xrange[0], xrange[-1]])
+    if ylimit is not None:
+        axis.set_ylim(ylimit)
+    if label is None:
+        label=f"Target PDF"
+    axis.plot(xrange, sample_distribution, label=label, zorder=6)
+    axis.legend(bbox_to_anchor=(0.75, 0.9))
+    config.save_post_asset(figure, "regression", plot)
+
 def distribution_plot(samples, title, plot, xrange=None, ylimit=None, bins=50, title_offset=1.0):
     figure, axis = pyplot.subplots(figsize=(10, 7))
     axis.set_ylabel(r"$f_X(x)$")
@@ -133,7 +158,7 @@ regression_plot(xt, yt, params, err, rsquard, [0.7, 0.4], title, plot_name)
 # %%
 
 npt = 1000
-nsample = 10000
+nsample = 100000
 
 β_estimate = beta_estimate_sample(npt, nsample)
 
@@ -143,12 +168,12 @@ mean = numpy.mean(β_estimate)
 sigma = numpy.sqrt(numpy.var(β_estimate))
 title = r"OLS $\hat{\beta}$, " + f"Sample Size={nsample}, T={n}, μ={format(mean, '1.2f')}, σ={format(sigma, '1.2f')}"
 plot_name = "cointegration_spurious_correlation_distribution_β_estimate"
-distribution_plot(β_estimate, title, plot_name)
+distribution_comparison_plot(normal(σ=sigma, μ=mean), β_estimate, title, plot_name, label="Normal PDF")
 
 # %%
 
 npt = 1000
-nsample = 10000
+nsample = 100000
 
 β_samples = beta_distribution_sample(npt, nsample)
 
@@ -158,4 +183,4 @@ mean = numpy.mean(β_samples)
 sigma = numpy.sqrt(numpy.var(β_samples))
 title = r"$\beta=\frac{\int_{0}^{1}B_x(s)B_y(s)ds}{\int_{0}^{1}B_y^2(s)ds}$, " + f"Sample Size={nsample}, T={n}, μ={format(mean, '1.2f')}, σ={format(sigma, '1.2f')}"
 plot_name = "cointegration_spurious_correlation_distribution_β_simulation"
-distribution_plot(β_samples, title, plot_name,title_offset=1.05)
+distribution_comparison_plot(normal(σ=sigma, μ=mean), β_samples, title, plot_name, label="Normal PDF",title_offset=1.05)
