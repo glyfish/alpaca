@@ -111,7 +111,7 @@ def distribution_comparison_plot(pdf, samples, title, plot, label=None, xrange=N
         label=f"Target PDF"
     axis.plot(xrange, sample_distribution, label=label, zorder=6)
     axis.legend(bbox_to_anchor=(0.75, 0.9))
-    config.save_post_asset(figure, "regression", plot)
+    config.save_post_asset(figure, "mean_reversion", plot)
 
 def distribution_plot(samples, title, plot, xrange=None, ylimit=None, bins=50, title_offset=1.0):
     figure, axis = pyplot.subplots(figsize=(10, 7))
@@ -168,7 +168,7 @@ mean = numpy.mean(β_estimate)
 sigma = numpy.sqrt(numpy.var(β_estimate))
 title = r"OLS $\hat{\beta}$, " + f"Sample Size={nsample}, T={n}, μ={format(mean, '1.2f')}, σ={format(sigma, '1.2f')}"
 plot_name = "cointegration_spurious_correlation_distribution_β_estimate"
-distribution_comparison_plot(normal(σ=sigma, μ=mean), β_estimate, title, plot_name, label="Normal PDF")
+distribution_comparison_plot(normal(σ=sigma, μ=mean), β_estimate, title, plot_name, xrange=numpy.arange(-6.0, 6.1, 0.1), label="Normal PDF")
 
 # %%
 
@@ -183,4 +183,4 @@ mean = numpy.mean(β_samples)
 sigma = numpy.sqrt(numpy.var(β_samples))
 title = r"$\beta=\frac{\int_{0}^{1}B_x(s)B_y(s)ds}{\int_{0}^{1}B_y^2(s)ds}$, " + f"Sample Size={nsample}, T={n}, μ={format(mean, '1.2f')}, σ={format(sigma, '1.2f')}"
 plot_name = "cointegration_spurious_correlation_distribution_β_simulation"
-distribution_comparison_plot(normal(σ=sigma, μ=mean), β_samples, title, plot_name, label="Normal PDF",title_offset=1.05)
+distribution_comparison_plot(normal(σ=sigma, μ=mean), β_samples, title, plot_name, xrange=numpy.arange(-6.0, 6.1, 0.1), label="Normal PDF",title_offset=1.05)
