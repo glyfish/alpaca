@@ -32,22 +32,30 @@ def brownian_motion(n):
 
 # stochastic integral simulation
 # \sqrt{\int_0^1{B_y^2(s)ds}}
-def denominator_integral(yt, n):
-    return numpy.sum(yt**2)/float(n**2)
+def denominator_integral(yt):
+    n = len(yt)
+    y = yt-numpy.mean(yt)
+    return numpy.sum(y**2)/float(n**2)
 
 # \sqrt{\int_0^1{B_y(s)B_x(s)ds}}
-def numerator_integral(xt, yt, n):
-    return numpy.sum(yt*xt)/float(n**2)
+def numerator_integral(xt, yt):
+    n = len(yt)
+    y = yt-numpy.mean(yt)
+    x = xt-numpy.mean(xt)
+    return numpy.sum(y*x)/float(n**2)
+
+def beta_estimate(xt, yt):
+    return numerator_integral(xt, yt) / denominator_integral(yt)
 
 def beta_distribution_sample(npt, nsample):
     beta = numpy.zeros(nsample)
     for i in range(nsample):
-        yt = brownian_motion(n)
-        xt = brownian_motion(n)
-        beta[i] = numerator_integral(xt, yt, npt) / denominator_integral(yt, npt)
+        yt = brownian_motion(npt)
+        xt = brownian_motion(npt)
+        beta[i] = beta_estimate(yt, xt)
     return beta
 
-def beta_estimate_sample(npt, nsample):
+def beta_ols_estimate_sample(npt, nsample):
     beta = numpy.zeros(nsample)
     for i in range(nsample):
         yt = brownian_motion(npt)
@@ -70,8 +78,8 @@ def comparison_plot(title, samples, labels, plot):
 def regression_plot(xt, yt, params, err, β_r_squared, legend_anchor, title, plot_name, lim=None):
     nsample = len(xt)
     figure, axis = pyplot.subplots(figsize=(12, 8))
-    axis.set_ylabel(r"$y_{t}$")
-    axis.set_xlabel(r"$x_{t}$")
+    axis.set_ylabel(r"$x_{t}$")
+    axis.set_xlabel(r"$y_{t}$")
     if lim is not None:
         axis.set_xlim(lim)
         axis.set_ylim(lim)
@@ -81,7 +89,7 @@ def regression_plot(xt, yt, params, err, β_r_squared, legend_anchor, title, plo
     y_hat = x * params[1] + params[0]
     axis.set_title(title)
     axis.plot(xt, yt, marker='o', markersize=5.0, linestyle="None", markeredgewidth=1.0, alpha=0.75, zorder=5, label="Simulation")
-    axis.plot(x, y_hat, lw=3.0, color="#000000", zorder=6, label=r"$y_{t}=\hat{\alpha}+\hat{\beta}x_{t}$")
+    axis.plot(x, y_hat, lw=3.0, color="#000000", zorder=6, label=r"$x_{t}=\hat{\alpha}+\hat{\beta}y_{t}$")
     bbox = dict(boxstyle='square,pad=1', facecolor="#f7f6e8", edgecolor="#f7f6e8", alpha=0.5)
     axis.text(x[0], y_hat[80],
               r"$\hat{\beta}=$" + f"{format(params[1], '2.4f')}, " +
@@ -95,8 +103,8 @@ def regression_plot(xt, yt, params, err, β_r_squared, legend_anchor, title, plo
 
 def distribution_comparison_plot(pdf, samples, title, plot, label=None, xrange=None, ylimit=None, bins=50, title_offset=1.0):
     figure, axis = pyplot.subplots(figsize=(10, 7))
-    axis.set_ylabel(r"$f_X(x)$")
-    axis.set_xlabel(r"x")
+    axis.set_ylabel(r"$f_β(x)$")
+    axis.set_xlabel(r"β")
     axis.set_title(title, y=title_offset)
     axis.set_prop_cycle(config.distribution_sample_cycler)
     _, bins, _ = axis.hist(samples, bins, rwidth=0.8, density=True, label=f"Samples", zorder=5)
@@ -146,13 +154,13 @@ comparison_plot(title, samples, labels, plot_name)
 
 # %%
 
-params, rsquard, err = arima.ols_estimate(xt, yt)
+params, rsquard, err = arima.ols_estimate(yt, xt)
 
 # %%
 
 title = f"Spurious Correlation of Independent Brownian Motion Time series, n={npt}"
 plot_name = f"cointegration_spurious_correlation_distribution_spurious_correlation_regression"
-regression_plot(xt, yt, params, err, rsquard, [0.7, 0.4], title, plot_name)
+regression_plot(yt, xt, params, err, rsquard, [0.7, 0.4], title, plot_name)
 
 
 # %%
@@ -160,15 +168,15 @@ regression_plot(xt, yt, params, err, rsquard, [0.7, 0.4], title, plot_name)
 npt = 1000
 nsample = 100000
 
-β_estimate = beta_estimate_sample(npt, nsample)
+β_estimate = beta_ols_estimate_sample(npt, nsample)
 
 # %%
 
 mean = numpy.mean(β_estimate)
 sigma = numpy.sqrt(numpy.var(β_estimate))
-title = r"OLS $\hat{\beta}$, " + f"Sample Size={nsample}, T={n}, μ={format(mean, '1.2f')}, σ={format(sigma, '1.2f')}"
+title = r"OLS $\hat{\beta}$, " + f"Sample Size={nsample}, T={npt}, μ={format(mean, '1.2f')}, σ={format(sigma, '1.2f')}"
 plot_name = "cointegration_spurious_correlation_distribution_β_estimate"
-distribution_comparison_plot(normal(σ=sigma, μ=mean), β_estimate, title, plot_name, xrange=numpy.arange(-6.0, 6.1, 0.1), label="Normal PDF")
+distribution_comparison_plot(normal(σ=sigma, μ=mean), β_estimate, title, plot_name, xrange=numpy.arange(-3.0, 3.1, 0.1), label="Normal PDF")
 
 # %%
 
@@ -181,6 +189,6 @@ nsample = 100000
 
 mean = numpy.mean(β_samples)
 sigma = numpy.sqrt(numpy.var(β_samples))
-title = r"$\beta=\frac{\int_{0}^{1}B_x(s)B_y(s)ds}{\int_{0}^{1}B_y^2(s)ds}$, " + f"Sample Size={nsample}, T={n}, μ={format(mean, '1.2f')}, σ={format(sigma, '1.2f')}"
+title = r"$\beta=\frac{\int_{0}^{1}B_x(s)B_y(s)ds}{\int_{0}^{1}B_y^2(s)ds}$, " + f"Sample Size={nsample}, T={npt}, μ={format(mean, '1.2f')}, σ={format(sigma, '1.2f')}"
 plot_name = "cointegration_spurious_correlation_distribution_β_simulation"
-distribution_comparison_plot(normal(σ=sigma, μ=mean), β_samples, title, plot_name, xrange=numpy.arange(-6.0, 6.1, 0.1), label="Normal PDF",title_offset=1.05)
+distribution_comparison_plot(normal(σ=sigma, μ=mean), β_samples, title, plot_name, xrange=numpy.arange(-3.0, 3.1, 0.1), label="Normal PDF",title_offset=1.05)
