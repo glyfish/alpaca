@@ -190,5 +190,20 @@ nsample = 100000
 mean = numpy.mean(β_samples)
 sigma = numpy.sqrt(numpy.var(β_samples))
 title = r"$\beta=\frac{\int_{0}^{1}B_x(s)B_y(s)ds}{\int_{0}^{1}B_y^2(s)ds}$, " + f"Sample Size={nsample}, T={npt}, μ={format(mean, '1.2f')}, σ={format(sigma, '1.2f')}"
-plot_name = "cointegration_spurious_correlation_distribution_β_simulation"
+plot_name = f"cointegration_spurious_correlation_distribution_β_simulation_{npt}"
+distribution_comparison_plot(normal(σ=sigma, μ=mean), β_samples, title, plot_name, xrange=numpy.arange(-3.0, 3.1, 0.1), label="Normal PDF",title_offset=1.05)
+
+# %%
+
+npt = 10000
+nsample = 100000
+
+β_samples = beta_distribution_sample(npt, nsample)
+
+# %%
+
+mean = numpy.mean(β_samples)
+sigma = numpy.sqrt(numpy.var(β_samples))
+title = r"$\beta=\frac{\int_{0}^{1}B_x(s)B_y(s)ds}{\int_{0}^{1}B_y^2(s)ds}$, " + f"Sample Size={nsample}, T={npt}, μ={format(mean, '1.2f')}, σ={format(sigma, '1.2f')}"
+plot_name = f"cointegration_spurious_correlation_distribution_β_simulation_{npt}"
 distribution_comparison_plot(normal(σ=sigma, μ=mean), β_samples, title, plot_name, xrange=numpy.arange(-3.0, 3.1, 0.1), label="Normal PDF",title_offset=1.05)
