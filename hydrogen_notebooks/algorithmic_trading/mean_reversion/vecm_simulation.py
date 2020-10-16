@@ -135,7 +135,7 @@ a = numpy.matrix([[0.5, 0.0, 0.0],
                   [0.0, 1.0, 0.0],
                   [0.0, 0.0, 1.0]])
 
-title = "VECM 2 Cointegrating Vector"
+title = "VECM 2 Cointegrating Vectors"
 labels = [r"$x_1$", r"$x_2$", r"$x_3$"]
 plot = "vecm_comparison_4"
 samples = vecm_generate_sample(α, β, a, Ω, nsample)
@@ -159,7 +159,7 @@ a = numpy.matrix([[0.5, 0.0, 0.0],
                   [0.0, 1.0, 0.0],
                   [0.0, 0.0, 1.0]])
 
-title = "VECM 2 Cointegrating Vector"
+title = "VECM 2 Cointegrating Vectors"
 labels = [r"$x_1$", r"$x_2$", r"$x_3$"]
 plot = "vecm_comparison_5"
 samples = vecm_generate_sample(α, β, a, Ω, nsample)
@@ -183,7 +183,7 @@ a = numpy.matrix([[0.5, 0.5, 0.0],
                   [0.0, 1.0, 0.0],
                   [0.0, 0.0, 1.0]])
 
-title = "VECM 2 Cointegrating Vector"
+title = "VECM 2 Cointegrating Vectors"
 labels = [r"$x_1$", r"$x_2$", r"$x_3$"]
 plot = "vecm_comparison_6"
 samples = vecm_generate_sample(α, β, a, Ω, nsample)
@@ -207,7 +207,7 @@ a = numpy.matrix([[0.5, 0.0, 0.0],
                   [0.0, 1.0, 0.0],
                   [0.0, 0.0, 1.0]])
 
-title = "VECM 2 Cointegrating Vector"
+title = "VECM 2 Cointegrating Vectors"
 labels = [r"$x_1$", r"$x_2$", r"$x_3$"]
 plot = "vecm_comparison_7"
 samples = vecm_generate_sample(α, β, a, Ω, nsample)
@@ -231,7 +231,7 @@ a = numpy.matrix([[0.5, 0.0, 0.0],
                   [0.0, 1.0, 0.0],
                   [0.0, 0.0, 1.0]])
 
-title = "VECM 2 Cointegrating Vector"
+title = "VECM 2 Cointegrating Vectors"
 labels = [r"$x_1$", r"$x_2$", r"$x_3$"]
 plot = "vecm_comparison_8"
 samples = vecm_generate_sample(α, β, a, Ω, nsample)
