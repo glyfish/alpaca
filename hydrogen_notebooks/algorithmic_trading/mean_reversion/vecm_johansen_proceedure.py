@@ -77,4 +77,88 @@ def covariance(x, y):
 def multivariate_ols(x, y):
     return covariance(y, x) * numpy.linalg.inv(covariance(x, x))
 
+def ols_residual(x, y):
+    a = multivariate_ols(x, y)
+    return y-a*x
+
+def vecm_anderson_form(samples):
+    Δ = numpy.diff(samples)
+    y = Δ[:,0:-1]
+    z = Δ[:,1:]
+    x = samples[:,1:-1]
+    return y, x, z
+
 # %%
+
+n = 10000
+σ = 1.0
+a = numpy.matrix([[1.0, 2.0, 1.0],
+                  [4.0, 1.0, -2.0],
+                  [-2.0, 1.0, 5.0]])
+x, y = multivariate_test_sample(a, n, σ)
+multivariate_ols(x, y)
+
+# %%
+
+nsample = 1000
+α = numpy.matrix([-0.5, 0.0, 0.0]).T
+β = numpy.matrix([1.0, -0.5, -0.5])
+a = numpy.matrix([[0.5, 0.0, 0.0],
+                  [0.0, 0.5, 0.0],
+                  [0.0, 0.0, 0.5]])
+Ω = numpy.matrix([[1.0, 0.0, 0.0],
+                  [0.0, 1.0, 0.0],
+                  [0.0, 0.0, 1.0]])
+
+title = "VECM 1 Cointegrating Vector"
+labels = [r"$x_1$", r"$x_2$", r"$x_3$"]
+plot = "vecm_estimation_1"
+samples = vecm_generate_sample(α, β, a, Ω, nsample)
+
+# %%
+
+comparison_plot(title, samples, α.T, β, labels, [0.1, 0.1], plot)
+
+# %%
+
+y, x, z = vecm_anderson_form(samples)
+
+x_star = ols_residual(z, x)
+y_star = ols_residual(z, y)
+
+Σxx = covariance(x_star, x_star)
+Σyy = covariance(y_star, y_star)
+Σxy = covariance(x_star, y_star)
+Σyx = covariance(y_star, x_star)
+
+R = numpy.linalg.inv(Σyy)*Σyx*Σxy*numpy.linalg.inv(Σxx)
+
+numpy.linalg.eig(R)
+
+# %%
+
+title = "VECM 1 Cointegrating Vector Anderson Form X"
+labels = [r"$x_1$", r"$x_2$", r"$x_3$"]
+plot = "vecm_estimation_anderson_form_x_1"
+comparison_plot(title, x, α.T, β, labels, [0.6, 0.1], plot)
+
+# %%
+
+title = "VECM 1 Cointegrating Vector Anderson Form αβX"
+labels = [r"$αβx_1$", r"$αβx_2$", r"$αβx_3$"]
+plot = "vecm_estimation_anderson_form_αβx_1"
+comparison_plot(title, α*β*x, α.T, β, labels, [0.6, 0.1], plot)
+
+# %%
+
+title = "VECM 1 Cointegrating Vector Anderson Form Y"
+labels = [r"$y_1$", r"$y_2$", r"$y_3$"]
+plot = "vecm_estimation_anderson_form_y_1"
+comparison_plot(title, y, α.T, β, labels, [0.6, 0.1], plot)
+
+# %%
+
+title = "VECM 1 Cointegrating Vector Anderson Form Z"
+labels = [r"$z_1$", r"$z_2$", r"$z_3$"]
+plot = "vecm_estimation_anderson_form_z_1"
+comparison_plot(title, z, α.T, β, labels, [0.6, 0.1], plot)

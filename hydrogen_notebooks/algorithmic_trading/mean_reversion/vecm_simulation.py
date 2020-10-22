@@ -69,7 +69,7 @@ a = numpy.matrix([[0.5, 0.0, 0.0],
                   [0.0, 1.0, 0.0],
                   [0.0, 0.0, 1.0]])
 
-title = "VECM 1 Cointegrationg Vector"
+title = "VECM 1 Cointegrating Vector"
 labels = [r"$x_1$", r"$x_2$", r"$x_3$"]
 plot = "vecm_comparison_1"
 samples = vecm_generate_sample(α, β, a, Ω, nsample)
