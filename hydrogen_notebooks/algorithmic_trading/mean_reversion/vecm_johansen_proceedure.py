@@ -13,8 +13,10 @@ from lib import stats
 from lib import config
 from lib import var
 from lib import arima
+from statsmodels.tsa.vector_ar import vecm
 import statsmodels.api as sm
 import scipy
+import datetime
 
 pyplot.style.use(config.glyfish_style)
 
@@ -88,6 +90,45 @@ def vecm_anderson_form(samples):
     x = samples[:,1:-1]
     return y, x, z
 
+def johansen_statistic(ρ2, n, r):
+    m = len(ρ2)
+    λ = numpy.log(numpy.ones(m-r)-ρ2[r:])
+    return -n * numpy.sum(λ)
+
+def johansen_statistic_critical_value(p, m, r):
+    return scipy.stats.chi2.ppf(p, (m-r)**2)
+
+# def sort_eigen_values_vectors(vals, vecs):
+#     n = len(vals)
+#     for i in range(n)
+#
+# def johansen_estimate(samples):
+#     m, n = samples.shape
+#
+#     y, x, z = vecm_anderson_form(samples)
+#
+#     x_star = ols_residual(z, x)
+#     y_star = ols_residual(z, y)
+#
+#     d_star =  multivariate_ols(z, y)
+#
+#     Σxx = covariance(x_star, x_star)
+#     Σyy = covariance(y_star, y_star)
+#     Σxy = covariance(x_star, y_star)
+#     Σyx = covariance(y_star, x_star)
+#
+#     sqrt_Σyy = numpy.matrix(scipy.linalg.sqrtm(Σyy))
+#     sqrt_Σyy_inv = numpy.matrix(numpy.linalg.inv(sqrt_Σyy))
+#     Σyy_inv = numpy.matrix(numpy.linalg.inv(Σyy))
+#     Σxx_inv = numpy.matrix(numpy.linalg.inv(Σxx))
+#
+#     R = sqrt_Σyy_inv*Σyx*numpy.matrix(numpy.linalg.inv(Σxx))*Σxy*sqrt_Σyy_inv
+#
+#     ρ2, M = numpy.linalg.eig(R)
+#
+#     for r in len(ρ2):
+#         crit = johansen_statistic(ρ2, n, r)
+
 # %%
 
 n = 10000
@@ -126,14 +167,45 @@ y, x, z = vecm_anderson_form(samples)
 x_star = ols_residual(z, x)
 y_star = ols_residual(z, y)
 
+d_star =  multivariate_ols(z, y)
+
 Σxx = covariance(x_star, x_star)
 Σyy = covariance(y_star, y_star)
 Σxy = covariance(x_star, y_star)
 Σyx = covariance(y_star, x_star)
 
-R = numpy.linalg.inv(Σyy)*Σyx*Σxy*numpy.linalg.inv(Σxx)
+sqrt_Σyy = numpy.matrix(scipy.linalg.sqrtm(Σyy))
+sqrt_Σyy_inv = numpy.matrix(numpy.linalg.inv(sqrt_Σyy))
+Σyy_inv = numpy.matrix(numpy.linalg.inv(Σyy))
+Σxx_inv = numpy.matrix(numpy.linalg.inv(Σxx))
+
+R = sqrt_Σyy_inv*Σyx*Σxx_inv*Σxy*sqrt_Σyy_inv
+R1 = Σyy_inv*Σyx*Σxx_inv*Σxy
+
+ρ2, M = numpy.linalg.eig(R)
 
 numpy.linalg.eig(R)
+numpy.linalg.eig(R1)
+
+johansen_statistic(ρ2, nsample, 1)
+johansen_statistic_critical_value(0.95, 3, 1)
+
+α = sqrt_Σyy*M
+β = M.T*sqrt_Σyy_inv*Σyx*numpy.matrix(numpy.linalg.inv(Σxx))
+
+# %%
+
+df = pandas.DataFrame(samples.T)
+result = vecm.coint_johansen(df, 0, 1)
+
+result.lr1
+result.cvt
+
+result.lr2
+result.cvm
+
+result.eig
+numpy.matrix(result.evec)
 
 # %%
 
