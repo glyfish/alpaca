@@ -69,6 +69,7 @@ def multivariate_test_sample(a, n, σ):
     y = a*x + ε.T
     return x, y
 
+# Implementation from Reduced Rand Regression For the Multivariate Linear Model
 def covariance(x, y):
     _, n = x.shape
     cov = x[:,0]*y[:,0].T
@@ -98,7 +99,7 @@ def johansen_statistic(ρ2, n, r):
 def johansen_statistic_critical_value(p, m, r):
     return scipy.stats.chi2.ppf(p, (m-r)**2)
 
-def johansen(samples):
+def johansen_coint_theory(samples):
     m, n = samples.shape
 
     y, x, z = vecm_anderson_form(samples)
@@ -118,7 +119,7 @@ def johansen(samples):
     Σyy_inv = numpy.matrix(numpy.linalg.inv(Σyy))
     Σxx_inv = numpy.matrix(numpy.linalg.inv(Σxx))
 
-    R = sqrt_Σyy_inv*Σyx*numpy.matrix(numpy.linalg.inv(Σxx))*Σxy*sqrt_Σyy_inv
+    R = sqrt_Σyy_inv*Σyx*Σxx_inv*Σxy*sqrt_Σyy_inv
 
     ρ2, M = numpy.linalg.eig(R)
     idx = ρ2.argsort()[::-1]
@@ -129,14 +130,49 @@ def johansen(samples):
     for r in range(m):
         cv = johansen_statistic_critical_value(0.95, m, r)
         l = johansen_statistic(ρ2, n, r)
-        print(cv,l)
+        print(f"Critical Value: {cv}, Trace Statistic: {l}")
         if l < cv:
-            rank = r-1
+            rank = r
+            break
+
+    α = sqrt_Σyy*M[:,:rank]
+    β = M[:,:rank].T*sqrt_Σyy_inv*Σyx*numpy.matrix(numpy.linalg.inv(Σxx))
+
+    if rank is None:
+        print("Reduced Rank Solution Does Not Exist")
+        return None
+
+    print(f"Rank={rank}")
+    print("Eigen Values\n", ρ2[:rank])
+    print("Eigen Vectors\n", M[:,:rank])
+    print("α\n", α)
+    print("β\n", β)
+
+    return ρ2[:rank], M[:,:rank], α, β
+
+# scipy implementation
+def johansen_coint(samples):
+    m, _  = samples.shape
+
+    df = pandas.DataFrame(samples.T)
+    result = vecm.coint_johansen(df, 0, 1)
+
+    l = result.lr1
+    cv = result.cvt
+
+    # 0: 90%  1:95% 2: 99%
+    rank = None
+    for r in range(m):
+        if l[r] < cv[r, 1]:
+            rank = r
             break
 
     if rank is None:
         print("Reduced Rank Solution Does Not Exist")
         return None
+
+    ρ2 = result.eig
+    M = numpy.matrix(result.evec)
 
     print(f"Rank={rank}")
     print("Eigen Values\n", ρ2[:rank])
@@ -177,54 +213,11 @@ comparison_plot(title, samples, α.T, β, labels, [0.1, 0.1], plot)
 
 # %%
 
-y, x, z = vecm_anderson_form(samples)
-
-x_star = ols_residual(z, x)
-y_star = ols_residual(z, y)
-
-multivariate_ols(z, x)
-d_star =  multivariate_ols(z, y)
-
-Σxx = covariance(x_star, x_star)
-Σyy = covariance(y_star, y_star)
-Σxy = covariance(x_star, y_star)
-Σyx = covariance(y_star, x_star)
-
-sqrt_Σyy = numpy.matrix(scipy.linalg.sqrtm(Σyy))
-sqrt_Σyy_inv = numpy.matrix(numpy.linalg.inv(sqrt_Σyy))
-Σyy_inv = numpy.matrix(numpy.linalg.inv(Σyy))
-Σxx_inv = numpy.matrix(numpy.linalg.inv(Σxx))
-
-R = sqrt_Σyy_inv*Σyx*Σxx_inv*Σxy*sqrt_Σyy_inv
-
-ρ2, M = numpy.linalg.eig(R)
-
-idx = ρ2.argsort()[::-1]
-ρ2 = ρ2[idx]
-M = M[:,idx]
-
-johansen_statistic(ρ2, nsample, 2)
-johansen_statistic_critical_value(0.95, 3, 2)
-
-α = sqrt_Σyy*M
-β = M.T*sqrt_Σyy_inv*Σyx*numpy.matrix(numpy.linalg.inv(Σxx))
-
-johansen(samples)
+johansen_coint_theory(samples)
 
 # %%
 
-df = pandas.DataFrame(samples.T)
-result = vecm.coint_johansen(df, 0, 1)
-
-result.lr1
-result.cvt
-
-result.lr2
-result.cvm
-
-result.eig
-numpy.matrix(result.evec)
-
+johansen_coint(samples)
 # %%
 
 title = "VECM 1 Cointegrating Vector Anderson Form X"
