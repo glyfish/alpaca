@@ -15,6 +15,7 @@ from lib import var
 from lib import arima
 from statsmodels.tsa.vector_ar import vecm
 import statsmodels.api as sm
+import statsmodels.formula.api as smf
 import scipy
 import datetime
 
@@ -49,6 +50,18 @@ def comparison_plot(title, samples, α, β, labels, box_pos, plot):
     axis.legend(fontsize=16)
     config.save_post_asset(figure, "mean_reversion", plot)
 
+def regression_plot(title, xt, yt, labels, plot_name):
+    nsample = len(xt)
+    figure, axis = pyplot.subplots(figsize=(12, 8))
+    axis.set_ylabel(labels[1])
+    axis.set_xlabel(labels[0])
+    x = numpy.linspace(numpy.min(xt), numpy.max(xt), 100)
+    y_hat = x * params[1] + params[0]
+    axis.set_title(title)
+    axis.plot(xt, yt, marker='o', markersize=5.0, linestyle="None", markeredgewidth=1.0, alpha=0.75, zorder=5)
+    axis.plot(x, y_hat, lw=3.0, color="#000000", zorder=6)
+    config.save_post_asset(figure, "mean_reversion", plot_name)
+
 def vecm_generate_sample(α, β, a, Ω, nsample):
     n, _ = a.shape
     xt = numpy.matrix(numpy.zeros((n, nsample)))
@@ -69,16 +82,30 @@ def multivariate_test_sample(a, n, σ):
     y = a*x + ε.T
     return x, y
 
-# Implementation from Reduced Rand Regression For the Multivariate Linear Model
+def samples_to_data_frame(samples):
+    m, n = samples.shape
+    columns = [f"x{i+1}" for i in range(m)]
+    index = (pandas.date_range(pandas.Timestamp.now(tz="UTC"), periods=n) - pandas.Timedelta(days=n)).normalize()
+    df = pandas.DataFrame(samples.T, columns=columns, index=index)
+    return df
+
+def data_frame_to_samples(df):
+    return numpy.matrix(df.to_numpy)
+
+def multiple_ols(samples, formula):
+    df = samples_to_data_frame(samples)
+    return smf.ols(formula=formula, data=df).fit()
+
+def simple_multivariate_ols(x, y):
+    return covariance(y, x) * numpy.linalg.inv(covariance(x, x))
+
+# Implementation from Reduced Rank Regression For the Multivariate Linear Model
 def covariance(x, y):
     _, n = x.shape
     cov = x[:,0]*y[:,0].T
     for i in range(1, n):
         cov += x[:,i]*y[:,i].T
     return cov/float(n)
-
-def multivariate_ols(x, y):
-    return covariance(y, x) * numpy.linalg.inv(covariance(x, x))
 
 def ols_residual(x, y):
     a = multivariate_ols(x, y)
@@ -99,7 +126,7 @@ def johansen_statistic(ρ2, n, r):
 def johansen_statistic_critical_value(p, m, r):
     return scipy.stats.chi2.ppf(p, (m-r)**2)
 
-def johansen_coint_theory(samples):
+def johansen_coint_theory(samples, report=True):
     m, n = samples.shape
 
     y, x, z = vecm_anderson_form(samples)
@@ -128,9 +155,10 @@ def johansen_coint_theory(samples):
 
     rank = None
     for r in range(m):
-        cv = johansen_statistic_critical_value(0.95, m, r)
+        cv = johansen_statistic_critical_value(0.99, m, r)
         l = johansen_statistic(ρ2, n, r)
-        print(f"Critical Value: {cv}, Trace Statistic: {l}")
+        if rank is None:
+            print(f"Critical Value: {cv}, Trace Statistic: {l}")
         if l < cv:
             rank = r
             break
@@ -138,20 +166,21 @@ def johansen_coint_theory(samples):
     α = sqrt_Σyy*M[:,:rank]
     β = M[:,:rank].T*sqrt_Σyy_inv*Σyx*numpy.matrix(numpy.linalg.inv(Σxx))
 
+    if report:
+        print(f"Rank={rank}")
+        print("Eigen Values\n", ρ2)
+        print("Eigen Vectors\n", M)
+        print("α\n", α)
+        print("β\n", β)
+
     if rank is None:
         print("Reduced Rank Solution Does Not Exist")
         return None
 
-    print(f"Rank={rank}")
-    print("Eigen Values\n", ρ2[:rank])
-    print("Eigen Vectors\n", M[:,:rank])
-    print("α\n", α)
-    print("β\n", β)
-
     return ρ2[:rank], M[:,:rank], α, β
 
 # scipy implementation
-def johansen_coint(samples):
+def johansen_coint(samples, report=True):
     m, _  = samples.shape
 
     df = pandas.DataFrame(samples.T)
@@ -163,20 +192,23 @@ def johansen_coint(samples):
     # 0: 90%  1:95% 2: 99%
     rank = None
     for r in range(m):
-        if l[r] < cv[r, 1]:
+        if report:
+            print(f"Critical Value: {cv[r, 2]}, Trace Statistic: {l[r]}")
+        if l[r] < cv[r, 2]:
             rank = r
             break
-
-    if rank is None:
-        print("Reduced Rank Solution Does Not Exist")
-        return None
 
     ρ2 = result.eig
     M = numpy.matrix(result.evec)
 
-    print(f"Rank={rank}")
-    print("Eigen Values\n", ρ2[:rank])
-    print("Eigen Vectors\n", M[:,:rank])
+    if report:
+        print(f"Rank={rank}")
+        print("Eigen Values\n", ρ2)
+        print("Eigen Vectors\n", M)
+
+    if rank is None:
+        print("Reduced Rank Solution Does Not Exist")
+        return None
 
     return ρ2[:rank], M[:,:rank]
 
@@ -188,23 +220,21 @@ a = numpy.matrix([[1.0, 2.0, 1.0],
                   [4.0, 1.0, -2.0],
                   [-2.0, 1.0, 5.0]])
 x, y = multivariate_test_sample(a, n, σ)
-multivariate_ols(x, y)
+simple_multivariate_ols(x, y)
 
 # %%
 
 nsample = 1000
-α = numpy.matrix([-0.5, 0.0, 0.0]).T
-β = numpy.matrix([1.0, -0.5, -0.5])
-a = numpy.matrix([[0.5, 0.0, 0.0],
-                  [0.0, 0.5, 0.0],
-                  [0.0, 0.0, 0.5]])
-Ω = numpy.matrix([[1.0, 0.0, 0.0],
-                  [0.0, 1.0, 0.0],
-                  [0.0, 0.0, 1.0]])
+α = numpy.matrix([-0.5, 0.0]).T
+β = numpy.matrix([1.0, -0.5])
+a = numpy.matrix([[0.5, 0.0],
+                  [0.0, 0.5]])
+Ω = numpy.matrix([[1.0, 0.0],
+                  [0.0, 1.0]])
 
-title = "VECM 1 Cointegrating Vector"
-labels = [r"$x_1$", r"$x_2$", r"$x_3$"]
-plot = "vecm_estimation_1"
+title = "Bivariate VECM 1 Cointegrating Vector"
+labels = [r"$x_1$", r"$x_2$"]
+plot = "vecm_estimation_comparison_bivariate_1"
 samples = vecm_generate_sample(α, β, a, Ω, nsample)
 
 # %%
@@ -218,30 +248,74 @@ johansen_coint_theory(samples)
 # %%
 
 johansen_coint(samples)
+
 # %%
 
-title = "VECM 1 Cointegrating Vector Anderson Form X"
+result = multiple_ols(samples, "x1 ~ x2 - 1")
+print(result.summary())
+
+# %%
+
+nsample = 1000
+α = numpy.matrix([-0.5, 0.0, 0.0]).T
+β = numpy.matrix([1.0, -0.5, -0.5])
+a = numpy.matrix([[0.5, 0.0, 0.0],
+                  [0.0, 0.5, 0.0],
+                  [0.0, 0.0, 0.5]])
+Ω = numpy.matrix([[1.0, 0.0, 0.0],
+                  [0.0, 1.0, 0.0],
+                  [0.0, 0.0, 1.0]])
+
+title = "Trivariate VECM 1 Cointegrating Vector"
 labels = [r"$x_1$", r"$x_2$", r"$x_3$"]
-plot = "vecm_estimation_anderson_form_x_1"
-comparison_plot(title, x, α.T, β, labels, [0.6, 0.1], plot)
+plot = "vecm_estimation_comparison_trivariate_1"
+samples = vecm_generate_sample(α, β, a, Ω, nsample)
 
 # %%
 
-title = "VECM 1 Cointegrating Vector Anderson Form αβX"
-labels = [r"$αβx_1$", r"$αβx_2$", r"$αβx_3$"]
-plot = "vecm_estimation_anderson_form_αβx_1"
-comparison_plot(title, α*β*x, α.T, β, labels, [0.6, 0.1], plot)
+comparison_plot(title, samples, α.T, β, labels, [0.1, 0.1], plot)
 
 # %%
 
-title = "VECM 1 Cointegrating Vector Anderson Form Y"
-labels = [r"$y_1$", r"$y_2$", r"$y_3$"]
-plot = "vecm_estimation_anderson_form_y_1"
-comparison_plot(title, y, α.T, β, labels, [0.6, 0.1], plot)
+johansen_coint_theory(samples)
 
 # %%
 
-title = "VECM 1 Cointegrating Vector Anderson Form Z"
-labels = [r"$z_1$", r"$z_2$", r"$z_3$"]
-plot = "vecm_estimation_anderson_form_z_1"
-comparison_plot(title, z, α.T, β, labels, [0.6, 0.1], plot)
+johansen_coint(samples)
+
+# %%
+
+result = multiple_ols(samples, "x1 ~ x2 + x3 - 1")
+print(result.summary())
+
+# %%
+
+nsample = 1000
+α = numpy.matrix([[-0.5, 0.0],
+                  [0.0, -0.5],
+                  [0.0, 0.0]])
+β = numpy.matrix([[1.0, 0.0, -0.5],
+                  [0.0, 1.0, -0.5]])
+a = numpy.matrix([[0.5, 0.0, 0.0],
+                  [0.0, 0.5, 0.0],
+                  [0.0, 0.0, 0.5]])
+Ω = numpy.matrix([[1.0, 0.0, 0.0],
+                  [0.0, 1.0, 0.0],
+                  [0.0, 0.0, 1.0]])
+
+title = "Trivariate VECM 2 Cointegrating Vectors"
+labels = [r"$x_1$", r"$x_2$", r"$x_3$"]
+plot = "vecm_estimation_comparison_trivariate_2"
+samples = vecm_generate_sample(α, β, a, Ω, nsample)
+
+# %%
+
+comparison_plot(title, samples, α.T, β, labels, [0.1, 0.1], plot)
+
+# %%
+
+johansen_coint_theory(samples)
+
+# %%
+
+johansen_coint(samples)
