@@ -22,11 +22,11 @@ import datetime
 pyplot.style.use(config.glyfish_style)
 
 # %%
-
 def multivariate_normal_sample(μ, Ω, n):
     return numpy.random.multivariate_normal(μ, Ω, n)
 
-def comparison_plot(title, samples, α, β, labels, box_pos, plot):
+def comparison_plot(title, df, α, β, labels, box_pos, plot):
+    samples = data_frame_to_samples(df)
     nplot, nsamples = samples.shape
     figure, axis = pyplot.subplots(figsize=(10, 7))
     axis.set_title(title)
@@ -62,43 +62,6 @@ def regression_plot(title, xt, yt, labels, plot_name):
     axis.plot(x, y_hat, lw=3.0, color="#000000", zorder=6)
     config.save_post_asset(figure, "mean_reversion", plot_name)
 
-def vecm_generate_sample(α, β, a, Ω, nsample):
-    n, _ = a.shape
-    xt = numpy.matrix(numpy.zeros((n, nsample)))
-    εt = numpy.matrix(multivariate_normal_sample(numpy.zeros(n), Ω, nsample))
-    for i in range(2, nsample):
-        Δxt1 = xt[:,i-1] - xt[:,i-2]
-        Δxt = α*β*xt[:,i-1] + a*Δxt1 + εt[i].T
-        xt[:,i] = Δxt + xt[:,i-1]
-    return xt
-
-def multivariate_test_sample(a, n, σ):
-    m, _ = a.shape
-    t = numpy.linspace(0.0, 10.0, n)
-    x = numpy.matrix([t])
-    for i in range(1, m):
-        x = numpy.concatenate((x, numpy.matrix([t**(1/(i+1))])))
-    ε = numpy.matrix(multivariate_normal_sample(numpy.zeros(m), σ*numpy.eye(m), n))
-    y = a*x + ε.T
-    return x, y
-
-def samples_to_data_frame(samples):
-    m, n = samples.shape
-    columns = [f"x{i+1}" for i in range(m)]
-    index = (pandas.date_range(pandas.Timestamp.now(tz="UTC"), periods=n) - pandas.Timedelta(days=n)).normalize()
-    df = pandas.DataFrame(samples.T, columns=columns, index=index)
-    return df
-
-def data_frame_to_samples(df):
-    return numpy.matrix(df.to_numpy)
-
-def multiple_ols(samples, formula):
-    df = samples_to_data_frame(samples)
-    return smf.ols(formula=formula, data=df).fit()
-
-def simple_multivariate_ols(x, y):
-    return covariance(y, x) * numpy.linalg.inv(covariance(x, x))
-
 # Implementation from Reduced Rank Regression For the Multivariate Linear Model
 def covariance(x, y):
     _, n = x.shape
@@ -108,7 +71,7 @@ def covariance(x, y):
     return cov/float(n)
 
 def ols_residual(x, y):
-    a = multivariate_ols(x, y)
+    a = simple_multivariate_ols(x, y)
     return y-a*x
 
 def vecm_anderson_form(samples):
@@ -126,7 +89,8 @@ def johansen_statistic(ρ2, n, r):
 def johansen_statistic_critical_value(p, m, r):
     return scipy.stats.chi2.ppf(p, (m-r)**2)
 
-def johansen_coint_theory(samples, report=True):
+def johansen_coint_theory(df, report=True):
+    samples = data_frame_to_samples(df)
     m, n = samples.shape
 
     y, x, z = vecm_anderson_form(samples)
@@ -134,7 +98,7 @@ def johansen_coint_theory(samples, report=True):
     x_star = ols_residual(z, x)
     y_star = ols_residual(z, y)
 
-    d_star =  multivariate_ols(z, y)
+    d_star =  simple_multivariate_ols(z, y)
 
     Σxx = covariance(x_star, x_star)
     Σyy = covariance(y_star, y_star)
@@ -180,7 +144,8 @@ def johansen_coint_theory(samples, report=True):
     return ρ2[:rank], M[:,:rank], α, β
 
 # scipy implementation
-def johansen_coint(samples, report=True):
+def johansen_coint(df, report=True):
+    samples = data_frame_to_samples(df)
     m, _  = samples.shape
 
     df = pandas.DataFrame(samples.T)
@@ -212,6 +177,65 @@ def johansen_coint(samples, report=True):
 
     return ρ2[:rank], M[:,:rank]
 
+# Utilities
+def simple_multivariate_ols(x, y):
+    return covariance(y, x) * numpy.linalg.inv(covariance(x, x))
+
+def vecm_generate_sample(α, β, a, Ω, nsample):
+    n, _ = a.shape
+    xt = numpy.matrix(numpy.zeros((n, nsample)))
+    εt = numpy.matrix(multivariate_normal_sample(numpy.zeros(n), Ω, nsample))
+    for i in range(2, nsample):
+        Δxt1 = xt[:,i-1] - xt[:,i-2]
+        Δxt = α*β*xt[:,i-1] + a*Δxt1 + εt[i].T
+        xt[:,i] = Δxt + xt[:,i-1]
+    return samples_to_data_frame(xt)
+
+def multivariate_test_sample(a, n, σ):
+    m, _ = a.shape
+    t = numpy.linspace(0.0, 10.0, n)
+    x = numpy.matrix([t])
+    for i in range(1, m):
+        x = numpy.concatenate((x, numpy.matrix([t**(1/(i+1))])))
+    ε = numpy.matrix(multivariate_normal_sample(numpy.zeros(m), σ*numpy.eye(m), n))
+    y = a*x + ε.T
+    return x, y
+
+def samples_to_data_frame(samples):
+    m, n = samples.shape
+    columns = [f"x{i+1}" for i in range(m)]
+    index = (pandas.date_range(pandas.Timestamp.now(tz="UTC"), periods=n) - pandas.Timedelta(days=n)).normalize()
+    df = pandas.DataFrame(samples.T, columns=columns, index=index)
+    return df
+
+def data_frame_to_samples(df):
+    return numpy.matrix(df.to_numpy()).T
+
+def multiple_ols(df, formula):
+    return smf.ols(formula=formula, data=df).fit()
+
+def residual_adf_test(df, params, report=True):
+    samples = data_frame_to_samples(df)
+    x = numpy.matrix(params[1:])*samples[1:,:]
+    y = numpy.squeeze(numpy.asarray(samples[0,:]))
+    εt = y - params[0] - numpy.squeeze(numpy.asarray(x))
+    if report:
+        return arima.adf_report(εt)
+    else:
+        return arima.adf_test(εt)
+
+def sample_adf_test(df, report=True):
+    results = []
+    for c in df.columns:
+        samples = df[c].to_numpy()
+        if report:
+            print(f">>> ADF Test Result for: {c}")
+            results.append(arima.adf_report(samples))
+            print("")
+        else:
+            results.append(arima.adf_test(samples))
+    return results
+
 # %%
 
 n = 10000
@@ -235,24 +259,25 @@ a = numpy.matrix([[0.5, 0.0],
 title = "Bivariate VECM 1 Cointegrating Vector"
 labels = [r"$x_1$", r"$x_2$"]
 plot = "vecm_estimation_comparison_bivariate_1"
-samples = vecm_generate_sample(α, β, a, Ω, nsample)
+df = vecm_generate_sample(α, β, a, Ω, nsample)
 
 # %%
 
-comparison_plot(title, samples, α.T, β, labels, [0.1, 0.1], plot)
+comparison_plot(title, df, α.T, β, labels, [0.1, 0.1], plot)
 
 # %%
 
-johansen_coint_theory(samples)
+johansen_coint_theory(df)
 
 # %%
 
-johansen_coint(samples)
+johansen_coint(df)
 
 # %%
 
-result = multiple_ols(samples, "x1 ~ x2 - 1")
+result = multiple_ols(df, "x1 ~ x2")
 print(result.summary())
+
 
 # %%
 
@@ -269,24 +294,28 @@ a = numpy.matrix([[0.5, 0.0, 0.0],
 title = "Trivariate VECM 1 Cointegrating Vector"
 labels = [r"$x_1$", r"$x_2$", r"$x_3$"]
 plot = "vecm_estimation_comparison_trivariate_1"
-samples = vecm_generate_sample(α, β, a, Ω, nsample)
+df = vecm_generate_sample(α, β, a, Ω, nsample)
 
 # %%
 
-comparison_plot(title, samples, α.T, β, labels, [0.1, 0.1], plot)
+comparison_plot(title, df, α.T, β, labels, [0.1, 0.1], plot)
 
 # %%
 
-johansen_coint_theory(samples)
+johansen_coint_theory(df)
 
 # %%
 
-johansen_coint(samples)
+johansen_coint(df)
 
 # %%
 
-result = multiple_ols(samples, "x1 ~ x2 + x3 - 1")
+result = multiple_ols(df, "x1 ~ x2 + x3")
 print(result.summary())
+
+sample_adf_test(df)
+
+residual_adf_test(df, result.params)
 
 # %%
 
