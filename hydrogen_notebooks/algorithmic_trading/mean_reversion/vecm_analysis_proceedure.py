@@ -18,10 +18,15 @@ import statsmodels.api as sm
 import statsmodels.formula.api as smf
 import scipy
 import datetime
+from sklearn.linear_model import LinearRegression
+from statsmodels.tsa.stattools import grangercausalitytests
+from statsmodels.tsa.vector_ar.var_model import VAR
+from statsmodels.tsa.vector_ar.vecm import VECM
 
 pyplot.style.use(config.glyfish_style)
 
 # %%
+
 def multivariate_normal_sample(μ, Ω, n):
     return numpy.random.multivariate_normal(μ, Ω, n)
 
@@ -61,6 +66,24 @@ def regression_plot(title, xt, yt, labels, plot_name):
     axis.plot(xt, yt, marker='o', markersize=5.0, linestyle="None", markeredgewidth=1.0, alpha=0.75, zorder=5)
     axis.plot(x, y_hat, lw=3.0, color="#000000", zorder=6)
     config.save_post_asset(figure, "mean_reversion", plot_name)
+
+def acf_pcf_plot(title, df, ylim, max_lag, plot):
+    samples = data_frame_to_samples(df)
+    vars = df.columns
+    nplot, n = samples.shape
+    figure, axis = pyplot.subplots(nplot/2, nplot/2, sharex=True, figsize=(12, 9))
+
+    acf_values = acf(samples, max_lag)
+    pacf_values = yule_walker(samples, max_lag)
+
+    axis.set_title(title)
+    axis.set_xlabel("Time Lag (τ)")
+    axis.set_xlim([-0.1, max_lag])
+    axis.set_ylim(ylim)
+    axis.plot(range(max_lag+1), acf_values, label="ACF")
+    axis.plot(range(1, max_lag+1), pacf_values, label="PACF")
+    axis.legend(fontsize=16)
+    config.save_post_asset(figure, "mean_reversion", plot)
 
 # Implementation from Reduced Rank Regression For the Multivariate Linear Model
 def covariance(x, y):
@@ -177,10 +200,7 @@ def johansen_coint(df, report=True):
 
     return ρ2[:rank], M[:,:rank]
 
-# Utilities
-def simple_multivariate_ols(x, y):
-    return covariance(y, x) * numpy.linalg.inv(covariance(x, x))
-
+# Data generation
 def vecm_generate_sample(α, β, a, Ω, nsample):
     n, _ = a.shape
     xt = numpy.matrix(numpy.zeros((n, nsample)))
@@ -194,13 +214,27 @@ def vecm_generate_sample(α, β, a, Ω, nsample):
 def multivariate_test_sample(a, n, σ):
     m, _ = a.shape
     t = numpy.linspace(0.0, 10.0, n)
-    x = numpy.matrix([t])
+    x = numpy.matrix(t)
     for i in range(1, m):
         x = numpy.concatenate((x, numpy.matrix([t**(1/(i+1))])))
     ε = numpy.matrix(multivariate_normal_sample(numpy.zeros(m), σ*numpy.eye(m), n))
     y = a*x + ε.T
     return x, y
 
+# Utilities
+def acf(samples, nlags):
+    return sm.tsa.stattools.acf(samples, nlags=nlags, fft=True)
+
+def pacf(samples, nlags):
+    return sm.tsa.stattools.pacf(samples, nlags=nlags, method="ywunbiased")
+
+def simple_multivariate_ols(x, y):
+    return covariance(y, x) * numpy.linalg.inv(covariance(x, x))
+
+def multiple_ols(df, formula):
+    return smf.ols(formula=formula, data=df).fit()
+
+# Data trandformations
 def samples_to_data_frame(samples):
     m, n = samples.shape
     columns = [f"x{i+1}" for i in range(m)]
@@ -211,9 +245,10 @@ def samples_to_data_frame(samples):
 def data_frame_to_samples(df):
     return numpy.matrix(df.to_numpy()).T
 
-def multiple_ols(df, formula):
-    return smf.ols(formula=formula, data=df).fit()
+def difference(df):
+    return df.diff().dropna()
 
+# Statistical tests
 def residual_adf_test(df, params, report=True):
     samples = data_frame_to_samples(df)
     x = numpy.matrix(params[1:])*samples[1:,:]
@@ -237,6 +272,7 @@ def sample_adf_test(df, report=True):
     return results
 
 # %%
+# Test multivariate regression
 
 n = 10000
 σ = 1.0
@@ -248,38 +284,25 @@ simple_multivariate_ols(x, y)
 
 # %%
 
-nsample = 1000
-α = numpy.matrix([-0.5, 0.0]).T
-β = numpy.matrix([1.0, -0.5])
-a = numpy.matrix([[0.5, 0.0],
-                  [0.0, 0.5]])
-Ω = numpy.matrix([[1.0, 0.0],
-                  [0.0, 1.0]])
-
-title = "Bivariate VECM 1 Cointegrating Vector"
-labels = [r"$x_1$", r"$x_2$"]
-plot = "vecm_estimation_comparison_bivariate_1"
-df = vecm_generate_sample(α, β, a, Ω, nsample)
+result = LinearRegression().fit(x.T, y.T)
+result.coef_
 
 # %%
 
-comparison_plot(title, df, α.T, β, labels, [0.1, 0.1], plot)
-
-# %%
-
-johansen_coint_theory(df)
-
-# %%
-
-johansen_coint(df)
-
-# %%
-
-result = multiple_ols(df, "x1 ~ x2")
+df = samples_to_data_frame(numpy.concatenate((y[0], x)))
+result = multiple_ols(df, "x1 ~ x2 + x3 + x4")
 print(result.summary())
 
+df = samples_to_data_frame(numpy.concatenate((y[1], x)))
+result = multiple_ols(df, "x1 ~ x2 + x3 + x4")
+print(result.summary())
+
+df = samples_to_data_frame(numpy.concatenate((y[2], x)))
+result = multiple_ols(df, "x1 ~ x2 + x3 + x4")
+print(result.summary())
 
 # %%
+# Test one cointegration vector with one cointegration vector
 
 nsample = 1000
 α = numpy.matrix([-0.5, 0.0, 0.0]).T
@@ -293,7 +316,7 @@ a = numpy.matrix([[0.5, 0.0, 0.0],
 
 title = "Trivariate VECM 1 Cointegrating Vector"
 labels = [r"$x_1$", r"$x_2$", r"$x_3$"]
-plot = "vecm_estimation_comparison_trivariate_1"
+plot = "vecm_analysis_samples"
 df = vecm_generate_sample(α, β, a, Ω, nsample)
 
 # %%
@@ -313,38 +336,36 @@ johansen_coint(df)
 result = multiple_ols(df, "x1 ~ x2 + x3")
 print(result.summary())
 
+# %%
+
 sample_adf_test(df)
+
+# %%
 
 residual_adf_test(df, result.params)
 
 # %%
 
-nsample = 1000
-α = numpy.matrix([[-0.5, 0.0],
-                  [0.0, -0.5],
-                  [0.0, 0.0]])
-β = numpy.matrix([[1.0, 0.0, -0.5],
-                  [0.0, 1.0, -0.5]])
-a = numpy.matrix([[0.5, 0.0, 0.0],
-                  [0.0, 0.5, 0.0],
-                  [0.0, 0.0, 0.5]])
-Ω = numpy.matrix([[1.0, 0.0, 0.0],
-                  [0.0, 1.0, 0.0],
-                  [0.0, 0.0, 1.0]])
-
-title = "Trivariate VECM 2 Cointegrating Vectors"
-labels = [r"$x_1$", r"$x_2$", r"$x_3$"]
-plot = "vecm_estimation_comparison_trivariate_2"
-samples = vecm_generate_sample(α, β, a, Ω, nsample)
+title = "Trivariate VECM 1 Cointegrating Vector First Difference"
+labels = [r"$Δx_1$", r"$Δx_2$", r"$Δx_3$"]
+plot = "vecm_analysis_samples_diff_1"
+df_diff_1 = difference(df)
+comparison_plot(title, df_diff_1, α.T, β, labels, [0.1, 0.8], plot)
 
 # %%
 
-comparison_plot(title, samples, α.T, β, labels, [0.1, 0.1], plot)
+sample_adf_test(df_diff_1)
 
 # %%
 
-johansen_coint_theory(samples)
+result = VAR(df_diff_1).select_order(maxlags=15)
+result.ics
+result.selected_orders
 
 # %%
 
-johansen_coint(samples)
+result = VECM(df, k_ar_diff=12, coint_rank=1, deterministic="nc").fit()
+result.coint_rank
+result.alpha
+result.beta
+result.gamma
