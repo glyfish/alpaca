@@ -55,34 +55,46 @@ def comparison_plot(title, df, α, β, labels, box_pos, plot):
     axis.legend(fontsize=16)
     config.save_post_asset(figure, "mean_reversion", plot)
 
-def regression_plot(title, xt, yt, labels, plot_name):
-    nsample = len(xt)
-    figure, axis = pyplot.subplots(figsize=(12, 8))
-    axis.set_ylabel(labels[1])
-    axis.set_xlabel(labels[0])
-    x = numpy.linspace(numpy.min(xt), numpy.max(xt), 100)
-    y_hat = x * params[1] + params[0]
-    axis.set_title(title)
-    axis.plot(xt, yt, marker='o', markersize=5.0, linestyle="None", markeredgewidth=1.0, alpha=0.75, zorder=5)
-    axis.plot(x, y_hat, lw=3.0, color="#000000", zorder=6)
+def scatter_matrix_plot(title, df, plot_name):
+    nsample, nvar = df.shape
+    vars = df.columns
+    samples = data_frame_to_samples(df)
+    figure, axis = pyplot.subplots(nvar, nvar, sharey=True, figsize=(9, 9))
+    figure.suptitle(title)
+    figure.subplots_adjust(wspace=0.1, hspace=0.1)
+    for i in range(nvar):
+        yt = samples[i].T
+        axis[i,0].set_ylabel(vars[i])
+        for j in range(nvar):
+            if i == nvar - 1:
+                axis[i,j].set_xlabel(vars[j])
+            xt = samples[j].T
+            axis[i,j].set_ylim([numpy.amin(yt), numpy.amax(yt)])
+            axis[i,j].set_xlim([numpy.amin(xt), numpy.amax(xt)])
+            axis[i,j].plot(xt, yt, marker='o', markersize=5.0, linestyle="None", markeredgewidth=1.0, alpha=0.75, zorder=5)
+
     config.save_post_asset(figure, "mean_reversion", plot_name)
 
-def acf_pcf_plot(title, df, ylim, max_lag, plot):
+def acf_pcf_plot(title, df, max_lag, plot):
     samples = data_frame_to_samples(df)
     vars = df.columns
     nplot, n = samples.shape
-    figure, axis = pyplot.subplots(nplot/2, nplot/2, sharex=True, figsize=(12, 9))
+    figure, axis = pyplot.subplots(nplot, sharex=True, figsize=(12, 9))
 
-    acf_values = acf(samples, max_lag)
-    pacf_values = yule_walker(samples, max_lag)
-
-    axis.set_title(title)
-    axis.set_xlabel("Time Lag (τ)")
-    axis.set_xlim([-0.1, max_lag])
-    axis.set_ylim(ylim)
-    axis.plot(range(max_lag+1), acf_values, label="ACF")
-    axis.plot(range(1, max_lag+1), pacf_values, label="PACF")
-    axis.legend(fontsize=16)
+    for i in range(nplot):
+        data = numpy.squeeze(numpy.array(samples[i]))
+        acf_values = acf(data, max_lag)
+        pacf_values = pacf(data, max_lag)
+        if i == 0:
+            axis[i].set_title(title)
+        if i == nplot - 1:
+            axis[i].set_xlabel("Time Lag (τ)")
+        axis[i].set_ylabel(vars[i])
+        axis[i].set_xlim([-0.1, max_lag])
+        axis[i].set_ylim([-1.1, 1.1])
+        axis[i].plot(range(max_lag+1), acf_values, label="ACF")
+        axis[i].plot(range(max_lag+1), pacf_values, label="PACF")
+        axis[i].legend(fontsize=16)
     config.save_post_asset(figure, "mean_reversion", plot)
 
 # Implementation from Reduced Rank Regression For the Multivariate Linear Model
@@ -364,8 +376,25 @@ result.selected_orders
 
 # %%
 
-result = VECM(df, k_ar_diff=12, coint_rank=1, deterministic="nc").fit()
+result = VECM(df, k_ar_diff=1, coint_rank=1, deterministic="nc").fit()
 result.coint_rank
 result.alpha
 result.beta
 result.gamma
+
+# %%
+
+title = "Trivariate VECM 1 Cointegrating Vector ACF-PCF"
+plot = "vecm_analysis_acf_pcf_1"
+max_lag = 9
+acf_pcf_plot(title, df, max_lag, plot)
+
+# %%
+
+df.corr()
+
+# %%
+
+title = "Trivariate VECM 1 Cointegrating Vector Scatter Matrix"
+plot = "vecm_analysis_scatter_matrix_1"
+scatter_matrix_plot(title, df, plot)

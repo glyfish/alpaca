@@ -15,3 +15,4 @@ pyyaml
 fbm
 statsmodels
 sklearn
+seaborn
