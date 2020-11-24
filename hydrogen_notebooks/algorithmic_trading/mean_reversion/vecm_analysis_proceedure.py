@@ -59,15 +59,19 @@ def scatter_matrix_plot(title, df, plot_name):
     nsample, nvar = df.shape
     vars = df.columns
     samples = data_frame_to_samples(df)
-    figure, axis = pyplot.subplots(nvar, nvar, sharey=True, figsize=(9, 9))
-    figure.suptitle(title)
+    figure, axis = pyplot.subplots(nvar, nvar, figsize=(9, 9))
     figure.subplots_adjust(wspace=0.1, hspace=0.1)
+    axis[0, int(nvar/2)].set_title(title, y=1.05)
     for i in range(nvar):
         yt = samples[i].T
         axis[i,0].set_ylabel(vars[i])
         for j in range(nvar):
+            if j != 0:
+                axis[i,j].set_yticklabels([])
             if i == nvar - 1:
                 axis[i,j].set_xlabel(vars[j])
+            else:
+                axis[i,j].set_xticklabels([])
             xt = samples[j].T
             axis[i,j].set_ylim([numpy.amin(yt), numpy.amax(yt)])
             axis[i,j].set_xlim([numpy.amin(xt), numpy.amax(xt)])
@@ -80,13 +84,12 @@ def acf_pcf_plot(title, df, max_lag, plot):
     vars = df.columns
     nplot, n = samples.shape
     figure, axis = pyplot.subplots(nplot, sharex=True, figsize=(12, 9))
+    axis[0].set_title(title)
 
     for i in range(nplot):
         data = numpy.squeeze(numpy.array(samples[i]))
         acf_values = acf(data, max_lag)
         pacf_values = pacf(data, max_lag)
-        if i == 0:
-            axis[i].set_title(title)
         if i == nplot - 1:
             axis[i].set_xlabel("Time Lag (τ)")
         axis[i].set_ylabel(vars[i])
@@ -378,8 +381,8 @@ result.selected_orders
 
 result = VECM(df, k_ar_diff=1, coint_rank=1, deterministic="nc").fit()
 result.coint_rank
-result.alpha
-result.beta
+α = result.alpha
+β = result.beta
 result.gamma
 
 # %%
@@ -395,6 +398,24 @@ df.corr()
 
 # %%
 
+df.cov()
+
+# %%
+
 title = "Trivariate VECM 1 Cointegrating Vector Scatter Matrix"
 plot = "vecm_analysis_scatter_matrix_1"
 scatter_matrix_plot(title, df, plot)
+
+# %%
+
+df_diff_1.corr()
+
+# %%
+
+df_diff_1.cov()
+
+# %%
+
+title = "Trivariate VECM 1 Cointegrating Vector Difference Scatter Matrix"
+plot = "vecm_analysis_differencescatter_matrix_1"
+scatter_matrix_plot(title, df_diff_1, plot)

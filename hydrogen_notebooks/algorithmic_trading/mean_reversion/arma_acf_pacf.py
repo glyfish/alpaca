@@ -20,7 +20,7 @@ pyplot.style.use(config.glyfish_style)
 
 n = 10000
 
-# ##
+# %%
 
 φ1 = numpy.array([0.7])
 ar1 = arima.ar_generate_sample(φ1, n)
@@ -61,6 +61,51 @@ arima.acf_yule_walker_pcf_plot(title, ar2, ylim, max_lag, plot_name)
 
 title = f"AR(3) ACF-PACF Comparison: " + r"$\phi=$"+f"{numpy.array2string(φ3, precision=2, separator=',')}"
 plot_name = "acf_pacf_ar_3_pacf_acf_comparison"
+max_lag = 10
+ylim = [-0.1, 1.1]
+arima.acf_yule_walker_pcf_plot(title, ar3, ylim, max_lag, plot_name)
+
+# %%
+
+φ1 = numpy.array([0.7])
+ar1 = arima.ar_generate_sample(φ1, n)
+
+φ2 = numpy.array([0.0, 0.3])
+ar2 = arima.ar_generate_sample(φ2, n)
+
+φ3 = numpy.array([0.0, 0.0, 0.4])
+ar3 = arima.ar_generate_sample(φ3, n)
+
+# %%
+
+samples = numpy.array([ar1, ar2, ar3])
+params = [r"$\phi=$"+f"{numpy.array2string(φ1, precision=2, separator=',')}",
+          r"$\phi=$"+f"{numpy.array2string(φ2, precision=2, separator=',')}",
+          r"$\phi=$"+f"{numpy.array2string(φ3, precision=2, separator=',')}"]
+title = "AR(p) Comparison"
+plot_name = "acf_pacf_ar_single_lag_comparison"
+arima.timeseries_comparison_plot(samples, params, 500, title, plot_name)
+
+# %%
+
+title = f"AR(1) ACF-PACF Comparison: " + r"$\phi=$"+f"{numpy.array2string(φ1, precision=2, separator=',')}"
+plot_name = "acf_pacf_ar_1_pacf_acf_single_lag_comparison"
+max_lag = 10
+ylim = [-0.1, 1.1]
+arima.acf_yule_walker_pcf_plot(title, ar1, ylim, max_lag, plot_name)
+
+# %%
+
+title = f"AR(2) ACF-PACF Comparison: " + r"$\phi=$"+f"{numpy.array2string(φ2, precision=2, separator=',')}"
+plot_name = "acf_pacf_ar_2_pacf_acf_single_lag_comparison"
+max_lag = 10
+ylim = [-0.1, 1.1]
+arima.acf_yule_walker_pcf_plot(title, ar2, ylim, max_lag, plot_name)
+
+# %%
+
+title = f"AR(3) ACF-PACF Comparison: " + r"$\phi=$"+f"{numpy.array2string(φ3, precision=2, separator=',')}"
+plot_name = "acf_pacf_ar_3_pacf_acf_single_lag_comparison"
 max_lag = 10
 ylim = [-0.1, 1.1]
 arima.acf_yule_walker_pcf_plot(title, ar3, ylim, max_lag, plot_name)
