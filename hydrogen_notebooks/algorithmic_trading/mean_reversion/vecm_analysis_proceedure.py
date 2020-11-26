@@ -1,5 +1,4 @@
 # %%
-
 %load_ext autoreload
 %autoreload 2
 
@@ -249,6 +248,17 @@ def simple_multivariate_ols(x, y):
 def multiple_ols(df, formula):
     return smf.ols(formula=formula, data=df).fit()
 
+# Regression
+
+def cointgration_params_estimate(df, rank):
+    vars = df.columns
+    result = []
+    for i in range(rank):
+        formula = vars[0] + " ~ " +  " + ".join(vars[1:])
+        vars = numpy.roll(vars, -1)
+        result.append(multiple_ols(df, formula))
+    return result
+
 # Data trandformations
 def samples_to_data_frame(samples):
     m, n = samples.shape
@@ -264,15 +274,42 @@ def difference(df):
     return df.diff().dropna()
 
 # Statistical tests
-def residual_adf_test(df, params, report=True):
+def adfuller_test(series, test_type):
+    adf_result = sm.tsa.stattools.adfuller(series, regression=test_type)
+    return adf_result[0] < adf_result[4]["5%"]
+
+def adfuller_report(series, test_type):
+    adf_result = sm.tsa.stattools.adfuller(series, regression=test_type)
+    print('ADF Statistic: %f' % adf_result[0])
+    print('p-value: %f' % adf_result[1])
+    isStationary = adf_result[0] < adf_result[4]["5%"]
+    print(f"Is Stationary at 5%: {isStationary}")
+    print("Critical Values")
+    for key, value in adf_result[4].items():
+	       print('\t%s: %.3f' % (key, value))
+    return adf_result[0] < adf_result[4]["5%"]
+
+def adf_report(series):
+    return adfuller_report(series, 'c')
+
+def adf_test(samples):
+    return adfuller_test(series, 'c')
+
+def residual_adf_test(df, params, report=False):
+    nres, _ = params.shape
     samples = data_frame_to_samples(df)
-    x = numpy.matrix(params[1:])*samples[1:,:]
-    y = numpy.squeeze(numpy.asarray(samples[0,:]))
-    εt = y - params[0] - numpy.squeeze(numpy.asarray(x))
-    if report:
-        return arima.adf_report(εt)
-    else:
-        return arima.adf_test(εt)
+    result = []
+    for i in range(nres):
+        p = -numpy.matrix(numpy.concatenate((params[i,:i], params[i,i+1:]))/params[i,i])
+        s = numpy.concatenate((samples[:i], samples[i+1:]))
+        x = p*s
+        y = numpy.squeeze(numpy.asarray(samples[i,:]))
+        εt = y - numpy.squeeze(numpy.asarray(x))
+        if report:
+            result.append(adf_report(εt))
+        else:
+            result.append(adf_test(εt))
+    return result
 
 def sample_adf_test(df, report=True):
     results = []
@@ -280,10 +317,24 @@ def sample_adf_test(df, report=True):
         samples = df[c].to_numpy()
         if report:
             print(f">>> ADF Test Result for: {c}")
-            results.append(arima.adf_report(samples))
+            results.append(adf_report(samples))
             print("")
         else:
-            results.append(arima.adf_test(samples))
+            results.append(adf_test(samples))
+    return results
+
+def causality_matrix(df, maxlag, cv=0.05, report=False):
+    vars = df.columns
+    nvars = len(vars)
+    results = pandas.DataFrame(numpy.zeros((nvars, nvars)), columns=vars, index=vars)
+    for col in vars:
+        for row in vars:
+            test_result = grangercausalitytests(df[[row, col]], maxlag=maxlag, verbose=False)
+            pvals = [round(test_result[i+1][0]["ssr_ftest"][1], 2) for i in range(maxlag)]
+            result = numpy.min(pvals) <= cv
+            if report:
+                print(f"{col} causes {row}: {result}")
+            results.loc[row, col] = result
     return results
 
 # %%
@@ -348,16 +399,12 @@ johansen_coint(df)
 
 # %%
 
-result = multiple_ols(df, "x1 ~ x2 + x3")
-print(result.summary())
+results = cointgration_params_estimate(df, 1)
+print(results[0].summary())
 
 # %%
 
 sample_adf_test(df)
-
-# %%
-
-residual_adf_test(df, result.params)
 
 # %%
 
@@ -382,8 +429,12 @@ result.selected_orders
 result = VECM(df, k_ar_diff=1, coint_rank=1, deterministic="nc").fit()
 result.coint_rank
 α = result.alpha
-β = result.beta
+β = result.beta.T
 result.gamma
+
+# %%
+
+residual_adf_test(df, β, report=True)
 
 # %%
 
@@ -419,3 +470,7 @@ df_diff_1.cov()
 title = "Trivariate VECM 1 Cointegrating Vector Difference Scatter Matrix"
 plot = "vecm_analysis_differencescatter_matrix_1"
 scatter_matrix_plot(title, df_diff_1, plot)
+
+# %%
+
+causality_matrix(df_diff_1, 2, cv=0.05)
