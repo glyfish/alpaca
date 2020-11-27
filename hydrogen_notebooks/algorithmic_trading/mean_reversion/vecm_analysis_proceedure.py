@@ -1,4 +1,5 @@
 # %%
+
 %load_ext autoreload
 %autoreload 2
 
@@ -249,7 +250,6 @@ def multiple_ols(df, formula):
     return smf.ols(formula=formula, data=df).fit()
 
 # Regression
-
 def cointgration_params_estimate(df, rank):
     vars = df.columns
     result = []
