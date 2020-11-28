@@ -145,7 +145,6 @@ samples = vecm_generate_sample(α, β, a, Ω, nsample)
 comparison_plot(title, samples, α.T, β, labels, [0.1, 0.15], plot)
 
 # %%
-
 nsample = 1000
 α = numpy.matrix([[-0.5, 0.0],
                   [0.0, -0.5],

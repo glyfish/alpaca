@@ -16,12 +16,15 @@ pyplot.style.use(config.glyfish_style)
 
 # %%
 # Test one cointegration vector with one cointegration vector
-example = 1
-assumed_rank = 1
+example = 7
+assumed_rank = 2
 
 nsample = 1000
-α = numpy.matrix([-0.2, 0.0, 0.0]).T
-β = numpy.matrix([1.0, -0.25, -0.5])
+α = numpy.matrix([[-0.25, 0.0],
+                  [0.0, -0.5],
+                  [0.0, 0.0]])
+β = numpy.matrix([[1.0, 0.0, -0.5],
+                  [0.0, 1.0, -0.25]])
 a = numpy.matrix([[0.5, 0.0, 0.0],
                   [0.0, 0.5, 0.0],
                   [0.0, 0.0, 0.5]])
@@ -33,6 +36,7 @@ title = f"Trivariate VECM {assumed_rank} Cointegrating Vector"
 labels = [r"$x_1$", r"$x_2$", r"$x_3$"]
 plot = f"vecm_analysis_{example}_samples"
 df = vecm.vecm_generate_sample(α, β, a, Ω, nsample)
+df = df[["x1", "x3", "x2"]]
 
 # %%
 
@@ -48,7 +52,7 @@ title = f"Trivariate VECM {assumed_rank} Cointegrating Vector First Difference"
 labels = [r"$Δx_1$", r"$Δx_2$", r"$Δx_3$"]
 plot = f"vecm_analysis_{example}_samples_diff_1"
 df_diff_1 = vecm.difference(df)
-vecm.comparison_plot(title, df_diff_1, α.T, β, labels, [0.1, 0.8], plot)
+vecm.comparison_plot(title, df_diff_1, α.T, β, labels, [0.1, 0.7], plot)
 
 # %%
 
@@ -103,7 +107,7 @@ vecm.scatter_matrix_plot(title, df_diff_1, plot)
 
 # %%
 
-vecm.causality_matrix(df_diff_1, 2, cv=0.05)
+vecm.causality_matrix(df_diff_1, 1, cv=0.05)
 
 # %%
 
