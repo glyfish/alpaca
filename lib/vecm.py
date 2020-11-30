@@ -1,8 +1,9 @@
 import numpy
-from matplotlib import pyplot
-from lib import config
 import scipy
 import pandas
+
+from matplotlib import pyplot
+import matplotlib.dates as mdates
 
 from statsmodels.tsa.vector_ar import vecm
 import statsmodels.api as sm
@@ -11,13 +12,16 @@ from statsmodels.tsa.stattools import grangercausalitytests
 from statsmodels.tsa.vector_ar.var_model import VAR
 from statsmodels.tsa.vector_ar.vecm import VECM
 
+from lib import config
+
 # Plots
 def comparison_plot(title, df, α, β, labels, box_pos, plot):
     samples = data_frame_to_samples(df)
+
     nplot, nsamples = samples.shape
     figure, axis = pyplot.subplots(figsize=(10, 7))
     axis.set_title(title)
-    axis.set_xlabel(r"$t$")
+    axis.set_xlabel(r"$t$ (Days)")
     axis.set_xlim([0, nsamples-1])
 
     params = []
@@ -28,12 +32,14 @@ def comparison_plot(title, df, α, β, labels, box_pos, plot):
         params.append(f"$α_{{{i+1}}}$=[{d.join([format(elem, '2.2f') for elem in numpy.array(α[i]).flatten()])}]")
     for i in range(nβ):
         params.append(f"$β_{{{i+1}}}$=[{d.join([format(elem, '2.2f') for elem in numpy.array(β[i]).flatten()])}]")
+
     params_string = "\n".join(params)
     bbox = dict(boxstyle='square,pad=1', facecolor="#FEFCEC", edgecolor="#FEFCEC", alpha=0.75)
     axis.text(box_pos[0], box_pos[1], params_string, fontsize=15, bbox=bbox, transform=axis.transAxes)
 
     for i in range(nplot):
         axis.plot(range(nsamples), samples[i].T, label=labels[i], lw=1)
+
     axis.legend(fontsize=16)
     config.save_post_asset(figure, "mean_reversion", plot)
 
@@ -73,14 +79,40 @@ def acf_pcf_plot(title, df, max_lag, plot):
         acf_values = acf(data, max_lag)
         pacf_values = pacf(data, max_lag)
         if i == nplot - 1:
-            axis[i].set_xlabel("Time Lag (τ)")
+            axis[i].set_xlabel("Time Lag (τ) Days")
         axis[i].set_ylabel(vars[i])
         axis[i].set_xlim([-0.1, max_lag])
         axis[i].set_ylim([-1.1, 1.1])
         axis[i].plot(range(max_lag+1), acf_values, label="ACF")
         axis[i].plot(range(max_lag+1), pacf_values, label="PACF")
+        axis[i].plot(range(max_lag+1), numpy.zeros(max_lag+1), color="black", alpha = 0.25, lw=1)
         if i == 0:
             axis[i].legend(fontsize=16)
+    config.save_post_asset(figure, "mean_reversion", plot)
+
+def training_plot(title, df, var, plot):
+    post_fix = ["_prediction", "_lower_bound", "_upper_bound"]
+    test = df[var].to_numpy()
+    pred = df[var + post_fix[0]].to_numpy()
+    lower = df[var + post_fix[1]].to_numpy()
+    upper = df[var + post_fix[2]].to_numpy()
+    time = df.index.to_numpy()
+    n = len(test)
+
+    figure, axis = pyplot.subplots(figsize=(10, 7))
+    axis.set_title(title)
+
+    axis.xaxis.set_major_formatter(mdates.DateFormatter('%m/%d/%y'))
+    axis.xaxis.set_major_locator(mdates.DayLocator())
+
+    for i in range(n):
+        axis.plot([time[i], time[i]], [lower[i], upper[i]], color='#8C35FF', marker='o', markersize=7.5)
+
+    axis.plot(time, test, label="Observations")
+    axis.plot(time, pred, label="Predictions")
+
+    figure.autofmt_xdate()
+    axis.legend(fontsize=16)
     config.save_post_asset(figure, "mean_reversion", plot)
 
 # Statistical Tests
@@ -171,7 +203,7 @@ def causality_matrix(df, maxlag, cv=0.05, report=False):
     results = pandas.DataFrame(numpy.zeros((nvars, nvars)), columns=vars, index=vars)
     for col in vars:
         for row in vars:
-            test_result = grangercausalitytests(df[[row, col]], maxlag=maxlag, verbose=False)
+            test_result = grangercausalitytests(df[[row, col]], maxlag=maxlag, verbose=report)
             pvals = [round(test_result[i+1][0]["ssr_ftest"][1], 2) for i in range(maxlag)]
             result = numpy.min(pvals) <= cv
             if report:
@@ -189,6 +221,20 @@ def vecm_generate_sample(α, β, a, Ω, nsample):
         Δxt = α*β*xt[:,i-1] + a*Δxt1 + εt[i].T
         xt[:,i] = Δxt + xt[:,i-1]
     return samples_to_data_frame(xt)
+
+def var_generate_sample(x0, μ, φ, Ω, n):
+    m, l = x0.shape
+    xt = numpy.zeros((m, n))
+    ε = multivariate_normal_sample(μ, Ω, n)
+    for i in range(l):
+        xt[:,i] = x0[:,i]
+    for i in range(l, n):
+        xt[:,i] = ε[i]
+        for j in range(l):
+            t1 = φ[j]*numpy.matrix(xt[:,i-j-1]).T
+            t2 = numpy.squeeze(numpy.array(t1), axis=1)
+            xt[:,i] += t2
+    return xt
 
 # Utilities
 def acf(samples, nlags):
@@ -227,6 +273,50 @@ def vecm_estimate(df, maxlags, rank, deterministic="nc", report=False):
 
 def aic_order(df, maxlags):
     return VAR(df).select_order(maxlags=maxlags).selected_orders['aic']
+
+def var_estimate(df, maxlags):
+    return VAR(df).fit(maxlags=maxlags)
+
+def bias(obs, pred):
+    return (obs - pred).mean()
+
+def mae(obs, pred):
+    return (obs - pred).abs().mean()
+
+def mse(obs, pred):
+    return ((obs - pred)**2).mean()
+
+def rmse(obs, pred):
+    return mse(obs, pred).apply(numpy.sqrt)
+
+# Prediction
+def vecm_train(df, maxlags, rank, steps, deterministic="nc", report=False):
+    train, test = df[:-steps], df[-steps:]
+    result = vecm_estimate(train, maxlags, rank, deterministic, report)
+    pred, lower, upper = result.predict(steps=steps, alpha=0.05)
+    data = numpy.concatenate((test.to_numpy(), pred, lower, upper), axis=1)
+    vars = [var for var in df.columns]
+    post_fix = ["_prediction", "_lower_bound", "_upper_bound"]
+    step = len(vars)
+    for i in range(3*step):
+        j = i % step
+        k = int(i / step)
+        var = df.columns[j] + post_fix[k]
+        vars.append(var)
+    return pandas.DataFrame(data, columns=vars, index=test.index.to_numpy())
+
+def vecm_prediction(df, result, steps):
+    pred, lower, upper = result.predict(steps=steps, alpha=0.05)
+    data = numpy.concatenate((pred, lower, upper), axis=1)
+    vars = []
+    post_fix = ["_prediction", "_lower_bound", "_upper_bound"]
+    step = len(vars)
+    for i in range(3*step):
+        j = i % step
+        k = int(i / step)
+        var = df.columns[j] + post_fix[k]
+        pred_vars.append(var)
+    return pandas.DataFrame(data, columns=vars, index=test.index.to_numpy())
 
 # Transformations
 def samples_to_data_frame(samples):

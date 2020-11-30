@@ -18,6 +18,7 @@ pyplot.style.use(config.glyfish_style)
 # Test one cointegration vector with one cointegration vector
 example = 1
 assumed_rank = 1
+title_prefix = f"Trivariate VECM {assumed_rank} Cointegrating Vector"
 
 nsample = 1000
 α = numpy.matrix([-0.2, 0.0, 0.0]).T
@@ -29,7 +30,7 @@ a = numpy.matrix([[0.5, 0.0, 0.0],
                   [0.0, 1.0, 0.0],
                   [0.0, 0.0, 1.0]])
 
-title = f"Trivariate VECM {assumed_rank} Cointegrating Vector"
+title = title_prefix
 labels = [r"$x_1$", r"$x_2$", r"$x_3$"]
 plot = f"vecm_analysis_{example}_samples"
 df = vecm.vecm_generate_sample(α, β, a, Ω, nsample)
@@ -44,7 +45,7 @@ vecm.sample_adf_test(df, report=True)
 
 # %%
 
-title = f"Trivariate VECM {assumed_rank} Cointegrating Vector First Difference"
+title = title_prefix + " First Difference"
 labels = [r"$Δx_1$", r"$Δx_2$", r"$Δx_3$"]
 plot = f"vecm_analysis_{example}_samples_diff_1"
 df_diff_1 = vecm.difference(df)
@@ -53,6 +54,10 @@ vecm.comparison_plot(title, df_diff_1, α.T, β, labels, [0.1, 0.8], plot)
 # %%
 
 vecm.sample_adf_test(df_diff_1, report=True)
+
+# %%
+
+vecm.causality_matrix(df_diff_1, 2, cv=0.05)
 
 # %%
 
@@ -68,7 +73,7 @@ print(f"AIC max lag: {maxlag}")
 
 # %%
 
-title = f"Trivariate VECM {assumed_rank} Cointegrating Vector ACF-PCF"
+title = title_prefix + " ACF-PCF"
 plot = f"vecm_analysis_{example}_acf_pcf"
 max_time_lag = 9
 vecm.acf_pcf_plot(title, df, max_time_lag, plot)
@@ -83,7 +88,7 @@ df.cov()
 
 # %%
 
-title = f"Trivariate VECM {assumed_rank} Cointegrating Vector Scatter Matrix"
+title = title_prefix + " Scatter Matrix"
 plot = f"vecm_analysis_{example}_scatter_matrix"
 vecm.scatter_matrix_plot(title, df, plot)
 
@@ -97,13 +102,9 @@ df_diff_1.cov()
 
 # %%
 
-title = f"Trivariate VECM {assumed_rank} Cointegrating Vector Difference Scatter Matrix"
+title = title_prefix + " Difference Scatter Matrix"
 plot = f"vecm_analysis_{example}_differencescatter_matrix"
 vecm.scatter_matrix_plot(title, df_diff_1, plot)
-
-# %%
-
-vecm.causality_matrix(df_diff_1, 2, cv=0.05)
 
 # %%
 
