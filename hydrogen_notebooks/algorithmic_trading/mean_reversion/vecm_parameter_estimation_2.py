@@ -129,7 +129,21 @@ train = vecm.vecm_train(df, 1, rank, 10)
 
 # %%
 
+var = "x1"
 title = title_prefix + r" $x_1$ Training"
 plot = f"vecm_analysis_{example}_x1_training"
-var = "x1"
+vecm.training_plot(title, train, var, [0.7, 0.2], plot)
+
+# %%
+
+var = "x2"
+title = title_prefix + r" $x_2$ Training"
+plot = f"vecm_analysis_{example}_x2_training"
+vecm.training_plot(title, train, var, [0.7, 0.2], plot)
+
+# %%
+
+var = "x3"
+title = title_prefix + r" $x_3$ Training"
+plot = f"vecm_analysis_{example}_x3_training"
 vecm.training_plot(title, train, var, [0.7, 0.2], plot)

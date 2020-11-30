@@ -106,9 +106,10 @@ def training_plot(title, df, var, box_pos, plot):
     axis.xaxis.set_major_locator(mdates.DayLocator())
 
 
-    metrics = f"BIAS  ={format(bias(test, pred), '2.2f')}\nMAE  = {format(mae(test, pred), '2.2f')}\nRMSE= {format(rmse(test, pred), '2.2f')}"
+    metrics = f"Bias = {format(bias(test, pred), '2.2f')}\nMAE  = {format(mae(test, pred), '2.2f')}\nRMSE = {format(rmse(test, pred), '2.2f')}"
     bbox = dict(boxstyle='square,pad=1', facecolor="#FEFCEC", edgecolor="#FEFCEC", alpha=0.75)
-    axis.text(box_pos[0], box_pos[1], metrics, fontsize=15, bbox=bbox, transform=axis.transAxes)
+    font = {"family":"monospace"}
+    axis.text(box_pos[0], box_pos[1], metrics, fontsize=15, bbox=bbox, transform=axis.transAxes, fontdict=font)
 
     for i in range(n):
         axis.plot([time[i], time[i]], [lower[i], upper[i]], color='#8C35FF', marker='o', markersize=7.5)
