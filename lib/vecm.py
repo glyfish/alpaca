@@ -16,13 +16,11 @@ from lib import config
 
 # Plots
 def comparison_plot(title, df, α, β, labels, box_pos, plot):
-    samples = data_frame_to_samples(df)
-
-    nplot, nsamples = samples.shape
     figure, axis = pyplot.subplots(figsize=(10, 7))
     axis.set_title(title)
     axis.set_xlabel(r"$t$ (Days)")
-    axis.set_xlim([0, nsamples-1])
+
+    axis.xaxis.set_major_formatter(mdates.DateFormatter('%m/%d/%y'))
 
     params = []
     d = ", "
@@ -37,9 +35,11 @@ def comparison_plot(title, df, α, β, labels, box_pos, plot):
     bbox = dict(boxstyle='square,pad=1', facecolor="#FEFCEC", edgecolor="#FEFCEC", alpha=0.75)
     axis.text(box_pos[0], box_pos[1], params_string, fontsize=15, bbox=bbox, transform=axis.transAxes)
 
-    for i in range(nplot):
-        axis.plot(range(nsamples), samples[i].T, label=labels[i], lw=1)
+    vars = df.columns
+    for i in range(len(vars)):
+        axis.plot(df.index, df[vars[i]], label=labels[i], lw=1)
 
+    figure.autofmt_xdate()
     axis.legend(fontsize=16)
     config.save_post_asset(figure, "mean_reversion", plot)
 
@@ -90,7 +90,7 @@ def acf_pcf_plot(title, df, max_lag, plot):
             axis[i].legend(fontsize=16)
     config.save_post_asset(figure, "mean_reversion", plot)
 
-def training_plot(title, df, var, plot):
+def training_plot(title, df, var, box_pos, plot):
     post_fix = ["_prediction", "_lower_bound", "_upper_bound"]
     test = df[var].to_numpy()
     pred = df[var + post_fix[0]].to_numpy()
@@ -104,6 +104,11 @@ def training_plot(title, df, var, plot):
 
     axis.xaxis.set_major_formatter(mdates.DateFormatter('%m/%d/%y'))
     axis.xaxis.set_major_locator(mdates.DayLocator())
+
+
+    metrics = f"BIAS  ={format(bias(test, pred), '2.2f')}\nMAE  = {format(mae(test, pred), '2.2f')}\nRMSE= {format(rmse(test, pred), '2.2f')}"
+    bbox = dict(boxstyle='square,pad=1', facecolor="#FEFCEC", edgecolor="#FEFCEC", alpha=0.75)
+    axis.text(box_pos[0], box_pos[1], metrics, fontsize=15, bbox=bbox, transform=axis.transAxes)
 
     for i in range(n):
         axis.plot([time[i], time[i]], [lower[i], upper[i]], color='#8C35FF', marker='o', markersize=7.5)
@@ -278,16 +283,16 @@ def var_estimate(df, maxlags):
     return VAR(df).fit(maxlags=maxlags)
 
 def bias(obs, pred):
-    return (obs - pred).mean()
+    return numpy.mean(obs - pred)
 
 def mae(obs, pred):
-    return (obs - pred).abs().mean()
+    return numpy.mean(numpy.abs(obs - pred))
 
 def mse(obs, pred):
-    return ((obs - pred)**2).mean()
+    return numpy.mean((obs - pred)**2)
 
 def rmse(obs, pred):
-    return mse(obs, pred).apply(numpy.sqrt)
+    return numpy.sqrt(mse(obs, pred))
 
 # Prediction
 def vecm_train(df, maxlags, rank, steps, deterministic="nc", report=False):
