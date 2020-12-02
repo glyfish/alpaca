@@ -121,6 +121,34 @@ def training_plot(title, df, var, box_pos, plot):
     axis.legend(fontsize=16)
     config.save_post_asset(figure, "mean_reversion", plot)
 
+def prediction_plot(title, df, pred, lag, var, plot):
+    post_fix = ["_prediction", "_lower_bound", "_upper_bound"]
+
+    obs = df[-lag:][var].to_numpy()
+    obs_time = df.index[-lag:].to_numpy()
+
+    forecast = pred[var + post_fix[0]].to_numpy()
+    forecast_time = pred.index.to_numpy()
+    lower = pred[var + post_fix[1]].to_numpy()
+    upper = pred[var + post_fix[2]].to_numpy()
+
+    n = len(forecast)
+
+    figure, axis = pyplot.subplots(figsize=(10, 7))
+    axis.set_title(title)
+
+    axis.xaxis.set_major_formatter(mdates.DateFormatter('%m/%d/%y'))
+
+    for i in range(n):
+        axis.plot([forecast_time[i], forecast_time[i]], [lower[i], upper[i]], color='#8C35FF', marker='o', markersize=7.5)
+
+    axis.plot(forecast_time, forecast, label="Prediction")
+    axis.plot(obs_time, obs, label="Observation")
+
+    figure.autofmt_xdate()
+    axis.legend(fontsize=16)
+    config.save_post_asset(figure, "mean_reversion", plot)
+
 # Statistical Tests
 def johansen_coint(df, report=False):
     samples = data_frame_to_samples(df)
@@ -309,20 +337,21 @@ def vecm_train(df, maxlags, rank, steps, deterministic="nc", report=False):
         k = int(i / step)
         var = df.columns[j] + post_fix[k]
         vars.append(var)
-    return pandas.DataFrame(data, columns=vars, index=test.index.to_numpy())
+    return pandas.DataFrame(data, columns=vars, index=test.index)
 
-def vecm_prediction(df, result, steps):
+def vecm_prediction(columns, result, steps):
     pred, lower, upper = result.predict(steps=steps, alpha=0.05)
     data = numpy.concatenate((pred, lower, upper), axis=1)
     vars = []
     post_fix = ["_prediction", "_lower_bound", "_upper_bound"]
-    step = len(vars)
-    for i in range(3*step):
-        j = i % step
-        k = int(i / step)
-        var = df.columns[j] + post_fix[k]
-        pred_vars.append(var)
-    return pandas.DataFrame(data, columns=vars, index=test.index.to_numpy())
+    l = len(columns)
+    for i in range(3*l):
+        j = i % l
+        k = int(i / l)
+        var = columns[j] + post_fix[k]
+        vars.append(var)
+    index = pandas.date_range(pandas.Timestamp.now(tz="UTC"), periods=steps).normalize()
+    return pandas.DataFrame(data, columns=vars, index=index)
 
 # Transformations
 def samples_to_data_frame(samples):
