@@ -142,8 +142,9 @@ def prediction_plot(title, df, pred, lag, var, plot):
     for i in range(n):
         axis.plot([forecast_time[i], forecast_time[i]], [lower[i], upper[i]], color='#8C35FF', marker='o', markersize=7.5)
 
-    axis.plot(forecast_time, forecast, label="Prediction")
     axis.plot(obs_time, obs, label="Observation")
+    axis.plot([obs_time[-1], forecast_time[0]], [obs[-1], forecast[0]], color='#FF9500')
+    axis.plot(forecast_time, forecast, label="Prediction")
 
     figure.autofmt_xdate()
     axis.legend(fontsize=16)

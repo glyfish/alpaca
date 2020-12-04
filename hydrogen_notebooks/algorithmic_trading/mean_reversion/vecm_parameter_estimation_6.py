@@ -52,7 +52,7 @@ title = title_prefix + " First Difference"
 labels = [r"$Δx_1$", r"$Δx_2$", r"$Δx_3$"]
 plot = f"vecm_analysis_{example}_samples_diff_1"
 df_diff_1 = vecm.difference(df)
-vecm.comparison_plot(title, df_diff_1, α.T, β, labels, [0.1, 0.7], plot)
+vecm.comparison_plot(title, df_diff_1, α.T, β, labels, [0.65, 0.7], plot)
 
 # %%
 
@@ -117,8 +117,61 @@ for result in results:
 
 # %%
 
-result = vecm.vecm_estimate(df, 1, rank, report=True)
+vecm_result = vecm.vecm_estimate(df, 1, rank, report=True)
 
 # %%
 
-vecm.residual_adf_test(df, result.beta.T, report=True)
+vecm.residual_adf_test(df, vecm_result.beta.T, report=True)
+
+# %%
+
+train = vecm.vecm_train(df, 1, rank, 10)
+
+# %%
+
+var = "x1"
+title = title_prefix + r" $x_1$ Training"
+plot = f"vecm_analysis_{example}_x1_training"
+vecm.training_plot(title, train, var, [0.7, 0.2], plot)
+
+# %%
+
+var = "x2"
+title = title_prefix + r" $x_2$ Training"
+plot = f"vecm_analysis_{example}_x2_training"
+vecm.training_plot(title, train, var, [0.7, 0.2], plot)
+
+# %%
+
+var = "x3"
+title = title_prefix + r" $x_3$ Training"
+plot = f"vecm_analysis_{example}_x3_training"
+vecm.training_plot(title, train, var, [0.7, 0.2], plot)
+
+# %%
+
+pred = vecm.vecm_prediction(df.columns, vecm_result, 10)
+
+# %%
+
+var = "x1"
+title = title_prefix + r" $x_1$ Training"
+plot = f"vecm_analysis_{example}_x1_training"
+lag = 30
+vecm.prediction_plot(title, df, pred, lag, var, plot)
+
+# %%
+
+var = "x2"
+title = title_prefix + r" $x_2$ Prediction"
+plot = f"vecm_analysis_{example}_x2_prediction"
+lag = 20
+vecm.prediction_plot(title, df, pred, lag, var, plot)
+
+# %%
+
+var = "x3"
+title = title_prefix + r" $x_3$ Prediction"
+plot = f"vecm_analysis_{example}_x3_prediction"
+lag = 20
+vecm.prediction_plot(title, df, pred, lag, var, plot)
