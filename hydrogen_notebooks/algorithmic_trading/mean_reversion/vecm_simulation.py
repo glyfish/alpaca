@@ -76,7 +76,7 @@ samples = vecm_generate_sample(α, β, a, Ω, nsample)
 
 # %%
 
-comparison_plot(title, samples, α.T, β, labels, [0.1, 0.1], plot)
+comparison_plot(title, samples, α.T, β, labels, [0.3, 0.7], plot)
 
 # %%
 
@@ -97,7 +97,7 @@ samples = vecm_generate_sample(α, β, a, Ω, nsample)
 
 # %%
 
-comparison_plot(title, samples, α.T, β, labels, [0.6, 0.1], plot)
+comparison_plot(title, samples, α.T, β, labels, [0.6, 0.5], plot)
 
 # %%
 
@@ -118,7 +118,7 @@ samples = vecm_generate_sample(α, β, a, Ω, nsample)
 
 # %%
 
-comparison_plot(title, samples, α.T, β, labels, [0.6, 0.1], plot)
+comparison_plot(title, samples, α.T, β, labels, [0.6, 0.4], plot)
 
 # %%
 
@@ -142,9 +142,10 @@ samples = vecm_generate_sample(α, β, a, Ω, nsample)
 
 # %%
 
-comparison_plot(title, samples, α.T, β, labels, [0.1, 0.15], plot)
+comparison_plot(title, samples, α.T, β, labels, [0.6, 0.15], plot)
 
 # %%
+
 nsample = 1000
 α = numpy.matrix([[-0.5, 0.0],
                   [0.0, -0.5],
@@ -165,7 +166,7 @@ samples = vecm_generate_sample(α, β, a, Ω, nsample)
 
 # %%
 
-comparison_plot(title, samples, α.T, β, labels, [0.6, 0.15], plot)
+comparison_plot(title, samples, α.T, β, labels, [0.5, 0.7], plot)
 
 # %%
 
@@ -189,7 +190,7 @@ samples = vecm_generate_sample(α, β, a, Ω, nsample)
 
 # %%
 
-comparison_plot(title, samples, α.T, β, labels, [0.1, 0.15], plot)
+comparison_plot(title, samples, α.T, β, labels, [0.3, 0.15], plot)
 
 # %%
 
@@ -213,7 +214,7 @@ samples = vecm_generate_sample(α, β, a, Ω, nsample)
 
 # %%
 
-comparison_plot(title, samples, α.T, β, labels, [0.1, 0.15], plot)
+comparison_plot(title, samples, α.T, β, labels, [0.4, 0.7], plot)
 
 # %%
 
@@ -222,7 +223,7 @@ nsample = 1000
                   [0.0, -0.5],
                   [0.0, 0.0]])
 β = numpy.matrix([[1.0, 0.0, -0.5],
-                  [-1.0, 1.0, -0.5]])
+                  [-0.5, 1.0, -0.5]])
 a = numpy.matrix([[0.5, 0.0, 0.0],
                   [0.0, 0.5, 0.0],
                   [0.0, 0.0, 0.5]])
@@ -237,4 +238,28 @@ samples = vecm_generate_sample(α, β, a, Ω, nsample)
 
 # %%
 
-comparison_plot(title, samples, α.T, β, labels, [0.1, 0.15], plot)
+comparison_plot(title, samples, α.T, β, labels, [0.6, 0.15], plot)
+
+# %%
+
+nsample = 1000
+α = numpy.matrix([[-0.5, -0.0],
+                  [0.0, -0.5],
+                  [0.0, 0.0]])
+β = numpy.matrix([[1.0, -0.5, -0.5],
+                  [0.0, 1.0, -0.5]])
+a = numpy.matrix([[0.5, 0.0, 0.0],
+                  [0.0, 0.5, 0.0],
+                  [0.0, 0.0, 0.5]])
+Ω = numpy.matrix([[1.0, 0.0, 0.0],
+                  [0.0, 1.0, 0.0],
+                  [0.0, 0.0, 1.0]])
+
+title = "VECM 2 Cointegrating Vectors"
+labels = [r"$x_1$", r"$x_2$", r"$x_3$"]
+plot = "vecm_comparison_9"
+samples = vecm_generate_sample(α, β, a, Ω, nsample)
+
+# %%
+
+comparison_plot(title, samples, α.T, β, labels, [0.3, 0.65], plot)
