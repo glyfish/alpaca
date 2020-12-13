@@ -165,7 +165,7 @@ def johansen_coint(df, report=False):
     rank = None
     for r in range(m):
         if report:
-            print(f"Critical Value: {cv[r, 2]}, Trace Statistic: {l[r]}")
+            print(f"Critical Value: {cv[r, 1]}, Trace Statistic: {l[r]}")
         if l[r] < cv[r, 2]:
             rank = r
             break
