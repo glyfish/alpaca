@@ -15,7 +15,7 @@ from lib import vecm
 pyplot.style.use(config.glyfish_style)
 
 # %%
-# Test one cointegration vector with one cointegration vector
+# Test one cointegration vector
 example = 1
 assumed_rank = 1
 title_prefix = f"Trivariate VECM {assumed_rank} Cointegrating Vector"
@@ -58,7 +58,7 @@ vecm.sample_adf_test(df_diff_1, report=True)
 
 # %%
 
-vecm.causality_matrix(df_diff_1, 2, cv=0.05)
+vecm.causality_matrix(df_diff_1, 1, cv=0.05)
 
 # %%
 
@@ -115,7 +115,7 @@ for result in results:
 
 # %%
 
-vecm_result = vecm.vecm_estimate(df, 1, rank, report=True)
+vecm_result = vecm.vecm_estimate(df, 1, 1, report=True)
 
 # %%
 

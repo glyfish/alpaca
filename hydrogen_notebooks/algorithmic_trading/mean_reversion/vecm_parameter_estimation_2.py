@@ -15,7 +15,7 @@ from lib import vecm
 pyplot.style.use(config.glyfish_style)
 
 # %%
-# Test one cointegration vector with one cointegration vector
+# Test one cointegration vector
 example = 2
 assumed_rank = 2
 title_prefix = f"Trivariate VECM {assumed_rank} Cointegrating Vectors"
@@ -52,7 +52,7 @@ title = title_prefix + " First Difference"
 labels = [r"$Δx_1$", r"$Δx_2$", r"$Δx_3$"]
 plot = f"vecm_analysis_{example}_samples_diff_1"
 df_diff_1 = vecm.difference(df)
-vecm.comparison_plot(title, df_diff_1, α.T, β, labels, [0.05, 0.1], plot)
+vecm.comparison_plot(title, df_diff_1, α.T, β, labels, [0.6, 0.], plot)
 
 # %%
 

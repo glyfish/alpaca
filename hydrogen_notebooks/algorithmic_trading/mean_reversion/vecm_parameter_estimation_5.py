@@ -15,17 +15,17 @@ from lib import vecm
 pyplot.style.use(config.glyfish_style)
 
 # %%
-# Test one cointegration vector with one cointegration vector
+# Test one cointegration
 example = 5
 assumed_rank = 2
 title_prefix = f"Trivariate VECM {assumed_rank} Cointegrating Vectors"
 
 nsample = 1000
-α = numpy.matrix([[-0.25, 0.0],
-                  [0.0, -0.5],
+α = numpy.matrix([[-0.25, 0.2],
+                  [0.4, -0.5],
                   [0.0, 0.0]])
-β = numpy.matrix([[1.0, -0.1, -0.5],
-                  [-0.25, 1.0, -0.25]])
+β = numpy.matrix([[1.0, 0.0, -0.5],
+                  [0.0, 1.0, -0.25]])
 a = numpy.matrix([[0.5, 0.0, 0.0],
                   [0.0, 0.5, 0.0],
                   [0.0, 0.0, 0.5]])
@@ -33,14 +33,15 @@ a = numpy.matrix([[0.5, 0.0, 0.0],
                   [0.0, 1.0, 0.0],
                   [0.0, 0.0, 1.0]])
 
-title = title_prefix
-labels = [r"$x_1$", r"$x_2$", r"$x_3$"]
-plot = f"vecm_analysis_{example}_samples"
 df = vecm.vecm_generate_sample(α, β, a, Ω, nsample)
 
 # %%
 
-vecm.comparison_plot(title, df, α.T, β, labels, [0.65, 0.1], plot)
+title = title_prefix
+labels = [r"$x_1$", r"$x_2$", r"$x_3$"]
+plot = f"vecm_analysis_{example}_samples"
+
+vecm.comparison_plot(title, df, α.T, β, labels, [0.65, 0.05], plot)
 
 # %%
 
