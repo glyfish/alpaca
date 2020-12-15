@@ -21,11 +21,11 @@ assumed_rank = 2
 title_prefix = f"Trivariate VECM {assumed_rank} Cointegrating Vectors"
 
 nsample = 1000
-α = numpy.matrix([[-0.25, 0.2],
-                  [0.4, -0.5],
+α = numpy.matrix([[-0.25, 0.1875],
+                  [0.1, -0.5],
                   [0.0, 0.0]])
-β = numpy.matrix([[1.0, 0.0, -0.5],
-                  [0.0, 1.0, -0.25]])
+β = numpy.matrix([[1.0, 0.0, -1.12],
+                  [0.0, 1.0, -0.824]])
 a = numpy.matrix([[0.5, 0.0, 0.0],
                   [0.0, 0.5, 0.0],
                   [0.0, 0.0, 0.5]])

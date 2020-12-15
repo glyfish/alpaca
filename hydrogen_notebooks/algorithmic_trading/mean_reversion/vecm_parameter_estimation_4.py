@@ -24,8 +24,8 @@ nsample = 1000
 α = numpy.matrix([[-0.25, 0.0],
                   [0.0, -0.5],
                   [0.0, 0.0]])
-β = numpy.matrix([[1.0, -0.8, -0.7],
-                  [-0.8, 1.0, -0.65]])
+β = numpy.matrix([[1.0, -0.75, -0.5],
+                  [-0.2, 1.0, -0.6]])
 a = numpy.matrix([[0.5, 0.0, 0.0],
                   [0.0, 0.5, 0.0],
                   [0.0, 0.0, 0.5]])
@@ -41,7 +41,7 @@ title = title_prefix
 labels = [r"$x_1$", r"$x_2$", r"$x_3$"]
 plot = f"vecm_analysis_{example}_samples"
 
-vecm.comparison_plot(title, df, α.T, β, labels, [0.6, 0.1], plot)
+vecm.comparison_plot(title, df, α.T, β, labels, [0.05, 0.1], plot)
 
 # %%
 
@@ -53,7 +53,7 @@ title = title_prefix + " First Difference"
 labels = [r"$Δx_1$", r"$Δx_2$", r"$Δx_3$"]
 plot = f"vecm_analysis_{example}_samples_diff_1"
 df_diff_1 = vecm.difference(df)
-vecm.comparison_plot(title, df_diff_1, α.T, β, labels, [0.6, 0.1], plot)
+vecm.comparison_plot(title, df_diff_1, α.T, β, labels, [0.65, 0.1], plot)
 
 # %%
 
