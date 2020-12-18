@@ -41,7 +41,7 @@ title = title_prefix
 labels = [r"$x_1$", r"$x_2$", r"$x_3$"]
 plot = f"vecm_analysis_{example}_samples"
 
-vecm.comparison_plot(title, df, α.T, β, labels, [0.05, 0.1], plot)
+vecm.comparison_plot(title, df, α.T, β, labels, [0.525, 0.05], plot)
 
 # %%
 

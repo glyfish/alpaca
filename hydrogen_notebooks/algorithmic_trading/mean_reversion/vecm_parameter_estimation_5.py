@@ -16,6 +16,7 @@ pyplot.style.use(config.glyfish_style)
 
 # %%
 # Test one cointegration
+
 example = 5
 assumed_rank = 2
 title_prefix = f"Trivariate VECM {assumed_rank} Cointegrating Vectors"
