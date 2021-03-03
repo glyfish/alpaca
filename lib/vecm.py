@@ -20,7 +20,7 @@ def comparison_plot(title, df, α, β, labels, box_pos, plot):
     axis.set_title(title)
     axis.set_xlabel(r"$t$ (Days)")
 
-    axis.xaxis.set_major_formatter(mdates.DateFormatter('%m/%d/%y'))
+    axis.xaxis.set_mactivajor_formatter(mdates.DateFormatter('%m/%d/%y'))
 
     params = []
     d = ", "
