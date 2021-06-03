@@ -43,7 +43,7 @@ mpmath==1.0.0
 nbconvert==5.3.1
 nbformat==4.4.0
 notebook==5.5.0
-numpy==1.14.4
+numpy==1.19.4
 pandas==0.24.0
 pandocfilters==1.4.2
 parso==0.2.1
@@ -53,6 +53,7 @@ pickleshare==0.7.4
 pluggy==0.6.0
 prompt-toolkit==1.0.15
 ptyprocess==0.5.2
+PuLP==2.1
 pycodestyle==2.4.0
 pydocstyle==2.1.1
 pyflakes==2.0.0
@@ -69,7 +70,8 @@ qtconsole==4.3.1
 requests==2.21.0
 rope==0.10.7
 scikit-learn==0.23.2
-scipy==1.1.0
+scipy==1.4.1
+seaborn==0.11.0
 Send2Trash==1.5.0
 simplegeneric==0.8.1
 six==1.11.0
