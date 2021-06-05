@@ -21,8 +21,8 @@ pyplot.style.use(config.glyfish_style)
 # %%
 
 model = pulp.LpProblem(name="super-replicating-portfolio", sense=pulp.LpMinimize)
-x = pulp.LpVariable(name="x")
-y = pulp.LpVariable(name="y")
+x = pulp.LpVariable(name="x", lowBound = 0.0)
+y = pulp.LpVariable(name="y", upBound = 0.0)
 
 # Constraints
 model += (36 * x + 1.05 * y >= 4, "up_constraint")
