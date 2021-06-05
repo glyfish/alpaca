@@ -36,7 +36,7 @@ model
 
 # %%
 
-status = model.solve()
+status = model.solve(solver=pulp.GLPK(msg=False))
 
 # %%
 
