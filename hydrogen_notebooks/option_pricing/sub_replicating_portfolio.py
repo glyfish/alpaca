@@ -6,6 +6,7 @@
 import os
 import sys
 import numpy
+import subprocess
 from matplotlib import pyplot
 from lib import config
 import pulp
@@ -36,7 +37,8 @@ model
 
 # %%
 
-status = model.solve(solver=pulp.GLPK(msg=False))
+glpsol_path = subprocess.check_output(["brew", "--prefix", "glpk"]).decode('utf-8').strip('\n') + "/bin/glpsol"
+status = model.solve(solver=pulp.GLPK(msg=False, path=glpsol_path))
 
 # %%
 

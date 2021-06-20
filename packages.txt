@@ -1,3 +1,4 @@
+wheel
 ipython
 jupyter
 numpy
@@ -5,15 +6,11 @@ scipy
 pandas
 pymc3
 matplotlib
-pygraphviz
-sympy
-mpltools
 backtrader
 alpaca-trade-api
 alpaca-backtrader-api
 pyyaml
-fbm
 statsmodels
 sklearn
-seaborn
 pulp
+'python-language-server[all]'
