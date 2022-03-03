@@ -59,6 +59,7 @@ def ensemble_autocorrelation_plot(H, ac, time, lengend_location, title, plot_nam
     axis.legend(bbox_to_anchor=lengend_location)
     config.save_post_asset(figure, "brownian_motion", plot_name)
 
+
 # %%
 
 Δt = 1.0
