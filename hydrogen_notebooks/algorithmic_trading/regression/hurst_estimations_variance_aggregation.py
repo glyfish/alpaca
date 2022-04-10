@@ -56,6 +56,7 @@ def agg_var_H_estimate(agg_var, m_vals):
 
 def agg_var_plot(agg_var, m_vals, title, plot_name):
     β, σ, r2 = agg_var_H_estimate(agg_var, m_vals)
+    print(β)
     h = float(1.0 + β[1]/2.0)
     σ = σ[1] / 2.0
     y_fit = 10**β[0]*m_vals**(β[1])
@@ -132,9 +133,9 @@ agg_process_comparission_multiplot(series, m, [-3.25, 3.25], title, plot_name)
 
 # %%
 
-H = 0.4
+H = 0.8
 Δt = 1.0
-npts = 2**16
+npts = 2**14
 time = numpy.linspace(0.0, float(npts*Δt), npts)
 samples = bm.fbn_fft(H, Δt, npts)
 

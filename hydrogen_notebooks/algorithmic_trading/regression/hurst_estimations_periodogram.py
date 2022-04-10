@@ -75,6 +75,8 @@ time = numpy.linspace(0.0, Δt*npts - 1, npts)
 ps = stats.power_spectrum(samples)
 ω = numpy.linspace(1.0, len(ps)+1, len(ps))
 
+len(ps)
+len(ω)
 # %%
 
 title = f"Fractional Brownian Noise: Δt={Δt}, H={H}"

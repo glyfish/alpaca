@@ -17,7 +17,7 @@ def unit_normal(t):
     return numpy.exp(-t**2)/numpy.sqrt(2.0*numpy.pi)
 
 def modified_chi_squared(x):
-    return  2.0*numpy.exp(-(2.0*x+1.0)/2.0) / numpy.sqrt(2.0*numpy.pi*(2.0*x+1.0))
+    return 2.0*numpy.exp(-(2.0*x+1.0)/2.0) / numpy.sqrt(2.0*numpy.pi*(2.0*x+1.0))
 
 # stochastic integral simulation
 # \int_0^1{B(s)dB(s)}

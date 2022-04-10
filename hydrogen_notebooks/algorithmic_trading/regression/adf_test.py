@@ -65,7 +65,7 @@ def adfuller(series, test_type):
 
 # %%
 
-n = 1000
+n = 100
 nsample = 10000
 test_statistic_samples = adf.df_test_statistic_ensemble(n, nsample)
 

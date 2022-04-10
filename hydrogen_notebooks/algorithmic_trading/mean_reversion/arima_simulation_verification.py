@@ -88,12 +88,14 @@ arima1 = arima_generate_sample(arma1, d)
 darima11 = arima.sample_difference(arima1)
 
 # %%
+arima.adf_report(darima11)
 
-arima.adf_report(darima1)
+# %%
+arima.adf_report(darima11)
 
 # %%
 
-samples = numpy.array([arma1[1:], darima11])
+samples = numpy.array([arima1[1:], darima11])
 title = r"ARIMA(1,1,0) $\Delta x_t$-ARMA(1,0) Comparison: " + r"$\phi=$"+f"{numpy.array2string(φ1, precision=2, separator=',')}, " + r"$\delta=$"+f"{numpy.array2string(δ1, precision=2, separator=',')}"
 plot_name = "aima_comparison_1_1_0"
 ylables = [r"$x_t$", r"$\Delta x_t$"]

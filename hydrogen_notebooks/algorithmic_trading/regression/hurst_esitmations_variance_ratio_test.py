@@ -148,7 +148,7 @@ def multi_hetero_vr_test_plot(samples, s, sig_level, title, plot_name):
 
 npts = 50
 fs = numpy.logspace(numpy.log10(10.0), numpy.log10(1000.0), npts)
-s_vals = numpy.array(list(dict.fromkeys([int(v) for v in fs])))
+s_vals = numpy.array([int(v) for v in fs])
 
 # %%
 
