@@ -20,7 +20,7 @@ def comparison_plot(title, df, α, β, labels, box_pos, plot):
     axis.set_title(title)
     axis.set_xlabel(r"$t$ (Days)")
 
-    axis.xaxis.set_mactivajor_formatter(mdates.DateFormatter('%m/%d/%y'))
+    axis.xaxis.set_major_formatter(mdates.DateFormatter('%m/%d/%y'))
 
     params = []
     d = ", "
@@ -276,7 +276,7 @@ def acf(samples, nlags):
     return sm.tsa.stattools.acf(samples, nlags=nlags, fft=True)
 
 def pacf(samples, nlags):
-    return sm.tsa.stattools.pacf(samples, nlags=nlags, method="ywunbiased")
+    return sm.tsa.stattools.pacf(samples, nlags=nlags)
 
 def multivariate_normal_sample(μ, Ω, n):
     return numpy.random.multivariate_normal(μ, Ω, n)
