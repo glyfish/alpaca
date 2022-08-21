@@ -79,15 +79,6 @@ def yule_walker(x, max_lag):
     pacf, _ = sm.regression.yule_walker(x, order=max_lag, method='mle')
     return pacf
 
-def autocorrelation(x):
-    n = len(x)
-    x_shifted = x - x.mean()
-    x_padded = numpy.concatenate((x_shifted, numpy.zeros(n-1)))
-    x_fft = numpy.fft.fft(x_padded)
-    h_fft = numpy.conj(x_fft) * x_fft
-    ac = numpy.fft.ifft(h_fft)
-    return ac[0:n]/ac[0]
-
 def ols_estimate(xt, yt, show_summary=True):
     xt = sm.add_constant(xt)
     model = sm.OLS(yt, xt)
