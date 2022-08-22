@@ -90,7 +90,7 @@ def bivatiate_pdf_samples_plot(samples, μ, Ω, n, contour_values, plot_name):
              r"$σ_x$=" + f"{format(Ω[0][0], '2.2f')}, " + r"$σ_y$=" + \
              f"{format(Ω[1][1], '2.2f')}"
     axis.set_title(title)
-    _, _, _, image = axis.hist2d(samples[:,0], samples[:,1], normed=True, bins=bins, cmap=config.alternate_color_map)
+    _, _, _, image = axis.hist2d(samples[:,0], samples[:,1], density=True, bins=bins, cmap=config.alternate_color_map)
     contour = axis.contour(x, y, f, contour_values, cmap=config.contour_color_map)
     axis.clabel(contour, contour.levels[::2], fmt="%.3f", inline=True, fontsize=15)
     figure.colorbar(image)
