@@ -1,0 +1,13 @@
+{
+    "python.envFile": "${workspaceFolder}/.env",
+    "editor.snippetSuggestions": "top",
+    "python.analysis.extraPaths": [
+        "/Users/troy/Develop/gly.fish/alpaca"
+    ],
+    "cSpell.words": [
+        "clabel",
+        "colorbar",
+        "cummean",
+        "ylim"
+    ]
+}
