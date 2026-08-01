@@ -195,7 +195,8 @@ def adfuller_report(samples, regression):
     print(f"Is Stationary at 5%: {isStationary}")
     print("Critical Values")
     for key, value in adf_result[4].items():
-	       print('\t%s: %.3f' % (key, value))
+	    print('\t%s: %.3f' % (key, value))
+               
     return adf_result[0] < adf_result[4]["5%"]
 
 def adf_report(samples, regression='c'):
